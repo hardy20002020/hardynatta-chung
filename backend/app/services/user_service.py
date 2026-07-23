@@ -2,7 +2,7 @@ from sqlalchemy.orm import Session
 
 from app.models.user import User
 from app.repositories.user_repository import UserRepository
-from app.schemas.user import UserCreate
+from app.schemas.user import UserCreate, UserUpdate
 
 
 class UserService:
@@ -17,3 +17,10 @@ class UserService:
 
     def get_user_by_id(self, user_id: int) -> User | None:
         return self.repository.get_user_by_id(user_id)
+
+    def update_user(
+        self,
+        user_id: int,
+        user: UserUpdate
+    ) -> User | None:
+        return self.repository.update_user(user_id, user)
