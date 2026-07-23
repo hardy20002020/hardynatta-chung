@@ -1,8 +1,12 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from app.db.database import get_db
-from app.schemas.user import UserCreate, UserResponse, UserUpdate
+from app.schemas.user import (
+    UserCreate,
+    UserUpdate,
+    UserResponse,
+)
 from app.services.user_service import UserService
 
 
@@ -18,7 +22,24 @@ def create_user(
     db: Session = Depends(get_db),
 ):
     service = UserService(db)
-    return service.create_user(user)
+
+    try:
+        return service.create_user(user)
+
+    except ValueError as e:
+        raise HTTPException(
+            status_code=400,
+            detail=str(e)
+        )
+
+
+@router.get("/", response_model=list[UserResponse])
+def get_users(
+    db: Session = Depends(get_db),
+):
+    service = UserService(db)
+
+    return service.get_all_users()
 
 
 @router.get("/{user_id}", response_model=UserResponse)
@@ -27,7 +48,16 @@ def get_user_by_id(
     db: Session = Depends(get_db),
 ):
     service = UserService(db)
-    return service.get_user_by_id(user_id)
+
+    user = service.get_user_by_id(user_id)
+
+    if user is None:
+        raise HTTPException(
+            status_code=404,
+            detail="User not found"
+        )
+
+    return user
 
 
 @router.put("/{user_id}", response_model=UserResponse)
@@ -37,12 +67,36 @@ def update_user(
     db: Session = Depends(get_db),
 ):
     service = UserService(db)
-    return service.update_user(user_id, user)
+
+    updated_user = service.update_user(
+        user_id,
+        user
+    )
+
+    if updated_user is None:
+        raise HTTPException(
+            status_code=404,
+            detail="User not found"
+        )
+
+    return updated_user
 
 
-@router.get("/", response_model=list[UserResponse])
-def get_users(
+@router.delete("/{user_id}")
+def delete_user(
+    user_id: int,
     db: Session = Depends(get_db),
 ):
     service = UserService(db)
-    return service.get_all_users()
+
+    deleted = service.delete_user(user_id)
+
+    if not deleted:
+        raise HTTPException(
+            status_code=404,
+            detail="User not found"
+        )
+
+    return {
+        "message": "User deleted successfully"
+    }
