@@ -18,3 +18,11 @@ def create_user(
 ):
     service = UserService(db)
     return service.create_user(user)
+
+
+@router.get("/", response_model=list[UserResponse])
+def get_users(
+    db: Session = Depends(get_db),
+):
+    service = UserService(db)
+    return service.get_all_users()

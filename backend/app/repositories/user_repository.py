@@ -19,3 +19,6 @@ class UserRepository:
         self.db.refresh(db_user)
 
         return db_user
+
+    def get_all_users(self) -> list[User]:
+        return self.db.query(User).all()
