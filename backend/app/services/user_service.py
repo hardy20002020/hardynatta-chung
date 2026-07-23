@@ -14,3 +14,6 @@ class UserService:
 
     def get_all_users(self) -> list[User]:
         return self.repository.get_all_users()
+
+    def get_user_by_id(self, user_id: int) -> User | None:
+        return self.repository.get_user_by_id(user_id)
