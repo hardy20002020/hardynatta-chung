@@ -1,11 +1,14 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
-from app.db.dependencies import get_db
+from app.db.database import get_db
 from app.schemas.user import UserCreate, UserResponse
 from app.services.user_service import UserService
 
-router = APIRouter(prefix="/users", tags=["Users"])
+router = APIRouter(
+    prefix="/users",
+    tags=["Users"],
+)
 
 
 @router.post("/", response_model=UserResponse)
