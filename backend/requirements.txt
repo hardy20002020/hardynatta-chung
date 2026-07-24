@@ -13,3 +13,4 @@ python-dotenv
 
 python-jose[cryptography]
 passlib[bcrypt]
+bcrypt==4.1.3

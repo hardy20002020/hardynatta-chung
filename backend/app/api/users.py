@@ -2,12 +2,11 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from app.db.database import get_db
-from app.schemas.user import (
-    UserCreate,
-    UserUpdate,
-    UserResponse,
-)
+from app.schemas.user import UserCreate, UserResponse, UserUpdate
 from app.services.user_service import UserService
+
+from app.core.dependencies import get_current_user
+from app.models.user import User
 
 
 router = APIRouter(
@@ -16,7 +15,10 @@ router = APIRouter(
 )
 
 
-@router.post("/", response_model=UserResponse)
+@router.post(
+    "/",
+    response_model=UserResponse,
+)
 def create_user(
     user: UserCreate,
     db: Session = Depends(get_db),
@@ -29,20 +31,41 @@ def create_user(
     except ValueError as e:
         raise HTTPException(
             status_code=400,
-            detail=str(e)
+            detail=str(e),
         )
 
 
-@router.get("/", response_model=list[UserResponse])
+@router.get(
+    "/",
+    response_model=list[UserResponse],
+)
 def get_users(
     db: Session = Depends(get_db),
 ):
     service = UserService(db)
 
-    return service.get_all_users()
+    return service.get_users()
 
 
-@router.get("/{user_id}", response_model=UserResponse)
+# ==========================
+# JWT Protected Endpoint
+# HARUS sebelum /{user_id}
+# ==========================
+
+@router.get(
+    "/me",
+    response_model=UserResponse,
+)
+def get_my_profile(
+    current_user: User = Depends(get_current_user),
+):
+    return current_user
+
+
+@router.get(
+    "/{user_id}",
+    response_model=UserResponse,
+)
 def get_user_by_id(
     user_id: int,
     db: Session = Depends(get_db),
@@ -54,13 +77,16 @@ def get_user_by_id(
     if user is None:
         raise HTTPException(
             status_code=404,
-            detail="User not found"
+            detail="User not found",
         )
 
     return user
 
 
-@router.put("/{user_id}", response_model=UserResponse)
+@router.put(
+    "/{user_id}",
+    response_model=UserResponse,
+)
 def update_user(
     user_id: int,
     user: UserUpdate,
@@ -70,33 +96,36 @@ def update_user(
 
     updated_user = service.update_user(
         user_id,
-        user
+        user,
     )
 
     if updated_user is None:
         raise HTTPException(
             status_code=404,
-            detail="User not found"
+            detail="User not found",
         )
 
     return updated_user
 
 
-@router.delete("/{user_id}")
+@router.delete(
+    "/{user_id}",
+)
 def delete_user(
     user_id: int,
     db: Session = Depends(get_db),
 ):
     service = UserService(db)
 
-    deleted = service.delete_user(user_id)
+    result = service.delete_user(user_id)
 
-    if not deleted:
+    if not result:
         raise HTTPException(
             status_code=404,
-            detail="User not found"
+            detail="User not found",
         )
 
     return {
-        "message": "User deleted successfully"
+        "success": True,
+        "message": "User deleted",
     }
