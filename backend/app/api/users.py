@@ -6,6 +6,8 @@ from app.schemas.user import UserCreate, UserResponse, UserUpdate
 from app.services.user_service import UserService
 
 from app.core.dependencies import get_current_user
+from app.core.authorization import require_role
+from app.core.roles import UserRole
 from app.models.user import User
 
 
@@ -44,12 +46,30 @@ def get_users(
 ):
     service = UserService(db)
 
-    return service.get_users()
+    return service.get_all_users()
+
+
+# ==========================
+# ADMIN ONLY
+# ==========================
+
+@router.get(
+    "/admin",
+    response_model=list[UserResponse],
+)
+def get_all_users_admin(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(
+        require_role(UserRole.ADMIN),
+    ),
+):
+    service = UserService(db)
+
+    return service.get_all_users()
 
 
 # ==========================
 # JWT Protected Endpoint
-# HARUS sebelum /{user_id}
 # ==========================
 
 @router.get(

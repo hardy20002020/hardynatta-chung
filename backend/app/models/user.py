@@ -1,6 +1,7 @@
 from sqlalchemy import Column, Integer, String
 
 from app.db.base import Base
+from app.core.roles import UserRole
 
 
 class User(Base):
@@ -32,5 +33,5 @@ class User(Base):
     role = Column(
         String(50),
         nullable=False,
-        default="user",
+        default=UserRole.MEMBER.value,
     )
