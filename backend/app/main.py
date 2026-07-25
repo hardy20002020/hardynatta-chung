@@ -3,6 +3,9 @@ from sqlalchemy import text
 
 from app.api.users import router as user_router
 from app.api.auth import router as auth_router
+from app.api.provinces import router as province_router
+from app.api.cities import router as city_router
+
 from app.db.session import engine
 
 
@@ -16,6 +19,8 @@ app = FastAPI(
 # Register Routers
 app.include_router(user_router)
 app.include_router(auth_router)
+app.include_router(province_router)
+app.include_router(city_router)
 
 
 @app.get("/")

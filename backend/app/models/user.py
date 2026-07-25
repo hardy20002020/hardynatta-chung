@@ -1,7 +1,7 @@
-from sqlalchemy import Column, Integer, String
+from sqlalchemy import Column, Integer, String, ForeignKey
+from sqlalchemy.orm import relationship
 
 from app.db.base import Base
-from app.core.roles import UserRole
 
 
 class User(Base):
@@ -14,24 +14,40 @@ class User(Base):
     )
 
     name = Column(
-        String(100),
+        String,
         nullable=False,
     )
 
     email = Column(
-        String(255),
+        String,
         unique=True,
         index=True,
         nullable=False,
     )
 
     password = Column(
-        String(255),
+        String,
         nullable=False,
     )
 
-    role = Column(
-        String(50),
-        nullable=False,
-        default=UserRole.MEMBER.value,
+    province_id = Column(
+        Integer,
+        ForeignKey("provinces.id"),
+        nullable=True,
+    )
+
+    city_id = Column(
+        Integer,
+        ForeignKey("cities.id"),
+        nullable=True,
+    )
+
+    province = relationship(
+        "Province",
+        back_populates="users",
+    )
+
+    city = relationship(
+        "City",
+        back_populates="users",
     )

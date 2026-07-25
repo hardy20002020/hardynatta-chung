@@ -1,4 +1,4 @@
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 
 from app.core.security import hash_password
 from app.models.user import User
@@ -6,10 +6,15 @@ from app.schemas.user import UserCreate, UserUpdate
 
 
 class UserRepository:
+
     def __init__(self, db: Session):
         self.db = db
 
-    def create_user(self, user: UserCreate) -> User:
+
+    def create_user(
+        self,
+        user: UserCreate,
+    ) -> User:
 
         existing_user = (
             self.db.query(User)
@@ -18,12 +23,17 @@ class UserRepository:
         )
 
         if existing_user:
-            raise ValueError("Email already registered")
+            raise ValueError(
+                "Email already registered"
+            )
 
         db_user = User(
             name=user.name,
             email=user.email,
             password=hash_password(user.password),
+
+            province_id=user.province_id,
+            city_id=user.city_id,
         )
 
         self.db.add(db_user)
@@ -32,8 +42,20 @@ class UserRepository:
 
         return db_user
 
-    def get_all_users(self) -> list[User]:
-        return self.db.query(User).all()
+
+    def get_all_users(
+        self,
+    ) -> list[User]:
+
+        return (
+            self.db.query(User)
+            .options(
+                joinedload(User.province),
+                joinedload(User.city),
+            )
+            .all()
+        )
+
 
     def get_user_by_id(
         self,
@@ -42,9 +64,14 @@ class UserRepository:
 
         return (
             self.db.query(User)
+            .options(
+                joinedload(User.province),
+                joinedload(User.city),
+            )
             .filter(User.id == user_id)
             .first()
         )
+
 
     def get_user_by_email(
         self,
@@ -56,6 +83,7 @@ class UserRepository:
             .filter(User.email == email)
             .first()
         )
+
 
     def update_user(
         self,
@@ -72,13 +100,24 @@ class UserRepository:
         if db_user is None:
             return None
 
+
         db_user.name = user.name
         db_user.email = user.email
+
+        db_user.province_id = (
+            user.province_id
+        )
+
+        db_user.city_id = (
+            user.city_id
+        )
+
 
         self.db.commit()
         self.db.refresh(db_user)
 
         return db_user
+
 
     def delete_user(
         self,
@@ -93,6 +132,7 @@ class UserRepository:
 
         if db_user is None:
             return False
+
 
         self.db.delete(db_user)
         self.db.commit()
