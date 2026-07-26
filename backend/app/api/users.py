@@ -2,16 +2,21 @@ from fastapi import APIRouter, Depends, Query, HTTPException
 from sqlalchemy.orm import Session
 
 from app.db.database import get_db
+from app.core.dependencies import get_current_user
+from app.models.user import User
+
 from app.schemas.base import ApiResponse
 from app.schemas.user import (
     UserCreate,
     UserResponse,
     UserUpdate,
 )
+
 from app.schemas.pagination import (
     PaginatedResponse,
     PaginationMeta,
 )
+
 from app.services.user_service import UserService
 
 
@@ -63,7 +68,7 @@ def get_users(
 
     service = UserService(db)
 
-    users, total = service.get_users_paginated(
+    result = service.get_users_paginated(
         page=page,
         size=size,
         search=search,
@@ -73,13 +78,28 @@ def get_users(
         success=True,
         message="Users retrieved successfully",
         data=PaginatedResponse(
-            items=users,
+            items=result["items"],
             meta=PaginationMeta(
-                page=page,
-                size=size,
-                total=total,
+                page=result["meta"]["page"],
+                size=result["meta"]["size"],
+                total=result["meta"]["total"],
             ),
         ),
+    )
+
+
+@router.get(
+    "/me",
+    response_model=ApiResponse[UserResponse],
+)
+def get_my_profile(
+    current_user: User = Depends(get_current_user),
+):
+
+    return ApiResponse(
+        success=True,
+        message="Profile retrieved successfully",
+        data=current_user,
     )
 
 
@@ -94,9 +114,7 @@ def get_user_by_id(
 
     service = UserService(db)
 
-    user = service.get_user_by_id(
-        user_id
-    )
+    user = service.get_user_by_id(user_id)
 
     if user is None:
         raise HTTPException(
