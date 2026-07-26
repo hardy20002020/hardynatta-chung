@@ -1,13 +1,14 @@
 from fastapi import FastAPI
 from sqlalchemy import text
 
-from app.api.users import router as user_router
 from app.api.auth import router as auth_router
-from app.api.provinces import router as province_router
 from app.api.cities import router as city_router
 from app.api.dashboard import router as dashboard_router
+from app.api.provinces import router as province_router
+from app.api.users import router as user_router
 
 from app.db.session import engine
+from app.exceptions.handlers import register_exception_handlers
 
 
 app = FastAPI(
@@ -16,6 +17,8 @@ app = FastAPI(
     version="1.0.0",
 )
 
+# Register Global Exception Handlers
+register_exception_handlers(app)
 
 # Register Routers
 app.include_router(user_router)
