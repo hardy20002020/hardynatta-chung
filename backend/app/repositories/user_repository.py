@@ -1,3 +1,4 @@
+from sqlalchemy import func
 from sqlalchemy.orm import Session, joinedload
 
 from app.core.security import hash_password
@@ -31,7 +32,6 @@ class UserRepository:
             name=user.name,
             email=user.email,
             password=hash_password(user.password),
-
             province_id=user.province_id,
             city_id=user.city_id,
         )
@@ -55,6 +55,33 @@ class UserRepository:
             )
             .all()
         )
+
+
+    def get_users_paginated(
+        self,
+        page: int,
+        size: int,
+    ) -> tuple[list[User], int]:
+
+        offset = (page - 1) * size
+
+        total = (
+            self.db.query(func.count(User.id))
+            .scalar()
+        )
+
+        users = (
+            self.db.query(User)
+            .options(
+                joinedload(User.province),
+                joinedload(User.city),
+            )
+            .offset(offset)
+            .limit(size)
+            .all()
+        )
+
+        return users, total
 
 
     def get_user_by_id(

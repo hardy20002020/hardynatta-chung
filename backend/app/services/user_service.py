@@ -6,42 +6,83 @@ from app.schemas.user import UserCreate, UserUpdate
 
 
 class UserService:
-    def __init__(self, db: Session):
+
+    def __init__(
+        self,
+        db: Session,
+    ):
         self.repository = UserRepository(db)
+
 
     def create_user(
         self,
         user: UserCreate,
     ) -> User:
+
         return self.repository.create_user(user)
 
-    def get_all_users(self) -> list[User]:
+
+    def get_all_users(
+        self,
+    ) -> list[User]:
+
         return self.repository.get_all_users()
+
+
+    def get_users_paginated(
+        self,
+        page: int,
+        size: int,
+    ) -> dict:
+
+        users, total = (
+            self.repository.get_users_paginated(
+                page,
+                size,
+            )
+        )
+
+        return {
+            "items": users,
+            "meta": {
+                "page": page,
+                "size": size,
+                "total": total,
+            },
+        }
+
 
     def get_user_by_id(
         self,
         user_id: int,
     ) -> User | None:
+
         return self.repository.get_user_by_id(user_id)
+
 
     def update_user(
         self,
         user_id: int,
         user: UserUpdate,
     ) -> User | None:
+
         return self.repository.update_user(
             user_id,
             user,
         )
 
+
     def delete_user(
         self,
         user_id: int,
     ) -> bool:
+
         return self.repository.delete_user(user_id)
+
 
     def get_user_by_email(
         self,
         email: str,
     ) -> User | None:
+
         return self.repository.get_user_by_email(email)

@@ -1,14 +1,18 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, Query, HTTPException
 from sqlalchemy.orm import Session
 
 from app.db.database import get_db
-from app.schemas.user import UserCreate, UserResponse, UserUpdate
+from app.schemas.base import ApiResponse
+from app.schemas.user import (
+    UserCreate,
+    UserResponse,
+    UserUpdate,
+)
+from app.schemas.pagination import (
+    PaginatedResponse,
+    PaginationMeta,
+)
 from app.services.user_service import UserService
-
-from app.core.dependencies import get_current_user
-from app.core.authorization import require_role
-from app.core.roles import UserRole
-from app.models.user import User
 
 
 router = APIRouter(
@@ -19,77 +23,71 @@ router = APIRouter(
 
 @router.post(
     "/",
-    response_model=UserResponse,
+    response_model=ApiResponse[UserResponse],
 )
 def create_user(
     user: UserCreate,
     db: Session = Depends(get_db),
 ):
+
     service = UserService(db)
 
-    try:
-        return service.create_user(user)
+    result = service.create_user(user)
 
-    except ValueError as e:
-        raise HTTPException(
-            status_code=400,
-            detail=str(e),
-        )
+    return ApiResponse(
+        success=True,
+        message="User created successfully",
+        data=result,
+    )
 
 
 @router.get(
     "/",
-    response_model=list[UserResponse],
+    response_model=ApiResponse[PaginatedResponse[UserResponse]],
 )
 def get_users(
-    db: Session = Depends(get_db),
-):
-    service = UserService(db)
-
-    return service.get_all_users()
-
-
-# ==========================
-# ADMIN ONLY
-# ==========================
-
-@router.get(
-    "/admin",
-    response_model=list[UserResponse],
-)
-def get_all_users_admin(
-    db: Session = Depends(get_db),
-    current_user: User = Depends(
-        require_role(UserRole.ADMIN),
+    page: int = Query(
+        default=1,
+        ge=1,
     ),
+    size: int = Query(
+        default=10,
+        ge=1,
+        le=100,
+    ),
+    db: Session = Depends(get_db),
 ):
+
     service = UserService(db)
 
-    return service.get_all_users()
+    result = service.get_users_paginated(
+        page,
+        size,
+    )
 
-
-# ==========================
-# JWT Protected Endpoint
-# ==========================
-
-@router.get(
-    "/me",
-    response_model=UserResponse,
-)
-def get_my_profile(
-    current_user: User = Depends(get_current_user),
-):
-    return current_user
+    return ApiResponse(
+        success=True,
+        message="Users retrieved successfully",
+        data=PaginatedResponse(
+            items=result["items"],
+            meta=PaginationMeta(
+                page=result["meta"]["page"],
+                size=result["meta"]["size"],
+                total=result["meta"]["total"],
+            ),
+        ),
+    )
 
 
 @router.get(
     "/{user_id}",
-    response_model=UserResponse,
+    response_model=ApiResponse[UserResponse],
 )
 def get_user_by_id(
     user_id: int,
     db: Session = Depends(get_db),
 ):
+
     service = UserService(db)
 
     user = service.get_user_by_id(user_id)
@@ -100,32 +98,41 @@ def get_user_by_id(
             detail="User not found",
         )
 
-    return user
+    return ApiResponse(
+        success=True,
+        message="User retrieved successfully",
+        data=user,
+    )
 
 
 @router.put(
     "/{user_id}",
-    response_model=UserResponse,
+    response_model=ApiResponse[UserResponse],
 )
 def update_user(
     user_id: int,
     user: UserUpdate,
     db: Session = Depends(get_db),
 ):
+
     service = UserService(db)
 
-    updated_user = service.update_user(
+    result = service.update_user(
         user_id,
         user,
     )
 
-    if updated_user is None:
+    if result is None:
         raise HTTPException(
             status_code=404,
             detail="User not found",
         )
 
-    return updated_user
+    return ApiResponse(
+        success=True,
+        message="User updated successfully",
+        data=result,
+    )
 
 
 @router.delete(
@@ -135,17 +142,21 @@ def delete_user(
     user_id: int,
     db: Session = Depends(get_db),
 ):
+
     service = UserService(db)
 
-    result = service.delete_user(user_id)
+    deleted = service.delete_user(
+        user_id,
+    )
 
-    if not result:
+    if not deleted:
         raise HTTPException(
             status_code=404,
             detail="User not found",
         )
 
-    return {
-        "success": True,
-        "message": "User deleted",
-    }
+    return ApiResponse(
+        success=True,
+        message="User deleted successfully",
+        data=None,
+    )
