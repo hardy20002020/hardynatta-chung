@@ -34,7 +34,6 @@ def create_user(
     user: UserCreate,
     db: Session = Depends(get_db),
 ):
-
     service = UserService(db)
 
     result = service.create_user(user)
@@ -60,10 +59,9 @@ def get_users(
         ge=1,
         le=100,
     ),
-    search: str | None = Query(
-        default=None,
-    ),
+    search: str | None = None,
     db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
 ):
 
     service = UserService(db)
@@ -89,32 +87,20 @@ def get_users(
 
 
 @router.get(
-    "/me",
-    response_model=ApiResponse[UserResponse],
-)
-def get_my_profile(
-    current_user: User = Depends(get_current_user),
-):
-
-    return ApiResponse(
-        success=True,
-        message="Profile retrieved successfully",
-        data=current_user,
-    )
-
-
-@router.get(
     "/{user_id}",
     response_model=ApiResponse[UserResponse],
 )
 def get_user_by_id(
     user_id: int,
     db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
 ):
 
     service = UserService(db)
 
-    user = service.get_user_by_id(user_id)
+    user = service.get_user_by_id(
+        user_id
+    )
 
     if user is None:
         raise HTTPException(
@@ -137,6 +123,7 @@ def update_user(
     user_id: int,
     user: UserUpdate,
     db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
 ):
 
     service = UserService(db)
@@ -161,16 +148,18 @@ def update_user(
 
 @router.delete(
     "/{user_id}",
+    response_model=ApiResponse[None],
 )
 def delete_user(
     user_id: int,
     db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
 ):
 
     service = UserService(db)
 
     deleted = service.delete_user(
-        user_id,
+        user_id
     )
 
     if not deleted:
