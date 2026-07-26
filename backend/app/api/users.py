@@ -2,8 +2,6 @@ from fastapi import APIRouter, Depends, Query, HTTPException
 from sqlalchemy.orm import Session
 
 from app.db.database import get_db
-from app.core.dependencies import get_current_user
-from app.models.user import User
 
 from app.schemas.base import ApiResponse
 from app.schemas.user import (
@@ -19,6 +17,11 @@ from app.schemas.pagination import (
 
 from app.services.user_service import UserService
 
+from app.core.permissions import (
+    require_admin,
+    require_user,
+)
+
 
 router = APIRouter(
     prefix="/users",
@@ -33,7 +36,9 @@ router = APIRouter(
 def create_user(
     user: UserCreate,
     db: Session = Depends(get_db),
+    admin_user=Depends(require_admin),
 ):
+
     service = UserService(db)
 
     result = service.create_user(user)
@@ -59,17 +64,19 @@ def get_users(
         ge=1,
         le=100,
     ),
-    search: str | None = None,
+    search: str | None = Query(
+        default=None,
+    ),
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user),
+    current_user=Depends(require_user),
 ):
 
     service = UserService(db)
 
     result = service.get_users_paginated(
-        page=page,
-        size=size,
-        search=search,
+        page,
+        size,
+        search,
     )
 
     return ApiResponse(
@@ -93,13 +100,13 @@ def get_users(
 def get_user_by_id(
     user_id: int,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user),
+    current_user=Depends(require_user),
 ):
 
     service = UserService(db)
 
     user = service.get_user_by_id(
-        user_id
+        user_id,
     )
 
     if user is None:
@@ -123,7 +130,7 @@ def update_user(
     user_id: int,
     user: UserUpdate,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user),
+    admin_user=Depends(require_admin),
 ):
 
     service = UserService(db)
@@ -153,13 +160,13 @@ def update_user(
 def delete_user(
     user_id: int,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user),
+    admin_user=Depends(require_admin),
 ):
 
     service = UserService(db)
 
     deleted = service.delete_user(
-        user_id
+        user_id,
     )
 
     if not deleted:

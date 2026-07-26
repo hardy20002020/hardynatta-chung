@@ -21,7 +21,7 @@ class AuthService:
         self,
         email: str,
         password: str,
-    ) -> str:
+    ):
 
         user = self.repository.get_user_by_email(
             email
@@ -46,9 +46,8 @@ class AuthService:
             {
                 "sub": str(user.id),
                 "email": user.email,
-                "role": "user",
+                "role": user.role,
             }
         )
-
 
         return token
