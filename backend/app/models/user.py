@@ -30,6 +30,12 @@ class User(Base):
         nullable=False,
     )
 
+    role = Column(
+        String,
+        nullable=False,
+        default="user",
+    )
+
     province_id = Column(
         Integer,
         ForeignKey("provinces.id"),
