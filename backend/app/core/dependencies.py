@@ -1,45 +1,40 @@
-from fastapi import Depends, HTTPException
-from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
-from sqlalchemy.orm import Session
+from fastapi import (
+    Depends,
+    HTTPException,
+    status,
+)
+from fastapi.security import HTTPAuthorizationCredentials
 
-from app.db.database import get_db
-from app.core.security import decode_access_token
-from app.models.user import User
-
-
-security = HTTPBearer()
+from app.core.security import (
+    decode_access_token,
+    security,
+)
 
 
 def get_current_user(
     credentials: HTTPAuthorizationCredentials = Depends(security),
-    db: Session = Depends(get_db),
 ):
     token = credentials.credentials
 
     try:
         payload = decode_access_token(token)
 
-        user_id = payload.get("sub")
-
-        if user_id is None:
-            raise Exception()
+        return payload
 
     except Exception:
         raise HTTPException(
-            status_code=401,
-            detail="Invalid token",
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid authentication token",
         )
 
-    user = (
-        db.query(User)
-        .filter(User.id == int(user_id))
-        .first()
-    )
 
-    if user is None:
+def require_admin(
+    current_user: dict = Depends(get_current_user),
+):
+    if current_user.get("role") != "admin":
         raise HTTPException(
-            status_code=404,
-            detail="User not found",
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Admin access required",
         )
 
-    return user
+    return current_user

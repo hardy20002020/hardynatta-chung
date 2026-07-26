@@ -11,7 +11,6 @@ class UserRepository:
     def __init__(self, db: Session):
         self.db = db
 
-
     def create_user(
         self,
         user: UserCreate,
@@ -42,7 +41,6 @@ class UserRepository:
 
         return db_user
 
-
     def get_all_users(
         self,
     ) -> list[User]:
@@ -52,10 +50,10 @@ class UserRepository:
             .options(
                 joinedload(User.province),
                 joinedload(User.city),
+                joinedload(User.role_ref),
             )
             .all()
         )
-
 
     def get_users_paginated(
         self,
@@ -71,6 +69,7 @@ class UserRepository:
             .options(
                 joinedload(User.province),
                 joinedload(User.city),
+                joinedload(User.role_ref),
             )
         )
 
@@ -95,7 +94,6 @@ class UserRepository:
 
         return users, total
 
-
     def get_user_by_id(
         self,
         user_id: int,
@@ -106,11 +104,11 @@ class UserRepository:
             .options(
                 joinedload(User.province),
                 joinedload(User.city),
+                joinedload(User.role_ref),
             )
             .filter(User.id == user_id)
             .first()
         )
-
 
     def get_user_by_email(
         self,
@@ -119,10 +117,12 @@ class UserRepository:
 
         return (
             self.db.query(User)
+            .options(
+                joinedload(User.role_ref),
+            )
             .filter(User.email == email)
             .first()
         )
-
 
     def update_user(
         self,
@@ -139,18 +139,15 @@ class UserRepository:
         if db_user is None:
             return None
 
-
         db_user.name = user.name
         db_user.email = user.email
         db_user.province_id = user.province_id
         db_user.city_id = user.city_id
 
-
         self.db.commit()
         self.db.refresh(db_user)
 
         return db_user
-
 
     def delete_user(
         self,
@@ -165,7 +162,6 @@ class UserRepository:
 
         if db_user is None:
             return False
-
 
         self.db.delete(db_user)
         self.db.commit()

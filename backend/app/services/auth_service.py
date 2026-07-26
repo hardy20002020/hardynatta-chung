@@ -16,7 +16,6 @@ class AuthService:
     ):
         self.repository = UserRepository(db)
 
-
     def login(
         self,
         email: str,
@@ -32,7 +31,6 @@ class AuthService:
                 "Invalid email or password"
             )
 
-
         if not verify_password(
             password,
             user.password,
@@ -41,12 +39,18 @@ class AuthService:
                 "Invalid email or password"
             )
 
+        # Ambil role dari tabel roles jika tersedia
+        role_name = (
+            user.role_ref.name
+            if user.role_ref is not None
+            else user.role
+        )
 
         token = create_access_token(
             {
                 "sub": str(user.id),
                 "email": user.email,
-                "role": user.role,
+                "role": role_name,
             }
         )
 

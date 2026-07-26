@@ -9,7 +9,14 @@ from app.core.config import settings
 from app.db.base import Base
 
 # Load semua model agar Alembic mengenali metadata
-from app.models import User, Province, City
+from app.models import (
+    User,
+    Province,
+    City,
+    Role,
+    Permission,
+    RolePermission,
+)
 
 
 # Alembic Config object

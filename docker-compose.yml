@@ -16,6 +16,7 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
+
   backend:
     build:
       context: ./backend
@@ -31,6 +32,10 @@ services:
 
     ports:
       - "8000:8000"
+
+    volumes:
+      - ./backend:/app
+
 
 volumes:
   postgres_data:

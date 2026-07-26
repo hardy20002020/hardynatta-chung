@@ -2,15 +2,21 @@ from datetime import datetime, timedelta, timezone
 
 from jose import jwt
 from passlib.context import CryptContext
+from fastapi.security import HTTPBearer
+
 
 SECRET_KEY = "super-secret-key-change-this"
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24
 
+
 pwd_context = CryptContext(
     schemes=["bcrypt"],
     deprecated="auto",
 )
+
+
+security = HTTPBearer()
 
 
 def hash_password(password: str) -> str:

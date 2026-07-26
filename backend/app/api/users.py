@@ -18,8 +18,10 @@ from app.schemas.pagination import (
 from app.services.user_service import UserService
 
 from app.core.permissions import (
-    require_admin,
-    require_user,
+    require_admin_create,
+    require_admin_update,
+    require_admin_delete,
+    require_user_read,
 )
 
 
@@ -36,7 +38,7 @@ router = APIRouter(
 def create_user(
     user: UserCreate,
     db: Session = Depends(get_db),
-    admin_user=Depends(require_admin),
+    current_user=Depends(require_admin_create),
 ):
 
     service = UserService(db)
@@ -52,7 +54,9 @@ def create_user(
 
 @router.get(
     "/",
-    response_model=ApiResponse[PaginatedResponse[UserResponse]],
+    response_model=ApiResponse[
+        PaginatedResponse[UserResponse]
+    ],
 )
 def get_users(
     page: int = Query(
@@ -68,7 +72,7 @@ def get_users(
         default=None,
     ),
     db: Session = Depends(get_db),
-    current_user=Depends(require_user),
+    current_user=Depends(require_user_read),
 ):
 
     service = UserService(db)
@@ -100,7 +104,7 @@ def get_users(
 def get_user_by_id(
     user_id: int,
     db: Session = Depends(get_db),
-    current_user=Depends(require_user),
+    current_user=Depends(require_user_read),
 ):
 
     service = UserService(db)
@@ -130,7 +134,7 @@ def update_user(
     user_id: int,
     user: UserUpdate,
     db: Session = Depends(get_db),
-    admin_user=Depends(require_admin),
+    current_user=Depends(require_admin_update),
 ):
 
     service = UserService(db)
@@ -160,7 +164,7 @@ def update_user(
 def delete_user(
     user_id: int,
     db: Session = Depends(get_db),
-    admin_user=Depends(require_admin),
+    current_user=Depends(require_admin_delete),
 ):
 
     service = UserService(db)

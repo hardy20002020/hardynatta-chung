@@ -30,10 +30,18 @@ class User(Base):
         nullable=False,
     )
 
+    # RBAC lama (sementara dipertahankan)
     role = Column(
         String,
         nullable=False,
         default="user",
+    )
+
+    # RBAC baru
+    role_id = Column(
+        Integer,
+        ForeignKey("roles.id"),
+        nullable=True,
     )
 
     province_id = Column(
@@ -55,5 +63,11 @@ class User(Base):
 
     city = relationship(
         "City",
+        back_populates="users",
+    )
+
+    # Relationship ke tabel roles
+    role_ref = relationship(
+        "Role",
         back_populates="users",
     )
