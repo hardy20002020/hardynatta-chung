@@ -19,7 +19,9 @@ class UserService:
         user: UserCreate,
     ) -> User:
 
-        return self.repository.create_user(user)
+        return self.repository.create_user(
+            user
+        )
 
 
     def get_all_users(
@@ -33,23 +35,14 @@ class UserService:
         self,
         page: int,
         size: int,
-    ) -> dict:
+        search: str | None = None,
+    ) -> tuple[list[User], int]:
 
-        users, total = (
-            self.repository.get_users_paginated(
-                page,
-                size,
-            )
+        return self.repository.get_users_paginated(
+            page=page,
+            size=size,
+            search=search,
         )
-
-        return {
-            "items": users,
-            "meta": {
-                "page": page,
-                "size": size,
-                "total": total,
-            },
-        }
 
 
     def get_user_by_id(
@@ -57,7 +50,19 @@ class UserService:
         user_id: int,
     ) -> User | None:
 
-        return self.repository.get_user_by_id(user_id)
+        return self.repository.get_user_by_id(
+            user_id
+        )
+
+
+    def get_user_by_email(
+        self,
+        email: str,
+    ) -> User | None:
+
+        return self.repository.get_user_by_email(
+            email
+        )
 
 
     def update_user(
@@ -77,12 +82,6 @@ class UserService:
         user_id: int,
     ) -> bool:
 
-        return self.repository.delete_user(user_id)
-
-
-    def get_user_by_email(
-        self,
-        email: str,
-    ) -> User | None:
-
-        return self.repository.get_user_by_email(email)
+        return self.repository.delete_user(
+            user_id
+        )

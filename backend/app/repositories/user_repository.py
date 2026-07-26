@@ -1,4 +1,4 @@
-from sqlalchemy import func
+from sqlalchemy import func, or_
 from sqlalchemy.orm import Session, joinedload
 
 from app.core.security import hash_password
@@ -61,21 +61,33 @@ class UserRepository:
         self,
         page: int,
         size: int,
+        search: str | None = None,
     ) -> tuple[list[User], int]:
 
         offset = (page - 1) * size
 
-        total = (
-            self.db.query(func.count(User.id))
-            .scalar()
-        )
-
-        users = (
+        query = (
             self.db.query(User)
             .options(
                 joinedload(User.province),
                 joinedload(User.city),
             )
+        )
+
+        if search:
+            keyword = f"%{search}%"
+
+            query = query.filter(
+                or_(
+                    User.name.ilike(keyword),
+                    User.email.ilike(keyword),
+                )
+            )
+
+        total = query.count()
+
+        users = (
+            query
             .offset(offset)
             .limit(size)
             .all()
@@ -130,14 +142,8 @@ class UserRepository:
 
         db_user.name = user.name
         db_user.email = user.email
-
-        db_user.province_id = (
-            user.province_id
-        )
-
-        db_user.city_id = (
-            user.city_id
-        )
+        db_user.province_id = user.province_id
+        db_user.city_id = user.city_id
 
 
         self.db.commit()

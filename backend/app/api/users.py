@@ -55,25 +55,29 @@ def get_users(
         ge=1,
         le=100,
     ),
+    search: str | None = Query(
+        default=None,
+    ),
     db: Session = Depends(get_db),
 ):
 
     service = UserService(db)
 
-    result = service.get_users_paginated(
-        page,
-        size,
+    users, total = service.get_users_paginated(
+        page=page,
+        size=size,
+        search=search,
     )
 
     return ApiResponse(
         success=True,
         message="Users retrieved successfully",
         data=PaginatedResponse(
-            items=result["items"],
+            items=users,
             meta=PaginationMeta(
-                page=result["meta"]["page"],
-                size=result["meta"]["size"],
-                total=result["meta"]["total"],
+                page=page,
+                size=size,
+                total=total,
             ),
         ),
     )
@@ -90,7 +94,9 @@ def get_user_by_id(
 
     service = UserService(db)
 
-    user = service.get_user_by_id(user_id)
+    user = service.get_user_by_id(
+        user_id
+    )
 
     if user is None:
         raise HTTPException(
