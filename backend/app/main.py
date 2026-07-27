@@ -4,7 +4,9 @@ from sqlalchemy import text
 from app.api.auth import router as auth_router
 from app.api.cities import router as city_router
 from app.api.dashboard import router as dashboard_router
+from app.api.permissions import router as permission_router
 from app.api.provinces import router as province_router
+from app.api.roles import router as role_router
 from app.api.users import router as user_router
 
 from app.db.session import engine
@@ -17,16 +19,39 @@ app = FastAPI(
     version="1.0.0",
 )
 
-# Register Global Exception Handlers
+
+# =====================================
+# Exception Handler
+# =====================================
+
 register_exception_handlers(app)
 
-# Register Routers
-app.include_router(user_router)
+
+# =====================================
+# Routers
+# =====================================
+
+# Authentication
 app.include_router(auth_router)
+
+# User Management
+app.include_router(user_router)
+
+# Master Data
 app.include_router(province_router)
 app.include_router(city_router)
+
+# Dashboard
 app.include_router(dashboard_router)
 
+# RBAC
+app.include_router(role_router)
+app.include_router(permission_router)
+
+
+# =====================================
+# Root
+# =====================================
 
 @app.get("/")
 def root():
@@ -35,6 +60,10 @@ def root():
         "message": "Welcome to MAJE API DEV",
     }
 
+
+# =====================================
+# Health Check
+# =====================================
 
 @app.get("/health")
 def health():

@@ -1,32 +1,86 @@
 from sqlalchemy.orm import Session
 
-from app.models.role import Role
+from app.models.permission import Permission
+from app.repositories.permission_repository import PermissionRepository
+from app.schemas.permission import (
+    PermissionCreate,
+    PermissionUpdate,
+)
 
 
 class PermissionService:
-    def __init__(self, db: Session):
-        self.db = db
 
-    def get_permissions(self, role_id: int) -> list[str]:
-        role = (
-            self.db.query(Role)
-            .filter(Role.id == role_id)
-            .first()
+    def __init__(
+        self,
+        db: Session,
+    ):
+        self.repository = PermissionRepository(db)
+
+
+    def get_permissions(self):
+        return self.repository.get_all()
+
+
+    def get_permission_by_id(
+        self,
+        permission_id: int,
+    ):
+        return self.repository.get_by_id(
+            permission_id
         )
 
-        if not role:
-            return []
 
-        return [
-            permission.name
-            for permission in role.permissions
-        ]
-
-    def has_permission(
+    def create_permission(
         self,
-        role_id: int,
-        permission_name: str,
-    ) -> bool:
-        permissions = self.get_permissions(role_id)
+        data: PermissionCreate,
+    ):
+        existing = self.repository.get_by_name(
+            data.name
+        )
 
-        return permission_name in permissions
+        if existing:
+            raise ValueError(
+                "Permission already exists"
+            )
+
+        permission = Permission(
+            name=data.name
+        )
+
+        return self.repository.create(
+            permission
+        )
+
+
+    def update_permission(
+        self,
+        permission_id: int,
+        data: PermissionUpdate,
+    ):
+        permission = self.repository.get_by_id(
+            permission_id
+        )
+
+        if permission is None:
+            return None
+
+        return self.repository.update(
+            permission,
+            data.name,
+        )
+
+
+    def delete_permission(
+        self,
+        permission_id: int,
+    ):
+        permission = self.repository.get_by_id(
+            permission_id
+        )
+
+        if permission is None:
+            return False
+
+        return self.repository.delete(
+            permission
+        )
