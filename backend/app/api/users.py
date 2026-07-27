@@ -1,4 +1,9 @@
-from fastapi import APIRouter, Depends, Query, HTTPException
+from fastapi import (
+    APIRouter,
+    Depends,
+    Query,
+    HTTPException,
+)
 from sqlalchemy.orm import Session
 
 from app.db.database import get_db
@@ -9,7 +14,6 @@ from app.schemas.user import (
     UserResponse,
     UserUpdate,
 )
-
 from app.schemas.pagination import (
     PaginatedResponse,
     PaginationMeta,
@@ -40,7 +44,6 @@ def create_user(
     db: Session = Depends(get_db),
     current_user=Depends(require_admin_create),
 ):
-
     service = UserService(db)
 
     result = service.create_user(user)
@@ -74,7 +77,6 @@ def get_users(
     db: Session = Depends(get_db),
     current_user=Depends(require_user_read),
 ):
-
     service = UserService(db)
 
     result = service.get_users_paginated(
@@ -106,12 +108,9 @@ def get_user_by_id(
     db: Session = Depends(get_db),
     current_user=Depends(require_user_read),
 ):
-
     service = UserService(db)
 
-    user = service.get_user_by_id(
-        user_id,
-    )
+    user = service.get_user_by_id(user_id)
 
     if user is None:
         raise HTTPException(
@@ -136,7 +135,6 @@ def update_user(
     db: Session = Depends(get_db),
     current_user=Depends(require_admin_update),
 ):
-
     service = UserService(db)
 
     result = service.update_user(
@@ -166,12 +164,9 @@ def delete_user(
     db: Session = Depends(get_db),
     current_user=Depends(require_admin_delete),
 ):
-
     service = UserService(db)
 
-    deleted = service.delete_user(
-        user_id,
-    )
+    deleted = service.delete_user(user_id)
 
     if not deleted:
         raise HTTPException(

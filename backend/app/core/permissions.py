@@ -1,58 +1,33 @@
-from fastapi import Depends, HTTPException
-
-from app.core.dependencies import get_current_user
-from app.models.user import User
+from app.core.dependencies import require_permission
 
 
-def require_permission(permission_name: str):
+#
+# User Permissions
+#
 
-    def permission_checker(
-        current_user: User = Depends(get_current_user),
-    ):
+require_user_read = require_permission(
+    "user.read"
+)
 
-        role = current_user.role_ref
+require_user_create = require_permission(
+    "user.create"
+)
 
-        if role is None:
-            raise HTTPException(
-                status_code=403,
-                detail="No role assigned",
-            )
+require_user_update = require_permission(
+    "user.update"
+)
 
-        permissions = {
-            permission.name
-            for permission in role.permissions
-        }
-
-        if permission_name not in permissions:
-            raise HTTPException(
-                status_code=403,
-                detail="Permission denied",
-            )
-
-        return current_user
-
-    return permission_checker
+require_user_delete = require_permission(
+    "user.delete"
+)
 
 
-def require_admin_create():
-    return require_permission(
-        "user.create"
-    )
+#
+# Admin Aliases
+#
 
+require_admin_create = require_user_create
 
-def require_user_read():
-    return require_permission(
-        "user.read"
-    )
+require_admin_update = require_user_update
 
-
-def require_admin_update():
-    return require_permission(
-        "user.update"
-    )
-
-
-def require_admin_delete():
-    return require_permission(
-        "user.delete"
-    )
+require_admin_delete = require_user_delete

@@ -4,7 +4,6 @@ from app.core.security import (
     verify_password,
     create_access_token,
 )
-
 from app.repositories.user_repository import UserRepository
 
 
@@ -21,7 +20,6 @@ class AuthService:
         email: str,
         password: str,
     ):
-
         user = self.repository.get_user_by_email(
             email
         )
@@ -39,7 +37,7 @@ class AuthService:
                 "Invalid email or password"
             )
 
-        # Ambil role dari tabel roles jika tersedia
+        # Gunakan role dari tabel roles jika tersedia
         role_name = (
             user.role_ref.name
             if user.role_ref is not None
@@ -51,6 +49,7 @@ class AuthService:
                 "sub": str(user.id),
                 "email": user.email,
                 "role": role_name,
+                "role_id": user.role_id,
             }
         )
 
