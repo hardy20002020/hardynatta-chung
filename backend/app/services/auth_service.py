@@ -4,7 +4,9 @@ from app.core.security import (
     verify_password,
     create_access_token,
 )
+
 from app.repositories.user_repository import UserRepository
+from app.models.user import User
 
 
 class AuthService:
@@ -37,7 +39,6 @@ class AuthService:
                 "Invalid email or password"
             )
 
-        # Gunakan role dari tabel roles jika tersedia
         role_name = (
             user.role_ref.name
             if user.role_ref is not None
@@ -54,3 +55,38 @@ class AuthService:
         )
 
         return token
+
+
+    def get_profile(
+        self,
+        user_id: int,
+    ):
+        user = (
+            self.repository.db
+            .query(User)
+            .filter(User.id == user_id)
+            .first()
+        )
+
+        if user is None:
+            return None
+
+        permissions = []
+
+        if user.role_ref:
+            permissions = [
+                permission.name
+                for permission in user.role_ref.permissions
+            ]
+
+        return {
+            "id": user.id,
+            "name": user.name,
+            "email": user.email,
+            "role": (
+                user.role_ref.name
+                if user.role_ref
+                else user.role
+            ),
+            "permissions": permissions,
+        }
