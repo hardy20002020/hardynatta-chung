@@ -25,11 +25,31 @@ class ProvinceService:
         db: Session,
         name: str,
     ):
-        province = Province(
-            name=name,
-        )
+        province = Province(name=name)
 
         db.add(province)
+        db.commit()
+        db.refresh(province)
+
+        return province
+
+    @staticmethod
+    def update(
+        db: Session,
+        province_id: int,
+        name: str,
+    ):
+        province = (
+            db.query(Province)
+            .filter(Province.id == province_id)
+            .first()
+        )
+
+        if not province:
+            return None
+
+        province.name = name
+
         db.commit()
         db.refresh(province)
 
@@ -46,8 +66,10 @@ class ProvinceService:
             .first()
         )
 
-        if province:
-            db.delete(province)
-            db.commit()
+        if not province:
+            return None
+
+        db.delete(province)
+        db.commit()
 
         return province

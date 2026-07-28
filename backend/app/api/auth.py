@@ -1,133 +1,131 @@
-from fastapi import (
-    APIRouter,
-    Depends,
-    HTTPException,
-    status,
-)
-
-from fastapi.security import HTTPAuthorizationCredentials
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from app.db.database import get_db
-
+from app.models.user import User
 from app.schemas.auth import (
     LoginRequest,
-    TokenResponse,
+    LoginResponse,
 )
 
-from app.services.auth_service import AuthService
-
 from app.core.security import (
-    decode_access_token,
-    security,
+    verify_password,
+    create_access_token,
 )
 
 from app.core.permissions import (
-    require_admin_create,
-)
-
-from app.core.dependencies import (
-    require_permission,
+    get_current_user,
+    require_admin,
 )
 
 
 router = APIRouter(
     prefix="/auth",
-    tags=["Authentication"],
+    tags=["Authentication"]
 )
 
-
-#
-# LOGIN
-#
 
 @router.post(
     "/login",
-    response_model=TokenResponse,
+    response_model=LoginResponse
 )
 def login(
-    data: LoginRequest,
-    db: Session = Depends(get_db),
+    request: LoginRequest,
+    db: Session = Depends(get_db)
 ):
 
-    service = AuthService(db)
+    user = (
+        db.query(User)
+        .filter(User.email == request.email)
+        .first()
+    )
 
-    try:
-        token = service.login(
-            data.email,
-            data.password,
-        )
-
-        return {
-            "access_token": token,
-            "token_type": "bearer",
-        }
-
-    except ValueError as e:
+    if not user:
         raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail=str(e),
+            status_code=401,
+            detail="Invalid email or password"
         )
 
 
-#
-# CURRENT USER
-#
+    if not verify_password(
+        request.password,
+        user.password
+    ):
+        raise HTTPException(
+            status_code=401,
+            detail="Invalid email or password"
+        )
 
-@router.get("/me")
-def me(
-    credentials: HTTPAuthorizationCredentials = Depends(security),
+
+    token_data = {
+        "sub": str(user.id),
+        "email": user.email,
+        "role": user.role,
+        "role_id": user.role_id,
+    }
+
+
+    access_token = create_access_token(
+        data=token_data
+    )
+
+
+    return {
+        "access_token": access_token,
+        "token_type": "bearer",
+        "user": {
+            "id": user.id,
+            "name": user.name,
+            "email": user.email,
+            "role": user.role,
+            "role_id": user.role_id,
+            "province_id": user.province_id,
+            "city_id": user.city_id,
+        }
+    }
+
+
+
+@router.get(
+    "/me"
+)
+def get_me(
+    current_user: User = Depends(get_current_user)
 ):
 
-    token = credentials.credentials
-
-    try:
-        payload = decode_access_token(token)
-
-        return {
-            "success": True,
-            "user": payload,
+    return {
+        "success": True,
+        "message": "Current User",
+        "user": {
+            "id": current_user.id,
+            "name": current_user.name,
+            "email": current_user.email,
+            "role": current_user.role,
+            "role_id": current_user.role_id,
+            "province_id": current_user.province_id,
+            "city_id": current_user.city_id,
         }
-
-    except Exception:
-
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid authentication token",
-        )
+    }
 
 
-#
-# ADMIN TEST (ROLE BASED)
-#
 
-@router.get("/admin-test")
+@router.get(
+    "/admin-test"
+)
 def admin_test(
-    user: dict = Depends(require_admin_create),
+    current_user: User = Depends(require_admin)
 ):
 
     return {
         "success": True,
         "message": "Welcome Admin",
-        "user": user,
-    }
-
-
-#
-# PERMISSION TEST
-#
-
-@router.get("/permission-test")
-def permission_test(
-    user: dict = Depends(
-        require_permission(
-            "user.read"
-        )
-    ),
-):
-
-    return {
-        "success": True,
-        "message": "Permission granted",
-        "user": user,
+        "user": {
+            "id": current_user.id,
+            "name": current_user.name,
+            "email": current_user.email,
+            "role": current_user.role,
+            "role_id": current_user.role_id,
+            "province_id": current_user.province_id,
+            "city_id": current_user.city_id,
+        }
     }

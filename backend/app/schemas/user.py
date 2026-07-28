@@ -1,33 +1,32 @@
-from pydantic import BaseModel, EmailStr, ConfigDict, Field
-
-from app.schemas.province import ProvinceResponse
-from app.schemas.city import CityResponse
+from pydantic import BaseModel, ConfigDict, EmailStr
 
 
-class UserCreate(BaseModel):
+class UserBase(BaseModel):
     name: str
     email: EmailStr
-    password: str = Field(min_length=8)
+    province_id: int
+    city_id: int
 
-    province_id: int | None = None
-    city_id: int | None = None
+
+class UserCreate(UserBase):
+    password: str
 
 
 class UserUpdate(BaseModel):
-    name: str
-    email: EmailStr
-
+    name: str | None = None
+    email: EmailStr | None = None
+    password: str | None = None
     province_id: int | None = None
     city_id: int | None = None
 
+    model_config = ConfigDict(
+        from_attributes=True
+    )
 
-class UserResponse(BaseModel):
+
+class UserResponse(UserBase):
     id: int
-    name: str
-    email: EmailStr
-
-    province: ProvinceResponse | None = None
-    city: CityResponse | None = None
+    role_id: int
 
     model_config = ConfigDict(
         from_attributes=True
