@@ -1,23 +1,20 @@
 import { Link } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext";
 
-
 export default function Sidebar() {
   const { user } = useAuth();
 
-
   return (
-    <aside>
-      <h2>MAJE</h2>
+    <aside className="sidebar">
+      <h2 className="sidebar-title">MAJE</h2>
 
       <nav>
-        <ul>
+        <ul className="sidebar-menu">
           <li>
             <Link to="/dashboard">
               Dashboard
             </Link>
           </li>
-
 
           {user?.role === "admin" && (
             <li>
@@ -27,16 +24,13 @@ export default function Sidebar() {
             </li>
           )}
 
-
           <li>
             <Link to="/profile">
               Profile
             </Link>
           </li>
-
         </ul>
       </nav>
-
     </aside>
   );
 }
