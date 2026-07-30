@@ -1,27 +1,26 @@
-from fastapi import Depends, HTTPException
+from fastapi import Depends, HTTPException, status
 
 from app.core.permissions import get_current_user
 from app.models.user import User
 
 
-
 def require_admin(
-    current_user: User = Depends(get_current_user)
+    current_user: User = Depends(get_current_user),
 ):
+    # RBAC baru
+    if current_user.role_ref is not None:
+        if current_user.role_ref.name != "admin":
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Admin access required",
+            )
+        return current_user
 
-    if current_user.role is None:
+    # RBAC lama
+    if current_user.role != "admin":
         raise HTTPException(
-            status_code=403,
+            status_code=status.HTTP_403_FORBIDDEN,
             detail="Admin access required",
         )
-
-
-    if current_user.role.name != "admin":
-
-        raise HTTPException(
-            status_code=403,
-            detail="Admin access required",
-        )
-
 
     return current_user

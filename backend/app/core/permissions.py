@@ -1,27 +1,30 @@
 from fastapi import Depends, HTTPException, status
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from sqlalchemy.orm import Session
 
 from app.db.database import get_db
 from app.core.security import decode_access_token
 from app.models.user import User
-from app.models.role import Role
-from app.models.permission import Permission
+
+
+security = HTTPBearer()
 
 
 def get_current_user(
-    token: str,
-    db: Session
+    credentials: HTTPAuthorizationCredentials = Depends(security),
+    db: Session = Depends(get_db),
 ):
+    token = credentials.credentials
 
     payload = decode_access_token(token)
 
-    if not payload:
+    user_id = payload.get("sub")
+
+    if not user_id:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid authentication token",
+            detail="Invalid token",
         )
-
-    user_id = payload.get("sub")
 
     user = (
         db.query(User)
@@ -39,34 +42,65 @@ def get_current_user(
 
 
 
-def require_permission(permission_name: str):
+def check_admin(user: User):
 
-    def permission_checker(
-        current_user: User = Depends(get_current_user),
-    ):
+    if user.role != "admin":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Admin access required",
+        )
 
-        if not current_user.role:
-            raise HTTPException(
-                status_code=403,
-                detail="User has no role",
-            )
+    return user
 
 
-        permissions = [
-            permission.name
-            for permission in current_user.role.permissions
-        ]
+
+def check_user(user: User):
+
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Unauthorized",
+        )
+
+    return user
 
 
-        if permission_name not in permissions:
 
-            raise HTTPException(
-                status_code=403,
-                detail=f"Missing permission: {permission_name}",
-            )
+# ==========================
+# RBAC Dependencies
+# ==========================
 
 
-        return current_user
+def require_admin(
+    current_user: User = Depends(get_current_user),
+):
+    return check_admin(current_user)
 
 
-    return permission_checker
+
+def require_admin_create(
+    current_user: User = Depends(get_current_user),
+):
+    return check_admin(current_user)
+
+
+
+def require_admin_update(
+    current_user: User = Depends(get_current_user),
+):
+    return check_admin(current_user)
+
+
+
+def require_admin_delete(
+    current_user: User = Depends(get_current_user),
+):
+    return check_admin(current_user)
+
+
+
+def require_user_read(
+    current_user: User = Depends(get_current_user),
+):
+    return check_user(current_user)
+

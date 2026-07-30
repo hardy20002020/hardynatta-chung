@@ -1,4 +1,4 @@
-from sqlalchemy import func, or_
+from sqlalchemy import or_
 from sqlalchemy.orm import Session, joinedload
 
 from app.core.security import hash_password
@@ -7,9 +7,12 @@ from app.schemas.user import UserCreate, UserUpdate
 
 
 class UserRepository:
-
     def __init__(self, db: Session):
         self.db = db
+
+    # ==========================================================
+    # CREATE
+    # ==========================================================
 
     def create_user(
         self,
@@ -31,15 +34,32 @@ class UserRepository:
             name=user.name,
             email=user.email,
             password=hash_password(user.password),
+
             province_id=user.province_id,
             city_id=user.city_id,
+
+            # Default Role = User
+            role_id=2,
         )
 
         self.db.add(db_user)
         self.db.commit()
         self.db.refresh(db_user)
 
-        return db_user
+        return (
+            self.db.query(User)
+            .options(
+                joinedload(User.province),
+                joinedload(User.city),
+                joinedload(User.role_ref),
+            )
+            .filter(User.id == db_user.id)
+            .first()
+        )
+
+    # ==========================================================
+    # READ ALL
+    # ==========================================================
 
     def get_all_users(
         self,
@@ -52,8 +72,13 @@ class UserRepository:
                 joinedload(User.city),
                 joinedload(User.role_ref),
             )
+            .order_by(User.id.desc())
             .all()
         )
+
+    # ==========================================================
+    # PAGINATION
+    # ==========================================================
 
     def get_users_paginated(
         self,
@@ -74,6 +99,7 @@ class UserRepository:
         )
 
         if search:
+
             keyword = f"%{search}%"
 
             query = query.filter(
@@ -87,12 +113,17 @@ class UserRepository:
 
         users = (
             query
+            .order_by(User.id.desc())
             .offset(offset)
             .limit(size)
             .all()
         )
 
         return users, total
+
+    # ==========================================================
+    # READ BY ID
+    # ==========================================================
 
     def get_user_by_id(
         self,
@@ -110,6 +141,10 @@ class UserRepository:
             .first()
         )
 
+    # ==========================================================
+    # READ BY EMAIL
+    # ==========================================================
+
     def get_user_by_email(
         self,
         email: str,
@@ -119,10 +154,16 @@ class UserRepository:
             self.db.query(User)
             .options(
                 joinedload(User.role_ref),
+                joinedload(User.province),
+                joinedload(User.city),
             )
             .filter(User.email == email)
             .first()
         )
+
+    # ==========================================================
+    # UPDATE
+    # ==========================================================
 
     def update_user(
         self,
@@ -139,15 +180,40 @@ class UserRepository:
         if db_user is None:
             return None
 
-        db_user.name = user.name
-        db_user.email = user.email
-        db_user.province_id = user.province_id
-        db_user.city_id = user.city_id
+        if user.name is not None:
+            db_user.name = user.name
+
+        if user.email is not None:
+            db_user.email = user.email
+
+        if user.password is not None:
+            db_user.password = hash_password(
+                user.password
+            )
+
+        if user.province_id is not None:
+            db_user.province_id = user.province_id
+
+        if user.city_id is not None:
+            db_user.city_id = user.city_id
 
         self.db.commit()
         self.db.refresh(db_user)
 
-        return db_user
+        return (
+            self.db.query(User)
+            .options(
+                joinedload(User.province),
+                joinedload(User.city),
+                joinedload(User.role_ref),
+            )
+            .filter(User.id == user_id)
+            .first()
+        )
+
+    # ==========================================================
+    # DELETE
+    # ==========================================================
 
     def delete_user(
         self,

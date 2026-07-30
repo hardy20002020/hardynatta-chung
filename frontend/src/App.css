@@ -1,0 +1,129 @@
+/* ==========================================
+   MAJE Frontend
+   ========================================== */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: Arial, Helvetica, sans-serif;
+  background: #f4f6f9;
+  color: #333;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+ul {
+  list-style: none;
+}
+
+button {
+  cursor: pointer;
+}
+
+input,
+button {
+  font-size: 16px;
+}
+
+/* ==========================================
+   Layout
+   ========================================== */
+
+.app-layout {
+  display: flex;
+  min-height: 100vh;
+}
+
+/* ==========================================
+   Sidebar
+   ========================================== */
+
+aside {
+  width: 240px;
+  background: #1f2937;
+  color: white;
+  min-height: 100vh;
+  padding: 20px;
+}
+
+aside h2 {
+  margin-bottom: 30px;
+}
+
+aside ul li {
+  margin-bottom: 15px;
+}
+
+aside a {
+  color: white;
+}
+
+aside a:hover {
+  color: #60a5fa;
+}
+
+/* ==========================================
+   Main Content
+   ========================================== */
+
+main {
+  flex: 1;
+  padding: 20px;
+}
+
+/* ==========================================
+   Navbar
+   ========================================== */
+
+nav {
+  margin-bottom: 20px;
+}
+
+/* ==========================================
+   Login
+   ========================================== */
+
+form {
+  max-width: 420px;
+  margin: 80px auto;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+input {
+  padding: 12px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+button {
+  padding: 12px;
+  border: none;
+  border-radius: 6px;
+  background: #2563eb;
+  color: white;
+}
+
+button:hover {
+  background: #1d4ed8;
+}
+
+/* ==========================================
+   Page Title
+   ========================================== */
+
+h1 {
+  margin-bottom: 20px;
+}
+
+p {
+  margin-bottom: 10px;
+}
