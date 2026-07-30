@@ -8,6 +8,7 @@ import MainLayout from "./layouts/MainLayout";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import UserManagement from "./pages/UserManagement";
+import Profile from "./pages/Profile";
 
 export default function App() {
   return (
@@ -21,7 +22,7 @@ export default function App() {
             element={<Login />}
           />
 
-          {/* Redirect root */}
+          {/* Redirect Root */}
           <Route
             path="/"
             element={<Navigate to="/dashboard" replace />}
@@ -46,6 +47,18 @@ export default function App() {
               <ProtectedRoute>
                 <MainLayout>
                   <UserManagement />
+                </MainLayout>
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Profile */}
+          <Route
+            path="/profile"
+            element={
+              <ProtectedRoute>
+                <MainLayout>
+                  <Profile />
                 </MainLayout>
               </ProtectedRoute>
             }
