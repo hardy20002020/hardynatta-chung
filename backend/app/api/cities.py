@@ -9,6 +9,8 @@ from app.schemas.city import (
 )
 from app.services.city_service import CityService
 
+from app.core.permissions import require_permission
+
 
 router = APIRouter(
     prefix="/cities",
@@ -22,6 +24,9 @@ router = APIRouter(
 )
 def get_cities(
     db: Session = Depends(get_db),
+    current_user=Depends(
+        require_permission("city.read")
+    ),
 ):
     return CityService.get_all(db)
 
@@ -33,6 +38,9 @@ def get_cities(
 def get_city(
     city_id: int,
     db: Session = Depends(get_db),
+    current_user=Depends(
+        require_permission("city.read")
+    ),
 ):
     city = CityService.get_by_id(
         db=db,
@@ -55,6 +63,9 @@ def get_city(
 def create_city(
     data: CityCreate,
     db: Session = Depends(get_db),
+    current_user=Depends(
+        require_permission("city.create")
+    ),
 ):
     return CityService.create(
         db=db,
@@ -71,6 +82,9 @@ def update_city(
     city_id: int,
     data: CityUpdate,
     db: Session = Depends(get_db),
+    current_user=Depends(
+        require_permission("city.update")
+    ),
 ):
     city = CityService.update(
         db=db,
@@ -95,6 +109,9 @@ def update_city(
 def delete_city(
     city_id: int,
     db: Session = Depends(get_db),
+    current_user=Depends(
+        require_permission("city.delete")
+    ),
 ):
     city = CityService.delete(
         db=db,

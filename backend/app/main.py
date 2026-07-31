@@ -3,6 +3,12 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.api.auth import router as auth_router
 from app.api.users import router as user_router
+from app.api.provinces import router as province_router
+from app.api.cities import router as city_router
+from app.api.dashboard import router as dashboard_router
+from app.api.roles import router as role_router
+from app.api.permissions import router as permission_router
+from app.api.role_permissions import router as role_permission_router
 
 
 # ==========================================================
@@ -39,6 +45,12 @@ app.add_middleware(
 
 app.include_router(auth_router)
 app.include_router(user_router)
+app.include_router(province_router)
+app.include_router(city_router)
+app.include_router(dashboard_router)
+app.include_router(role_router)
+app.include_router(permission_router)
+app.include_router(role_permission_router)
 
 
 # ==========================================================

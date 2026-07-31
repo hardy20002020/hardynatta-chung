@@ -1,13 +1,13 @@
 from fastapi import Depends, HTTPException, status
-from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+from fastapi.security import HTTPAuthorizationCredentials
 from sqlalchemy.orm import Session
 
+from app.core.security import (
+    security,
+    decode_access_token,
+)
 from app.db.database import get_db
-from app.core.security import decode_access_token
 from app.models.user import User
-
-
-security = HTTPBearer()
 
 
 def get_current_user(
@@ -41,9 +41,22 @@ def get_current_user(
     return user
 
 
+# ==========================================================
+# Legacy RBAC (Dipertahankan)
+# ==========================================================
 
 def check_admin(user: User):
 
+    # RBAC Baru
+    if user.role_ref is not None:
+        if user.role_ref.name != "admin":
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Admin access required",
+            )
+        return user
+
+    # RBAC Lama
     if user.role != "admin":
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
@@ -51,7 +64,6 @@ def check_admin(user: User):
         )
 
     return user
-
 
 
 def check_user(user: User):
@@ -65,17 +77,66 @@ def check_user(user: User):
     return user
 
 
+# ==========================================================
+# Permission Engine
+# ==========================================================
 
-# ==========================
-# RBAC Dependencies
-# ==========================
+def has_permission(
+    user: User,
+    permission_name: str,
+) -> bool:
+    """
+    Mengecek apakah user memiliki permission tertentu.
 
+    Prioritas:
+    1. Role + Permission (RBAC Baru)
+    2. Fallback ke role lama
+    """
+
+    # RBAC Baru
+    if user.role_ref is not None:
+
+        for permission in user.role_ref.permissions:
+            if permission.name == permission_name:
+                return True
+
+        return False
+
+    # RBAC Lama
+    if user.role == "admin":
+        return True
+
+    return False
+
+
+def require_permission(permission_name: str):
+
+    def dependency(
+        current_user: User = Depends(get_current_user),
+    ):
+
+        if not has_permission(
+            current_user,
+            permission_name,
+        ):
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail=f"Permission '{permission_name}' required",
+            )
+
+        return current_user
+
+    return dependency
+
+
+# ==========================================================
+# Existing Dependencies (Backward Compatibility)
+# ==========================================================
 
 def require_admin(
     current_user: User = Depends(get_current_user),
 ):
     return check_admin(current_user)
-
 
 
 def require_admin_create(
@@ -84,12 +145,10 @@ def require_admin_create(
     return check_admin(current_user)
 
 
-
 def require_admin_update(
     current_user: User = Depends(get_current_user),
 ):
     return check_admin(current_user)
-
 
 
 def require_admin_delete(
@@ -98,9 +157,7 @@ def require_admin_delete(
     return check_admin(current_user)
 
 
-
 def require_user_read(
     current_user: User = Depends(get_current_user),
 ):
     return check_user(current_user)
-

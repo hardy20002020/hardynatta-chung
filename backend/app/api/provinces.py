@@ -9,6 +9,8 @@ from app.schemas.province import (
 )
 from app.services.province_service import ProvinceService
 
+from app.core.permissions import require_permission
+
 
 router = APIRouter(
     prefix="/provinces",
@@ -22,6 +24,9 @@ router = APIRouter(
 )
 def get_provinces(
     db: Session = Depends(get_db),
+    current_user=Depends(
+        require_permission("province.read")
+    ),
 ):
     return ProvinceService.get_all(db)
 
@@ -33,6 +38,9 @@ def get_provinces(
 def get_province(
     province_id: int,
     db: Session = Depends(get_db),
+    current_user=Depends(
+        require_permission("province.read")
+    ),
 ):
     province = ProvinceService.get_by_id(
         db=db,
@@ -55,6 +63,9 @@ def get_province(
 def create_province(
     data: ProvinceCreate,
     db: Session = Depends(get_db),
+    current_user=Depends(
+        require_permission("province.create")
+    ),
 ):
     return ProvinceService.create(
         db=db,
@@ -70,6 +81,9 @@ def update_province(
     province_id: int,
     data: ProvinceUpdate,
     db: Session = Depends(get_db),
+    current_user=Depends(
+        require_permission("province.update")
+    ),
 ):
     province = ProvinceService.update(
         db=db,
@@ -93,6 +107,9 @@ def update_province(
 def delete_province(
     province_id: int,
     db: Session = Depends(get_db),
+    current_user=Depends(
+        require_permission("province.delete")
+    ),
 ):
     province = ProvinceService.delete(
         db=db,

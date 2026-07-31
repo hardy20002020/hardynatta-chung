@@ -16,10 +16,8 @@ class PermissionService:
     ):
         self.repository = PermissionRepository(db)
 
-
     def get_permissions(self):
         return self.repository.get_all()
-
 
     def get_permission_by_id(
         self,
@@ -28,7 +26,6 @@ class PermissionService:
         return self.repository.get_by_id(
             permission_id
         )
-
 
     def create_permission(
         self,
@@ -51,7 +48,6 @@ class PermissionService:
             permission
         )
 
-
     def update_permission(
         self,
         permission_id: int,
@@ -64,11 +60,22 @@ class PermissionService:
         if permission is None:
             return None
 
+        existing = self.repository.get_by_name(
+            data.name
+        )
+
+        if (
+            existing is not None
+            and existing.id != permission_id
+        ):
+            raise ValueError(
+                "Permission already exists"
+            )
+
         return self.repository.update(
             permission,
             data.name,
         )
-
 
     def delete_permission(
         self,

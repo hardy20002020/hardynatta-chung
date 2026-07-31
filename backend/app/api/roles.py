@@ -16,7 +16,7 @@ from app.schemas.role import (
 
 from app.services.role_service import RoleService
 
-from app.core.dependencies import require_admin
+from app.core.permissions import require_permission
 
 
 router = APIRouter(
@@ -31,7 +31,7 @@ router = APIRouter(
 )
 def get_roles(
     db: Session = Depends(get_db),
-    current_user: dict = Depends(require_admin),
+    current_user=Depends(require_permission("role.read")),
 ):
 
     service = RoleService(db)
@@ -47,7 +47,7 @@ def get_roles(
 def get_role(
     role_id: int,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(require_admin),
+    current_user=Depends(require_permission("role.read")),
 ):
 
     service = RoleService(db)
@@ -73,7 +73,7 @@ def get_role(
 def create_role(
     data: RoleCreate,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(require_admin),
+    current_user=Depends(require_permission("role.create")),
 ):
 
     service = RoleService(db)
@@ -99,7 +99,7 @@ def update_role(
     role_id: int,
     data: RoleUpdate,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(require_admin),
+    current_user=Depends(require_permission("role.update")),
 ):
 
     service = RoleService(db)
@@ -125,7 +125,7 @@ def update_role(
 def delete_role(
     role_id: int,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(require_admin),
+    current_user=Depends(require_permission("role.delete")),
 ):
 
     service = RoleService(db)

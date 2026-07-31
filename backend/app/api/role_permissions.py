@@ -10,11 +10,9 @@ from app.db.database import get_db
 
 from app.models.role import Role
 from app.models.permission import Permission
-
-
 from app.models.role_permission import RolePermission
 
-from app.core.dependencies import require_admin
+from app.core.permissions import require_permission
 
 
 router = APIRouter(
@@ -28,7 +26,9 @@ def assign_permission(
     role_id: int,
     permission_id: int,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(require_admin),
+    current_user=Depends(
+        require_permission("role.permission.assign")
+    ),
 ):
 
     role = (
@@ -43,7 +43,6 @@ def assign_permission(
             detail="Role not found",
         )
 
-
     permission = (
         db.query(Permission)
         .filter(Permission.id == permission_id)
@@ -56,7 +55,6 @@ def assign_permission(
             detail="Permission not found",
         )
 
-
     existing = (
         db.query(RolePermission)
         .filter(
@@ -66,23 +64,19 @@ def assign_permission(
         .first()
     )
 
-
     if existing:
         return {
             "success": True,
             "message": "Permission already assigned",
         }
 
-
     rp = RolePermission(
         role_id=role_id,
         permission_id=permission_id,
     )
 
-
     db.add(rp)
     db.commit()
-
 
     return {
         "success": True,

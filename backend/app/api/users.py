@@ -21,12 +21,7 @@ from app.schemas.pagination import (
 
 from app.services.user_service import UserService
 
-from app.core.permissions import (
-    require_admin_create,
-    require_admin_update,
-    require_admin_delete,
-    require_user_read,
-)
+from app.core.permissions import require_permission
 
 
 router = APIRouter(
@@ -42,7 +37,9 @@ router = APIRouter(
 def create_user(
     user: UserCreate,
     db: Session = Depends(get_db),
-    current_user=Depends(require_admin_create),
+    current_user=Depends(
+        require_permission("user.create")
+    ),
 ):
     service = UserService(db)
 
@@ -75,7 +72,9 @@ def get_users(
         default=None,
     ),
     db: Session = Depends(get_db),
-    current_user=Depends(require_user_read),
+    current_user=Depends(
+        require_permission("user.read")
+    ),
 ):
     service = UserService(db)
 
@@ -106,7 +105,9 @@ def get_users(
 def get_user_by_id(
     user_id: int,
     db: Session = Depends(get_db),
-    current_user=Depends(require_user_read),
+    current_user=Depends(
+        require_permission("user.read")
+    ),
 ):
     service = UserService(db)
 
@@ -133,7 +134,9 @@ def update_user(
     user_id: int,
     user: UserUpdate,
     db: Session = Depends(get_db),
-    current_user=Depends(require_admin_update),
+    current_user=Depends(
+        require_permission("user.update")
+    ),
 ):
     service = UserService(db)
 
@@ -162,7 +165,9 @@ def update_user(
 def delete_user(
     user_id: int,
     db: Session = Depends(get_db),
-    current_user=Depends(require_admin_delete),
+    current_user=Depends(
+        require_permission("user.delete")
+    ),
 ):
     service = UserService(db)
 
