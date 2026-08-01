@@ -9,6 +9,7 @@ from app.api.dashboard import router as dashboard_router
 from app.api.roles import router as role_router
 from app.api.permissions import router as permission_router
 from app.api.role_permissions import router as role_permission_router
+from app.api.audit_logs import router as audit_log_router
 
 
 # ==========================================================
@@ -51,6 +52,7 @@ app.include_router(dashboard_router)
 app.include_router(role_router)
 app.include_router(permission_router)
 app.include_router(role_permission_router)
+app.include_router(audit_log_router)
 
 
 # ==========================================================

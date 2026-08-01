@@ -98,6 +98,12 @@ class User(Base):
     )
 
 
+    audit_logs = relationship(
+        "AuditLog",
+        back_populates="user",
+    )
+
+
     # ==========================================================
     # COMPATIBILITY FOR RESPONSE SCHEMA
     # ==========================================================

@@ -20,10 +20,16 @@ from app.core.permissions import (
     require_admin,
 )
 
+from app.services.audit_log_service import AuditLogService
+
+
 router = APIRouter(
     prefix="/auth",
     tags=["Authentication"],
 )
+
+
+audit_service = AuditLogService()
 
 
 def get_user_permissions(user: User) -> list[str]:
@@ -80,6 +86,7 @@ def login(
             detail="Invalid email or password",
         )
 
+
     token_data = {
         "sub": str(user.id),
         "email": user.email,
@@ -87,9 +94,24 @@ def login(
         "role_id": user.role_id,
     }
 
+
     access_token = create_access_token(
         data=token_data
     )
+
+
+    # ======================================================
+    # AUDIT LOG - USER LOGIN
+    # ======================================================
+
+    audit_service.create_log(
+        db,
+        user_id=user.id,
+        action="LOGIN",
+        resource="AUTH",
+        description="User login successfully",
+    )
+
 
     return {
         "access_token": access_token,

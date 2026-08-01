@@ -14,12 +14,21 @@ from app.schemas.city import (
     CityResponse,
 )
 
+from app.schemas.audit_log import (
+    AuditLogResponse,
+)
+
+
 __all__ = [
     "UserCreate",
     "UserUpdate",
     "UserResponse",
+
     "ProvinceCreate",
     "ProvinceResponse",
+
     "CityCreate",
     "CityResponse",
+
+    "AuditLogResponse",
 ]

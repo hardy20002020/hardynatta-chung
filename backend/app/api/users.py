@@ -23,6 +23,7 @@ from app.schemas.pagination import (
 )
 
 from app.services.user_service import UserService
+from app.services.audit_log_service import AuditLogService
 
 from app.core.permissions import require_permission
 
@@ -31,6 +32,9 @@ router = APIRouter(
     prefix="/users",
     tags=["Users"],
 )
+
+
+audit_service = AuditLogService()
 
 
 # ==========================================================
@@ -48,11 +52,22 @@ def create_user(
         require_permission("user.create")
     ),
 ):
+
     service = UserService(db)
 
     result = service.create_user(
         user
     )
+
+
+    audit_service.create_log(
+        db,
+        user_id=current_user.id,
+        action="CREATE_USER",
+        resource="USERS",
+        description=f"Created user {result.email}",
+    )
+
 
     return ApiResponse(
         success=True,
@@ -89,6 +104,7 @@ def get_users(
         require_permission("user.read")
     ),
 ):
+
     service = UserService(db)
 
     result = service.get_users_paginated(
@@ -96,6 +112,7 @@ def get_users(
         size,
         search,
     )
+
 
     return ApiResponse(
         success=True,
@@ -126,17 +143,20 @@ def get_user_by_id(
         require_permission("user.read")
     ),
 ):
+
     service = UserService(db)
 
     user = service.get_user_by_id(
         user_id
     )
 
+
     if user is None:
         raise HTTPException(
             status_code=404,
             detail="User not found",
         )
+
 
     return ApiResponse(
         success=True,
@@ -161,7 +181,9 @@ def update_user(
         require_permission("user.update")
     ),
 ):
+
     service = UserService(db)
+
 
     try:
         result = service.update_user(
@@ -181,6 +203,15 @@ def update_user(
             status_code=404,
             detail="User not found",
         )
+
+
+    audit_service.create_log(
+        db,
+        user_id=current_user.id,
+        action="UPDATE_USER",
+        resource="USERS",
+        description=f"Updated user ID {user_id}",
+    )
 
 
     return ApiResponse(
@@ -205,17 +236,30 @@ def delete_user(
         require_permission("user.delete")
     ),
 ):
+
     service = UserService(db)
+
 
     deleted = service.delete_user(
         user_id
     )
+
 
     if not deleted:
         raise HTTPException(
             status_code=404,
             detail="User not found",
         )
+
+
+    audit_service.create_log(
+        db,
+        user_id=current_user.id,
+        action="DELETE_USER",
+        resource="USERS",
+        description=f"Deleted user ID {user_id}",
+    )
+
 
     return ApiResponse(
         success=True,

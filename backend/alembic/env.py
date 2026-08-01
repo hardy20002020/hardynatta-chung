@@ -16,6 +16,7 @@ from app.models import (
     Role,
     Permission,
     RolePermission,
+    AuditLog,
 )
 
 
