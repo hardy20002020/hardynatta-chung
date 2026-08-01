@@ -1,7 +1,10 @@
 import { useEffect, useState } from "react";
 
 import { useAuth } from "../auth/AuthContext";
+
 import dashboardService from "../api/dashboardService";
+
+import { getRecentAuditLogs } from "../api/auditLogService";
 
 
 export default function Dashboard() {
@@ -26,6 +29,10 @@ export default function Dashboard() {
   });
 
 
+
+  const [recentLogs, setRecentLogs] = useState([]);
+
+
   const [loading, setLoading] = useState(true);
 
 
@@ -38,13 +45,27 @@ export default function Dashboard() {
 
 
 
+
   async function loadDashboard() {
 
     try {
 
-      const data = await dashboardService.getDashboard();
+      const data =
+        await dashboardService.getDashboard();
+
 
       setStats(data);
+
+
+
+      const logs =
+        await getRecentAuditLogs();
+
+
+      setRecentLogs(
+        logs.items || []
+      );
+
 
     } catch (error) {
 
@@ -63,6 +84,8 @@ export default function Dashboard() {
 
 
 
+
+
   return (
 
     <div>
@@ -70,6 +93,7 @@ export default function Dashboard() {
       <h1>
         MAJE Dashboard
       </h1>
+
 
 
 
@@ -108,9 +132,13 @@ export default function Dashboard() {
 
 
 
+
+
+
       <h2 className="mt-3">
         Dashboard Statistics
       </h2>
+
 
 
 
@@ -120,13 +148,11 @@ export default function Dashboard() {
           Loading...
         </p>
 
+
       ) : (
 
         <div className="dashboard-grid">
 
-
-
-          {/* Total Users */}
 
           <div className="stat-card">
 
@@ -134,11 +160,9 @@ export default function Dashboard() {
               👥
             </div>
 
-
             <div className="stat-title">
               Total Users
             </div>
-
 
             <div className="stat-value">
               {stats.total_users}
@@ -148,20 +172,15 @@ export default function Dashboard() {
 
 
 
-
-          {/* Total Provinces */}
-
           <div className="stat-card">
 
             <div className="stat-icon">
               🗺️
             </div>
 
-
             <div className="stat-title">
               Total Provinces
             </div>
-
 
             <div className="stat-value">
               {stats.total_provinces}
@@ -171,20 +190,15 @@ export default function Dashboard() {
 
 
 
-
-          {/* Total Cities */}
-
           <div className="stat-card">
 
             <div className="stat-icon">
               🏙️
             </div>
 
-
             <div className="stat-title">
               Total Cities
             </div>
-
 
             <div className="stat-value">
               {stats.total_cities}
@@ -194,20 +208,15 @@ export default function Dashboard() {
 
 
 
-
-          {/* Total Audit Logs */}
-
           <div className="stat-card">
 
             <div className="stat-icon">
               📋
             </div>
 
-
             <div className="stat-title">
               Total Audit Logs
             </div>
-
 
             <div className="stat-value">
               {stats.total_audit_logs}
@@ -217,20 +226,15 @@ export default function Dashboard() {
 
 
 
-
-          {/* Login Today */}
-
           <div className="stat-card">
 
             <div className="stat-icon">
               🔐
             </div>
 
-
             <div className="stat-title">
               Login Today
             </div>
-
 
             <div className="stat-value">
               {stats.today_login}
@@ -240,20 +244,15 @@ export default function Dashboard() {
 
 
 
-
-          {/* User Changes Today */}
-
           <div className="stat-card">
 
             <div className="stat-icon">
               ✏️
             </div>
 
-
             <div className="stat-title">
               User Changes Today
             </div>
-
 
             <div className="stat-value">
               {stats.today_user_changes}
@@ -262,10 +261,77 @@ export default function Dashboard() {
           </div>
 
 
-
         </div>
 
       )}
+
+
+
+
+
+
+      <h2 className="mt-3">
+        Recent Activity
+      </h2>
+
+
+
+      <div className="card">
+
+
+        {recentLogs.length === 0 ? (
+
+          <p>
+            No activity found.
+          </p>
+
+
+        ) : (
+
+
+          recentLogs.map((log) => (
+
+            <div
+              key={log.id}
+              style={{
+                padding: "12px 0",
+                borderBottom:
+                  "1px solid #eee",
+              }}
+            >
+
+              <strong>
+                {log.action}
+              </strong>
+
+
+              <p>
+                {log.description}
+              </p>
+
+
+              <small>
+
+                {log.resource}
+
+                {" | "}
+
+                {new Date(
+                  log.created_at
+                ).toLocaleString()}
+
+              </small>
+
+
+            </div>
+
+          ))
+
+        )}
+
+
+      </div>
+
 
 
     </div>

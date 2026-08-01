@@ -2,7 +2,8 @@ import api from "./axios";
 
 
 // ==========================================================
-// GET AUDIT LOGS (ENTERPRISE PAGINATION + FILTER)
+// GET AUDIT LOGS
+// ENTERPRISE PAGINATION + FILTER
 // ==========================================================
 
 export const getAuditLogs = async (
@@ -39,6 +40,34 @@ export const getAuditLogs = async (
 
 
 
+
+// ==========================================================
+// GET RECENT AUDIT LOGS
+// DASHBOARD WIDGET
+// ==========================================================
+
+export const getRecentAuditLogs = async () => {
+
+    const response = await api.get(
+        "/audit-logs/",
+        {
+            params: {
+
+                page: 1,
+
+                size: 5,
+
+            },
+        }
+    );
+
+
+    return response.data;
+};
+
+
+
+
 // ==========================================================
 // GET AUDIT LOGS BY USER
 // ==========================================================
@@ -51,7 +80,9 @@ export const getUserAuditLogs = async (
         "/audit-logs/",
         {
             params: {
+
                 user_id: userId,
+
             },
         }
     );
