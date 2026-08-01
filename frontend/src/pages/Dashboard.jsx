@@ -4,7 +4,11 @@ import { useAuth } from "../auth/AuthContext";
 
 import dashboardService from "../api/dashboardService";
 
-import { getRecentAuditLogs } from "../api/auditLogService";
+import {
+  getRecentAuditLogs,
+} from "../api/auditLogService";
+
+import AuditSummary from "../components/dashboard/AuditSummary";
 
 
 export default function Dashboard() {
@@ -85,10 +89,10 @@ export default function Dashboard() {
 
 
 
-
   return (
 
     <div>
+
 
       <h1>
         MAJE Dashboard
@@ -119,10 +123,13 @@ export default function Dashboard() {
 
 
           <p>
+
             <strong>
               Role:
             </strong>{" "}
+
             {user.role}
+
           </p>
 
 
@@ -172,6 +179,7 @@ export default function Dashboard() {
 
 
 
+
           <div className="stat-card">
 
             <div className="stat-icon">
@@ -187,6 +195,7 @@ export default function Dashboard() {
             </div>
 
           </div>
+
 
 
 
@@ -208,6 +217,7 @@ export default function Dashboard() {
 
 
 
+
           <div className="stat-card">
 
             <div className="stat-icon">
@@ -226,6 +236,7 @@ export default function Dashboard() {
 
 
 
+
           <div className="stat-card">
 
             <div className="stat-icon">
@@ -241,6 +252,7 @@ export default function Dashboard() {
             </div>
 
           </div>
+
 
 
 
@@ -271,6 +283,18 @@ export default function Dashboard() {
 
 
       <h2 className="mt-3">
+        Analytics
+      </h2>
+
+
+      <AuditSummary />
+
+
+
+
+
+
+      <h2 className="mt-3">
         Recent Activity
       </h2>
 
@@ -294,9 +318,12 @@ export default function Dashboard() {
             <div
               key={log.id}
               style={{
+
                 padding: "12px 0",
+
                 borderBottom:
                   "1px solid #eee",
+
               }}
             >
 
