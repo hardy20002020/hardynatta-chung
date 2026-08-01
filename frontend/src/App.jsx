@@ -5,20 +5,33 @@ import {
   Navigate,
 } from "react-router-dom";
 
+
 import { AuthProvider } from "./auth/AuthContext";
 
 import ProtectedRoute from "./auth/ProtectedRoute";
+
 import PermissionRoute from "./auth/PermissionRoute";
+
 
 import MainLayout from "./layouts/MainLayout";
 
+
 import Login from "./pages/Login";
+
 import Dashboard from "./pages/Dashboard";
+
 import UserManagement from "./pages/UserManagement";
+
 import RoleManagement from "./pages/RoleManagement";
+
 import PermissionManagement from "./pages/PermissionManagement";
-import AuditLogs from "./pages/AuditLogs";
+
 import Profile from "./pages/Profile";
+
+import AuditLogs from "./pages/AuditLogs";
+
+import UserActivity from "./pages/UserActivity";
+
 
 
 export default function App() {
@@ -32,38 +45,58 @@ export default function App() {
         <Routes>
 
 
-          {/* ==================================================
+          {/* =========================
               LOGIN
-          ================================================== */}
+          ========================== */}
 
           <Route
+
             path="/login"
-            element={<Login />}
-          />
 
-
-          {/* ==================================================
-              ROOT
-          ================================================== */}
-
-          <Route
-            path="/"
             element={
-              <Navigate
-                to="/dashboard"
-                replace
-              />
+              <Login />
             }
+
           />
 
 
-          {/* ==================================================
-              DASHBOARD
-          ================================================== */}
+
+
+          {/* =========================
+              ROOT
+          ========================== */}
 
           <Route
-            path="/dashboard"
+
+            path="/"
+
             element={
+
+              <Navigate
+
+                to="/dashboard"
+
+                replace
+
+              />
+
+            }
+
+          />
+
+
+
+
+          {/* =========================
+              DASHBOARD
+          ========================== */}
+
+          <Route
+
+            path="/dashboard"
+
+            element={
+
               <ProtectedRoute>
 
                 <MainLayout>
@@ -73,18 +106,24 @@ export default function App() {
                 </MainLayout>
 
               </ProtectedRoute>
+
             }
+
           />
 
 
 
-          {/* ==================================================
+
+          {/* =========================
               USER MANAGEMENT
-          ================================================== */}
+          ========================== */}
 
           <Route
+
             path="/users"
+
             element={
+
               <ProtectedRoute>
 
                 <PermissionRoute permission="user.read">
@@ -98,18 +137,51 @@ export default function App() {
                 </PermissionRoute>
 
               </ProtectedRoute>
+
             }
+
           />
 
 
 
-          {/* ==================================================
-              ROLE MANAGEMENT
-          ================================================== */}
+
+          {/* =========================
+              USER ACTIVITY TIMELINE
+          ========================== */}
 
           <Route
-            path="/roles"
+
+            path="/users/:userId/activity"
+
             element={
+
+              <ProtectedRoute>
+
+                <MainLayout>
+
+                  <UserActivity />
+
+                </MainLayout>
+
+              </ProtectedRoute>
+
+            }
+
+          />
+
+
+
+
+          {/* =========================
+              ROLE MANAGEMENT
+          ========================== */}
+
+          <Route
+
+            path="/roles"
+
+            element={
+
               <ProtectedRoute>
 
                 <PermissionRoute permission="role.read">
@@ -123,18 +195,24 @@ export default function App() {
                 </PermissionRoute>
 
               </ProtectedRoute>
+
             }
+
           />
 
 
 
-          {/* ==================================================
+
+          {/* =========================
               PERMISSION MANAGEMENT
-          ================================================== */}
+          ========================== */}
 
           <Route
+
             path="/permissions"
+
             element={
+
               <ProtectedRoute>
 
                 <PermissionRoute permission="permission.read">
@@ -148,18 +226,24 @@ export default function App() {
                 </PermissionRoute>
 
               </ProtectedRoute>
+
             }
+
           />
 
 
 
-          {/* ==================================================
+
+          {/* =========================
               AUDIT LOGS
-          ================================================== */}
+          ========================== */}
 
           <Route
+
             path="/audit-logs"
+
             element={
+
               <ProtectedRoute>
 
                 <PermissionRoute permission="audit.read">
@@ -173,18 +257,24 @@ export default function App() {
                 </PermissionRoute>
 
               </ProtectedRoute>
+
             }
+
           />
 
 
 
-          {/* ==================================================
+
+          {/* =========================
               PROFILE
-          ================================================== */}
+          ========================== */}
 
           <Route
+
             path="/profile"
+
             element={
+
               <ProtectedRoute>
 
                 <MainLayout>
@@ -194,57 +284,80 @@ export default function App() {
                 </MainLayout>
 
               </ProtectedRoute>
+
             }
+
           />
 
 
 
-          {/* ==================================================
-              403 FORBIDDEN
-          ================================================== */}
+
+          {/* =========================
+              403
+          ========================== */}
 
           <Route
+
             path="/403"
+
             element={
 
               <div
+
                 style={{
+
                   padding: "50px",
+
                   textAlign: "center",
+
                 }}
+
               >
 
                 <h1>
                   403
                 </h1>
 
+
                 <h2>
                   Forbidden
                 </h2>
+
 
                 <p>
                   You do not have permission to access this page.
                 </p>
 
+
               </div>
 
             }
+
           />
 
 
 
-          {/* ==================================================
+
+          {/* =========================
               FALLBACK
-          ================================================== */}
+          ========================== */}
 
           <Route
+
             path="*"
+
             element={
+
               <Navigate
+
                 to="/dashboard"
+
                 replace
+
               />
+
             }
+
           />
 
 

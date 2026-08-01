@@ -1,102 +1,440 @@
 /* ==========================================================
-   MAJE Enterprise
-   Application Styles
+   MAJE Enterprise Layout Styles
    ========================================================== */
 
-/* Global box sizing */
+
+/* RESET */
+
 *,
 *::before,
 *::after {
   box-sizing: border-box;
 }
 
-/* Body */
+
 body {
+
   margin: 0;
+
   padding: 0;
+
   font-family:
     "Segoe UI",
     Tahoma,
     Geneva,
     Verdana,
     sans-serif;
+
   background: #f5f7fb;
+
   color: #1f2937;
+
 }
 
-/* Links */
-a {
-  text-decoration: none;
-  color: inherit;
+
+
+/* ==========================================================
+   MAIN LAYOUT
+   ========================================================== */
+
+
+.layout {
+
+  display: flex;
+
+  min-height: 100vh;
+
 }
 
-/* Buttons */
-button {
-  cursor: pointer;
-  border: none;
-  outline: none;
-  transition: all 0.2s ease;
+
+
+
+.content {
+
+  flex: 1;
+
+  min-width: 0;
+
 }
 
-button:hover {
-  opacity: 0.9;
+
+
+
+
+.page-content {
+
+  padding: 30px;
+
 }
 
-/* Images */
-img {
-  max-width: 100%;
-  display: block;
+
+
+
+
+/* ==========================================================
+   SIDEBAR
+   ========================================================== */
+
+
+.sidebar {
+
+  width: 260px;
+
+  min-height: 100vh;
+
+  background:
+
+    #1f2937;
+
+  color: white;
+
+  padding: 20px 0;
+
 }
 
-/* Tables */
+
+
+
+
+.sidebar-title {
+
+  padding:
+
+    0 25px;
+
+  margin:
+
+    0 0 30px;
+
+  font-size:
+
+    32px;
+
+  font-weight:
+
+    700;
+
+}
+
+
+
+
+
+.sidebar-menu {
+
+  list-style:
+
+    none;
+
+  padding:
+
+    0;
+
+  margin:
+
+    0;
+
+}
+
+
+
+
+
+.sidebar-menu li {
+
+  margin:
+
+    5px 0;
+
+}
+
+
+
+
+
+.sidebar-menu a {
+
+  display:
+
+    block;
+
+  padding:
+
+    15px 25px;
+
+  color:
+
+    white;
+
+  font-size:
+
+    18px;
+
+  transition:
+
+    background 0.2s ease;
+
+}
+
+
+
+
+
+.sidebar-menu a:hover {
+
+  background:
+
+    #374151;
+
+}
+
+
+
+
+
+.sidebar-menu a.active {
+
+  background:
+
+    #2563eb;
+
+  font-weight:
+
+    600;
+
+}
+
+
+
+
+
+/* ==========================================================
+   NAVBAR
+   ========================================================== */
+
+
+header {
+
+  background:
+
+    white;
+
+}
+
+
+
+
+
+header button {
+
+  background:
+
+    #2563eb;
+
+  color:
+
+    white;
+
+  padding:
+
+    10px 20px;
+
+  border-radius:
+
+    6px;
+
+}
+
+
+
+
+
+/* ==========================================================
+   TABLE
+   ========================================================== */
+
+
 table {
-  width: 100%;
-  border-collapse: collapse;
+
+  width:
+
+    100%;
+
+  border-collapse:
+
+    collapse;
+
+  background:
+
+    white;
+
 }
+
+
+
+
 
 th,
 td {
-  padding: 10px 12px;
-  border-bottom: 1px solid #e5e7eb;
+
+  padding:
+
+    12px;
+
+  border-bottom:
+
+    1px solid #e5e7eb;
+
 }
+
+
+
+
 
 th {
-  background: #f3f4f6;
-  text-align: left;
+
+  background:
+
+    #f3f4f6;
+
+  text-align:
+
+    left;
+
 }
 
-/* Form Controls */
+
+
+
+
+tbody tr:hover {
+
+  background:
+
+    #f9fafb;
+
+}
+
+
+
+
+
+/* ==========================================================
+   CARD
+   ========================================================== */
+
+
+.card {
+
+  background:
+
+    white;
+
+  padding:
+
+    25px;
+
+  border-radius:
+
+    12px;
+
+  box-shadow:
+
+    0 4px 12px rgba(0,0,0,0.08);
+
+}
+
+
+
+
+
+/* ==========================================================
+   ACTIVITY TIMELINE
+   ========================================================== */
+
+
+.activity-container {
+
+  margin-top:
+
+    20px;
+
+}
+
+
+
+
+.activity-card {
+
+  background:
+
+    white;
+
+  padding:
+
+    20px;
+
+  margin-bottom:
+
+    15px;
+
+  border-left:
+
+    5px solid #2563eb;
+
+  border-radius:
+
+    8px;
+
+  box-shadow:
+
+    0 2px 6px rgba(0,0,0,0.08);
+
+}
+
+
+
+
+
+.activity-meta {
+
+  color:
+
+    #6b7280;
+
+  font-size:
+
+    14px;
+
+}
+
+
+
+
+
+/* ==========================================================
+   FORM
+   ========================================================== */
+
+
 input,
 select,
 textarea {
-  font: inherit;
-}
 
-/* Utility */
-.text-center {
-  text-align: center;
-}
+  font:
 
-.mt-1 {
-  margin-top: 8px;
-}
+    inherit;
 
-.mt-2 {
-  margin-top: 16px;
-}
+  padding:
 
-.mt-3 {
-  margin-top: 24px;
-}
+    8px 12px;
 
-.mb-1 {
-  margin-bottom: 8px;
-}
+  border:
 
-.mb-2 {
-  margin-bottom: 16px;
-}
+    1px solid #d1d5db;
 
-.mb-3 {
-  margin-bottom: 24px;
+  border-radius:
+
+    6px;
+
 }
