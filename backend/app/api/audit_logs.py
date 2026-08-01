@@ -6,13 +6,19 @@ from fastapi import (
 
 from sqlalchemy.orm import Session
 
+
 from app.db.session import get_db
+
+from app.core.permissions import require_permission
+
 
 from app.schemas.audit_log import (
     AuditLogPaginationResponse,
 )
 
+
 from app.services.audit_log_service import AuditLogService
+
 
 
 
@@ -23,7 +29,10 @@ router = APIRouter(
 
 
 
+
 service = AuditLogService()
+
+
 
 
 
@@ -33,10 +42,12 @@ service = AuditLogService()
 )
 def get_audit_logs(
 
+
     page: int = Query(
         default=1,
         ge=1,
     ),
+
 
     size: int = Query(
         default=10,
@@ -44,17 +55,28 @@ def get_audit_logs(
         le=100,
     ),
 
+
     user_id: int | None = Query(
         default=None,
     ),
+
 
     action: str | None = Query(
         default=None,
     ),
 
+
     db: Session = Depends(get_db),
 
+
+    current_user = Depends(
+        require_permission(
+            "audit.read"
+        )
+    ),
+
 ):
+
 
     return service.get_filtered_logs(
 
