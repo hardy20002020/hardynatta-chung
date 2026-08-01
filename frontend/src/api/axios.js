@@ -1,6 +1,5 @@
 import axios from "axios";
 
-
 const api = axios.create({
   baseURL: "http://localhost:8000",
   headers: {
@@ -8,7 +7,13 @@ const api = axios.create({
   },
 });
 
-
+/*
+|--------------------------------------------------------------------------
+| Request Interceptor
+|--------------------------------------------------------------------------
+| Menambahkan JWT ke setiap request jika tersedia.
+|--------------------------------------------------------------------------
+*/
 api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("access_token");
@@ -19,10 +24,33 @@ api.interceptors.request.use(
 
     return config;
   },
+  (error) => Promise.reject(error)
+);
+
+/*
+|--------------------------------------------------------------------------
+| Response Interceptor
+|--------------------------------------------------------------------------
+| Jika backend mengembalikan 401:
+| - hapus token
+| - hapus user
+| - kembali ke halaman login
+|--------------------------------------------------------------------------
+*/
+api.interceptors.response.use(
+  (response) => response,
   (error) => {
+    if (error.response?.status === 401) {
+      localStorage.removeItem("access_token");
+      localStorage.removeItem("user");
+
+      if (window.location.pathname !== "/login") {
+        window.location.href = "/login";
+      }
+    }
+
     return Promise.reject(error);
   }
 );
-
 
 export default api;

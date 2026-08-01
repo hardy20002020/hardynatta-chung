@@ -1,35 +1,29 @@
 import { useAuth } from "../auth/AuthContext";
 
-
 export default function Dashboard() {
-  const { user, logout } = useAuth();
-
+  const { user } = useAuth();
 
   return (
     <div>
       <h1>MAJE Dashboard</h1>
 
       {user && (
-        <div>
+        <>
           <p>
-            Welcome, {user.name}
+            Role: <strong>{user.role}</strong>
           </p>
 
           <p>
-            Role: {user.role}
+            Email: <strong>{user.email}</strong>
           </p>
-
-          <p>
-            Email: {user.email}
-          </p>
-        </div>
+        </>
       )}
 
+      <hr />
 
-      <button onClick={logout}>
-        Logout
-      </button>
+      <h2>Dashboard Statistics</h2>
 
+      <p>Coming Soon...</p>
     </div>
   );
 }

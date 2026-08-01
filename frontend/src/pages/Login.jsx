@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-import api from "../api/axios";
+import { login as loginService } from "../api/authService";
 import { useAuth } from "../auth/AuthContext";
 
 export default function Login() {
@@ -15,13 +15,12 @@ export default function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    try {
-      const response = await api.post("/auth/login", {
-        email,
-        password,
-      });
+    setError("");
 
-      login(response.data);
+    try {
+      const data = await loginService(email, password);
+
+      login(data);
 
       navigate("/dashboard");
     } catch (err) {
@@ -37,8 +36,8 @@ export default function Login() {
 
       setError(
         err.response?.data?.detail ||
-          err.message ||
-          "Login gagal"
+        err.message ||
+        "Login gagal"
       );
     }
   };
@@ -55,6 +54,7 @@ export default function Login() {
           placeholder="Email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
+          required
         />
 
         <input
@@ -62,6 +62,7 @@ export default function Login() {
           placeholder="Password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
+          required
         />
 
         <button type="submit">
