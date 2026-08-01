@@ -6,6 +6,7 @@ import {
 } from "react-router-dom";
 
 import { AuthProvider } from "./auth/AuthContext";
+
 import ProtectedRoute from "./auth/ProtectedRoute";
 import PermissionRoute from "./auth/PermissionRoute";
 
@@ -16,21 +17,35 @@ import Dashboard from "./pages/Dashboard";
 import UserManagement from "./pages/UserManagement";
 import RoleManagement from "./pages/RoleManagement";
 import PermissionManagement from "./pages/PermissionManagement";
+import AuditLogs from "./pages/AuditLogs";
 import Profile from "./pages/Profile";
 
+
 export default function App() {
+
   return (
+
     <AuthProvider>
+
       <BrowserRouter>
+
         <Routes>
 
-          {/* Login */}
+
+          {/* ==================================================
+              LOGIN
+          ================================================== */}
+
           <Route
             path="/login"
             element={<Login />}
           />
 
-          {/* Root */}
+
+          {/* ==================================================
+              ROOT
+          ================================================== */}
+
           <Route
             path="/"
             element={
@@ -41,94 +56,187 @@ export default function App() {
             }
           />
 
-          {/* Dashboard */}
+
+          {/* ==================================================
+              DASHBOARD
+          ================================================== */}
+
           <Route
             path="/dashboard"
             element={
               <ProtectedRoute>
+
                 <MainLayout>
+
                   <Dashboard />
+
                 </MainLayout>
+
               </ProtectedRoute>
             }
           />
 
-          {/* User Management */}
+
+
+          {/* ==================================================
+              USER MANAGEMENT
+          ================================================== */}
+
           <Route
             path="/users"
             element={
               <ProtectedRoute>
+
                 <PermissionRoute permission="user.read">
+
                   <MainLayout>
+
                     <UserManagement />
+
                   </MainLayout>
+
                 </PermissionRoute>
+
               </ProtectedRoute>
             }
           />
 
-          {/* Role Management */}
+
+
+          {/* ==================================================
+              ROLE MANAGEMENT
+          ================================================== */}
+
           <Route
             path="/roles"
             element={
               <ProtectedRoute>
+
                 <PermissionRoute permission="role.read">
+
                   <MainLayout>
+
                     <RoleManagement />
+
                   </MainLayout>
+
                 </PermissionRoute>
+
               </ProtectedRoute>
             }
           />
 
-          {/* Permission Management */}
+
+
+          {/* ==================================================
+              PERMISSION MANAGEMENT
+          ================================================== */}
+
           <Route
             path="/permissions"
             element={
               <ProtectedRoute>
+
                 <PermissionRoute permission="permission.read">
+
                   <MainLayout>
+
                     <PermissionManagement />
+
                   </MainLayout>
+
                 </PermissionRoute>
+
               </ProtectedRoute>
             }
           />
 
-          {/* Profile */}
+
+
+          {/* ==================================================
+              AUDIT LOGS
+          ================================================== */}
+
+          <Route
+            path="/audit-logs"
+            element={
+              <ProtectedRoute>
+
+                <PermissionRoute permission="audit.read">
+
+                  <MainLayout>
+
+                    <AuditLogs />
+
+                  </MainLayout>
+
+                </PermissionRoute>
+
+              </ProtectedRoute>
+            }
+          />
+
+
+
+          {/* ==================================================
+              PROFILE
+          ================================================== */}
+
           <Route
             path="/profile"
             element={
               <ProtectedRoute>
+
                 <MainLayout>
+
                   <Profile />
+
                 </MainLayout>
+
               </ProtectedRoute>
             }
           />
 
-          {/* 403 Forbidden */}
+
+
+          {/* ==================================================
+              403 FORBIDDEN
+          ================================================== */}
+
           <Route
             path="/403"
             element={
+
               <div
                 style={{
                   padding: "50px",
                   textAlign: "center",
                 }}
               >
-                <h1>403</h1>
 
-                <h2>Forbidden</h2>
+                <h1>
+                  403
+                </h1>
+
+                <h2>
+                  Forbidden
+                </h2>
 
                 <p>
                   You do not have permission to access this page.
                 </p>
+
               </div>
+
             }
           />
 
-          {/* Fallback */}
+
+
+          {/* ==================================================
+              FALLBACK
+          ================================================== */}
+
           <Route
             path="*"
             element={
@@ -139,8 +247,13 @@ export default function App() {
             }
           />
 
+
         </Routes>
+
       </BrowserRouter>
+
     </AuthProvider>
+
   );
+
 }

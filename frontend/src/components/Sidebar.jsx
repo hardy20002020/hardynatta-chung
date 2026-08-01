@@ -10,84 +10,164 @@ export default function Sidebar() {
 
 
   return (
+
     <aside className="sidebar">
+
 
       <h2 className="sidebar-title">
         MAJE
       </h2>
 
 
+
       <nav>
+
         <ul className="sidebar-menu">
 
 
-          {/* Dashboard */}
+          {/* ==================================================
+              DASHBOARD
+          ================================================== */}
+
           {hasPermission(
             user,
             "dashboard.read"
           ) && (
+
             <li>
+
               <NavLink to="/dashboard">
+
                 📊 Dashboard
+
               </NavLink>
+
             </li>
+
           )}
 
 
 
-          {/* User Management */}
+
+          {/* ==================================================
+              USER MANAGEMENT
+          ================================================== */}
+
           {hasPermission(
             user,
             "user.read"
           ) && (
+
             <li>
+
               <NavLink to="/users">
+
                 👥 User Management
+
               </NavLink>
+
             </li>
+
           )}
 
 
 
-          {/* Role Management */}
+
+          {/* ==================================================
+              ROLE MANAGEMENT
+          ================================================== */}
+
           {hasPermission(
             user,
             "role.read"
           ) && (
+
             <li>
+
               <NavLink to="/roles">
+
                 🛡 Role Management
+
               </NavLink>
+
             </li>
+
           )}
 
 
 
-          {/* Permission Management */}
+
+          {/* ==================================================
+              PERMISSION MANAGEMENT
+          ================================================== */}
+
           {hasPermission(
             user,
             "permission.read"
           ) && (
+
             <li>
+
               <NavLink to="/permissions">
+
                 🔑 Permission Management
+
               </NavLink>
+
             </li>
+
           )}
 
 
 
-          {/* Profile */}
+
+          {/* ==================================================
+              AUDIT LOGS
+          ================================================== */}
+
+          {hasPermission(
+            user,
+            "audit.read"
+          ) && (
+
+            <li>
+
+              <NavLink to="/audit-logs">
+
+                📋 Audit Logs
+
+              </NavLink>
+
+            </li>
+
+          )}
+
+
+
+
+          {/* ==================================================
+              PROFILE
+          ================================================== */}
+
           <li>
+
             <NavLink to="/profile">
+
               👤 Profile
+
             </NavLink>
+
           </li>
 
 
+
         </ul>
+
       </nav>
 
+
     </aside>
+
   );
+
 }
