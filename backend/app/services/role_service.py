@@ -8,6 +8,12 @@ from app.schemas.role import (
 )
 
 
+SYSTEM_ROLES = {
+    "admin",
+    "user",
+}
+
+
 class RoleService:
 
     def __init__(
@@ -64,6 +70,23 @@ class RoleService:
         if role is None:
             return None
 
+        if role.name.lower() in SYSTEM_ROLES:
+            raise ValueError(
+                "System role cannot be modified"
+            )
+
+        existing = self.repository.get_by_name(
+            data.name
+        )
+
+        if (
+            existing
+            and existing.id != role_id
+        ):
+            raise ValueError(
+                "Role already exists"
+            )
+
         return self.repository.update(
             role,
             data.name,
@@ -80,6 +103,11 @@ class RoleService:
 
         if role is None:
             return False
+
+        if role.name.lower() in SYSTEM_ROLES:
+            raise ValueError(
+                "System role cannot be deleted"
+            )
 
         return self.repository.delete(
             role

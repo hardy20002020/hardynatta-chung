@@ -20,6 +20,9 @@ class UserAuthResponse(BaseModel):
     province_id: int | None = None
     city_id: int | None = None
 
+    # Baru
+    permissions: list[str] = []
+
     model_config = ConfigDict(
         from_attributes=True
     )
@@ -29,6 +32,19 @@ class LoginResponse(BaseModel):
     access_token: str
     token_type: str = "bearer"
     user: UserAuthResponse | None = None
+
+    model_config = ConfigDict(
+        from_attributes=True
+    )
+
+
+# ==========================================================
+# Response Schema untuk GET /auth/me
+# ==========================================================
+class CurrentUserResponse(BaseModel):
+    success: bool
+    message: str
+    user: UserAuthResponse
 
     model_config = ConfigDict(
         from_attributes=True

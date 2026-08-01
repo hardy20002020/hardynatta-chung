@@ -31,13 +31,13 @@ router = APIRouter(
 )
 def get_roles(
     db: Session = Depends(get_db),
-    current_user=Depends(require_permission("role.read")),
+    current_user=Depends(
+        require_permission("role.read")
+    ),
 ):
-
     service = RoleService(db)
 
     return service.get_roles()
-
 
 
 @router.get(
@@ -47,9 +47,10 @@ def get_roles(
 def get_role(
     role_id: int,
     db: Session = Depends(get_db),
-    current_user=Depends(require_permission("role.read")),
+    current_user=Depends(
+        require_permission("role.read")
+    ),
 ):
-
     service = RoleService(db)
 
     role = service.get_role_by_id(
@@ -65,7 +66,6 @@ def get_role(
     return role
 
 
-
 @router.post(
     "/",
     response_model=RoleResponse,
@@ -73,9 +73,10 @@ def get_role(
 def create_role(
     data: RoleCreate,
     db: Session = Depends(get_db),
-    current_user=Depends(require_permission("role.create")),
+    current_user=Depends(
+        require_permission("role.create")
+    ),
 ):
-
     service = RoleService(db)
 
     try:
@@ -87,8 +88,7 @@ def create_role(
         raise HTTPException(
             status_code=400,
             detail=str(e),
-        )
-
+        ) from e
 
 
 @router.put(
@@ -99,15 +99,23 @@ def update_role(
     role_id: int,
     data: RoleUpdate,
     db: Session = Depends(get_db),
-    current_user=Depends(require_permission("role.update")),
+    current_user=Depends(
+        require_permission("role.update")
+    ),
 ):
-
     service = RoleService(db)
 
-    role = service.update_role(
-        role_id,
-        data,
-    )
+    try:
+        role = service.update_role(
+            role_id,
+            data,
+        )
+
+    except ValueError as e:
+        raise HTTPException(
+            status_code=400,
+            detail=str(e),
+        ) from e
 
     if role is None:
         raise HTTPException(
@@ -118,21 +126,28 @@ def update_role(
     return role
 
 
-
 @router.delete(
     "/{role_id}",
 )
 def delete_role(
     role_id: int,
     db: Session = Depends(get_db),
-    current_user=Depends(require_permission("role.delete")),
+    current_user=Depends(
+        require_permission("role.delete")
+    ),
 ):
-
     service = RoleService(db)
 
-    deleted = service.delete_role(
-        role_id
-    )
+    try:
+        deleted = service.delete_role(
+            role_id
+        )
+
+    except ValueError as e:
+        raise HTTPException(
+            status_code=400,
+            detail=str(e),
+        ) from e
 
     if not deleted:
         raise HTTPException(

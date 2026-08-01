@@ -3,9 +3,11 @@ from sqlalchemy.orm import Session
 
 from app.db.database import get_db
 from app.models.user import User
+
 from app.schemas.auth import (
     LoginRequest,
     LoginResponse,
+    CurrentUserResponse,
 )
 
 from app.core.security import (
@@ -18,20 +20,43 @@ from app.core.permissions import (
     require_admin,
 )
 
-
 router = APIRouter(
     prefix="/auth",
-    tags=["Authentication"]
+    tags=["Authentication"],
 )
+
+
+def get_user_permissions(user: User) -> list[str]:
+    """
+    Mengambil seluruh permission dari role user.
+
+    Prioritas:
+    1. RBAC Baru (Role -> Permissions)
+    2. Fallback RBAC Lama
+    """
+
+    if user.role_ref is not None:
+        return sorted(
+            [
+                permission.name
+                for permission in user.role_ref.permissions
+            ]
+        )
+
+    # Fallback untuk admin lama
+    if user.role == "admin":
+        return ["*"]
+
+    return []
 
 
 @router.post(
     "/login",
-    response_model=LoginResponse
+    response_model=LoginResponse,
 )
 def login(
     request: LoginRequest,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
 ):
 
     user = (
@@ -43,19 +68,17 @@ def login(
     if not user:
         raise HTTPException(
             status_code=401,
-            detail="Invalid email or password"
+            detail="Invalid email or password",
         )
-
 
     if not verify_password(
         request.password,
-        user.password
+        user.password,
     ):
         raise HTTPException(
             status_code=401,
-            detail="Invalid email or password"
+            detail="Invalid email or password",
         )
-
 
     token_data = {
         "sub": str(user.id),
@@ -64,11 +87,9 @@ def login(
         "role_id": user.role_id,
     }
 
-
     access_token = create_access_token(
         data=token_data
     )
-
 
     return {
         "access_token": access_token,
@@ -81,16 +102,17 @@ def login(
             "role_id": user.role_id,
             "province_id": user.province_id,
             "city_id": user.city_id,
-        }
+            "permissions": get_user_permissions(user),
+        },
     }
 
 
-
 @router.get(
-    "/me"
+    "/me",
+    response_model=CurrentUserResponse,
 )
 def get_me(
-    current_user: User = Depends(get_current_user)
+    current_user: User = Depends(get_current_user),
 ):
 
     return {
@@ -104,16 +126,17 @@ def get_me(
             "role_id": current_user.role_id,
             "province_id": current_user.province_id,
             "city_id": current_user.city_id,
-        }
+            "permissions": get_user_permissions(current_user),
+        },
     }
 
 
-
 @router.get(
-    "/admin-test"
+    "/admin-test",
+    response_model=CurrentUserResponse,
 )
 def admin_test(
-    current_user: User = Depends(require_admin)
+    current_user: User = Depends(require_admin),
 ):
 
     return {
@@ -127,5 +150,6 @@ def admin_test(
             "role_id": current_user.role_id,
             "province_id": current_user.province_id,
             "city_id": current_user.city_id,
-        }
+            "permissions": get_user_permissions(current_user),
+        },
     }
