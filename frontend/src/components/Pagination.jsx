@@ -7,37 +7,47 @@ export default function Pagination({
   onPrevious,
   onNext,
 }) {
-  const totalPages = Math.max(1, Math.ceil(total / size));
+  const totalPages = Math.max(
+    1,
+    Math.ceil(total / size)
+  );
 
   return (
     <div className="pagination">
+
       <button
-        className="btn"
+        className="btn btn-primary"
         onClick={onPrevious}
         disabled={page <= 1}
       >
-        Previous
+        ← Previous
       </button>
 
-      <span className="pagination-info">
-        Page {page} of {totalPages}
-      </span>
+      <div className="pagination-info">
+        <strong>
+          Page {page}
+        </strong>{" "}
+        of {totalPages}
+      </div>
 
       <button
-        className="btn"
+        className="btn btn-primary"
         onClick={onNext}
         disabled={page >= totalPages}
       >
-        Next
+        Next →
       </button>
 
-      <span className="pagination-size">
-        Size : {size}
-      </span>
+      <div className="pagination-meta">
+        <span>
+          Size: <strong>{size}</strong>
+        </span>
 
-      <span className="pagination-total">
-        Total : {total}
-      </span>
+        <span>
+          Total: <strong>{total}</strong>
+        </span>
+      </div>
+
     </div>
   );
 }

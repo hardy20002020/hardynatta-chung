@@ -1,129 +1,102 @@
-/* ==========================================
-   MAJE Frontend
-   ========================================== */
+/* ==========================================================
+   MAJE Enterprise
+   Application Styles
+   ========================================================== */
 
-* {
-  margin: 0;
-  padding: 0;
+/* Global box sizing */
+*,
+*::before,
+*::after {
   box-sizing: border-box;
 }
 
+/* Body */
 body {
-  font-family: Arial, Helvetica, sans-serif;
-  background: #f4f6f9;
-  color: #333;
+  margin: 0;
+  padding: 0;
+  font-family:
+    "Segoe UI",
+    Tahoma,
+    Geneva,
+    Verdana,
+    sans-serif;
+  background: #f5f7fb;
+  color: #1f2937;
 }
 
+/* Links */
 a {
   text-decoration: none;
   color: inherit;
 }
 
-ul {
-  list-style: none;
-}
-
+/* Buttons */
 button {
   cursor: pointer;
-}
-
-input,
-button {
-  font-size: 16px;
-}
-
-/* ==========================================
-   Layout
-   ========================================== */
-
-.app-layout {
-  display: flex;
-  min-height: 100vh;
-}
-
-/* ==========================================
-   Sidebar
-   ========================================== */
-
-aside {
-  width: 240px;
-  background: #1f2937;
-  color: white;
-  min-height: 100vh;
-  padding: 20px;
-}
-
-aside h2 {
-  margin-bottom: 30px;
-}
-
-aside ul li {
-  margin-bottom: 15px;
-}
-
-aside a {
-  color: white;
-}
-
-aside a:hover {
-  color: #60a5fa;
-}
-
-/* ==========================================
-   Main Content
-   ========================================== */
-
-main {
-  flex: 1;
-  padding: 20px;
-}
-
-/* ==========================================
-   Navbar
-   ========================================== */
-
-nav {
-  margin-bottom: 20px;
-}
-
-/* ==========================================
-   Login
-   ========================================== */
-
-form {
-  max-width: 420px;
-  margin: 80px auto;
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-}
-
-input {
-  padding: 12px;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-}
-
-button {
-  padding: 12px;
   border: none;
-  border-radius: 6px;
-  background: #2563eb;
-  color: white;
+  outline: none;
+  transition: all 0.2s ease;
 }
 
 button:hover {
-  background: #1d4ed8;
+  opacity: 0.9;
 }
 
-/* ==========================================
-   Page Title
-   ========================================== */
-
-h1 {
-  margin-bottom: 20px;
+/* Images */
+img {
+  max-width: 100%;
+  display: block;
 }
 
-p {
-  margin-bottom: 10px;
+/* Tables */
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th,
+td {
+  padding: 10px 12px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+th {
+  background: #f3f4f6;
+  text-align: left;
+}
+
+/* Form Controls */
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+/* Utility */
+.text-center {
+  text-align: center;
+}
+
+.mt-1 {
+  margin-top: 8px;
+}
+
+.mt-2 {
+  margin-top: 16px;
+}
+
+.mt-3 {
+  margin-top: 24px;
+}
+
+.mb-1 {
+  margin-bottom: 8px;
+}
+
+.mb-2 {
+  margin-bottom: 16px;
+}
+
+.mb-3 {
+  margin-bottom: 24px;
 }
