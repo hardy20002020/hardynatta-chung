@@ -1,11 +1,23 @@
-from sqlalchemy import Column, Integer, String, ForeignKey
+from sqlalchemy import (
+    Column,
+    Integer,
+    String,
+    ForeignKey,
+)
+
 from sqlalchemy.orm import relationship
 
 from app.db.base import Base
 
 
 class User(Base):
+
     __tablename__ = "users"
+
+
+    # ==========================================================
+    # BASIC
+    # ==========================================================
 
     id = Column(
         Integer,
@@ -13,10 +25,12 @@ class User(Base):
         index=True,
     )
 
+
     name = Column(
         String,
         nullable=False,
     )
+
 
     email = Column(
         String,
@@ -25,24 +39,28 @@ class User(Base):
         nullable=False,
     )
 
+
     password = Column(
         String,
         nullable=False,
     )
 
-    # RBAC lama (sementara dipertahankan)
-    role = Column(
-        String,
-        nullable=False,
-        default="user",
-    )
 
-    # RBAC baru
+    # ==========================================================
+    # RBAC ROLE
+    # ==========================================================
+
     role_id = Column(
         Integer,
         ForeignKey("roles.id"),
-        nullable=True,
+        nullable=False,
+        default=2,
     )
+
+
+    # ==========================================================
+    # LOCATION
+    # ==========================================================
 
     province_id = Column(
         Integer,
@@ -50,24 +68,48 @@ class User(Base):
         nullable=True,
     )
 
+
     city_id = Column(
         Integer,
         ForeignKey("cities.id"),
         nullable=True,
     )
 
+
+    # ==========================================================
+    # RELATIONSHIPS
+    # ==========================================================
+
+    role_ref = relationship(
+        "Role",
+        back_populates="users",
+    )
+
+
     province = relationship(
         "Province",
         back_populates="users",
     )
+
 
     city = relationship(
         "City",
         back_populates="users",
     )
 
-    # Relationship ke tabel roles
-    role_ref = relationship(
-        "Role",
-        back_populates="users",
-    )
+
+    # ==========================================================
+    # COMPATIBILITY FOR RESPONSE SCHEMA
+    # ==========================================================
+
+    @property
+    def role(self):
+        """
+        Return role name from RBAC relation.
+        Used by UserResponse schema.
+        """
+
+        if self.role_ref:
+            return self.role_ref.name
+
+        return None

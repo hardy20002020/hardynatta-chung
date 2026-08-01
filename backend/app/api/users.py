@@ -4,16 +4,19 @@ from fastapi import (
     Query,
     HTTPException,
 )
+
 from sqlalchemy.orm import Session
 
 from app.db.database import get_db
 
 from app.schemas.base import ApiResponse
+
 from app.schemas.user import (
     UserCreate,
     UserResponse,
     UserUpdate,
 )
+
 from app.schemas.pagination import (
     PaginatedResponse,
     PaginationMeta,
@@ -30,6 +33,10 @@ router = APIRouter(
 )
 
 
+# ==========================================================
+# CREATE USER
+# ==========================================================
+
 @router.post(
     "/",
     response_model=ApiResponse[UserResponse],
@@ -43,7 +50,9 @@ def create_user(
 ):
     service = UserService(db)
 
-    result = service.create_user(user)
+    result = service.create_user(
+        user
+    )
 
     return ApiResponse(
         success=True,
@@ -51,6 +60,10 @@ def create_user(
         data=result,
     )
 
+
+# ==========================================================
+# GET USERS
+# ==========================================================
 
 @router.get(
     "/",
@@ -98,6 +111,10 @@ def get_users(
     )
 
 
+# ==========================================================
+# GET USER BY ID
+# ==========================================================
+
 @router.get(
     "/{user_id}",
     response_model=ApiResponse[UserResponse],
@@ -111,7 +128,9 @@ def get_user_by_id(
 ):
     service = UserService(db)
 
-    user = service.get_user_by_id(user_id)
+    user = service.get_user_by_id(
+        user_id
+    )
 
     if user is None:
         raise HTTPException(
@@ -125,6 +144,10 @@ def get_user_by_id(
         data=user,
     )
 
+
+# ==========================================================
+# UPDATE USER
+# ==========================================================
 
 @router.put(
     "/{user_id}",
@@ -140,10 +163,18 @@ def update_user(
 ):
     service = UserService(db)
 
-    result = service.update_user(
-        user_id,
-        user,
-    )
+    try:
+        result = service.update_user(
+            user_id,
+            user,
+        )
+
+    except ValueError as e:
+        raise HTTPException(
+            status_code=400,
+            detail=str(e),
+        ) from e
+
 
     if result is None:
         raise HTTPException(
@@ -151,12 +182,17 @@ def update_user(
             detail="User not found",
         )
 
+
     return ApiResponse(
         success=True,
         message="User updated successfully",
         data=result,
     )
 
+
+# ==========================================================
+# DELETE USER
+# ==========================================================
 
 @router.delete(
     "/{user_id}",
@@ -171,7 +207,9 @@ def delete_user(
 ):
     service = UserService(db)
 
-    deleted = service.delete_user(user_id)
+    deleted = service.delete_user(
+        user_id
+    )
 
     if not deleted:
         raise HTTPException(

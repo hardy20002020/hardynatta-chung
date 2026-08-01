@@ -1,8 +1,14 @@
 from sqlalchemy.orm import Session
 
 from app.models.user import User
+from app.models.role import Role
+
 from app.repositories.user_repository import UserRepository
-from app.schemas.user import UserCreate, UserUpdate
+
+from app.schemas.user import (
+    UserCreate,
+    UserUpdate,
+)
 
 
 class UserService:
@@ -12,15 +18,26 @@ class UserService:
         db: Session,
     ):
         self.repository = UserRepository(db)
+        self.db = db
 
+
+    # ==========================================================
+    # CREATE
+    # ==========================================================
 
     def create_user(
         self,
         user: UserCreate,
     ) -> User:
 
-        return self.repository.create_user(user)
+        return self.repository.create_user(
+            user
+        )
 
+
+    # ==========================================================
+    # READ ALL
+    # ==========================================================
 
     def get_all_users(
         self,
@@ -29,6 +46,10 @@ class UserService:
         return self.repository.get_all_users()
 
 
+    # ==========================================================
+    # PAGINATION
+    # ==========================================================
+
     def get_users_paginated(
         self,
         page: int,
@@ -36,10 +57,12 @@ class UserService:
         search: str | None = None,
     ):
 
-        users, total = self.repository.get_users_paginated(
-            page=page,
-            size=size,
-            search=search,
+        users, total = (
+            self.repository.get_users_paginated(
+                page=page,
+                size=size,
+                search=search,
+            )
         )
 
         return {
@@ -52,21 +75,37 @@ class UserService:
         }
 
 
+    # ==========================================================
+    # READ BY ID
+    # ==========================================================
+
     def get_user_by_id(
         self,
         user_id: int,
     ) -> User | None:
 
-        return self.repository.get_user_by_id(user_id)
+        return self.repository.get_user_by_id(
+            user_id
+        )
 
+
+    # ==========================================================
+    # READ BY EMAIL
+    # ==========================================================
 
     def get_user_by_email(
         self,
         email: str,
     ) -> User | None:
 
-        return self.repository.get_user_by_email(email)
+        return self.repository.get_user_by_email(
+            email
+        )
 
+
+    # ==========================================================
+    # UPDATE
+    # ==========================================================
 
     def update_user(
         self,
@@ -74,15 +113,42 @@ class UserService:
         user: UserUpdate,
     ) -> User | None:
 
+
+        # ======================================================
+        # RBAC ROLE VALIDATION
+        # ======================================================
+
+        if user.role_id is not None:
+
+            role = (
+                self.db.query(Role)
+                .filter(
+                    Role.id == user.role_id
+                )
+                .first()
+            )
+
+            if role is None:
+                raise ValueError(
+                    "Role not found"
+                )
+
+
         return self.repository.update_user(
             user_id,
             user,
         )
 
 
+    # ==========================================================
+    # DELETE
+    # ==========================================================
+
     def delete_user(
         self,
         user_id: int,
     ) -> bool:
 
-        return self.repository.delete_user(user_id)
+        return self.repository.delete_user(
+            user_id
+        )
