@@ -96,6 +96,27 @@ class Settings(BaseSettings):
 
 
     # ==========================================================
+    # TRUSTED HOST SECURITY
+    # ==========================================================
+
+    ALLOWED_HOSTS: str = (
+        "localhost,"
+        "127.0.0.1,"
+        "testserver"
+    )
+
+
+    @property
+    def allowed_hosts(self) -> list[str]:
+        return [
+            host.strip()
+            for host
+            in self.ALLOWED_HOSTS.split(",")
+            if host.strip()
+        ]
+
+
+    # ==========================================================
     # SETTINGS
     # ==========================================================
 
