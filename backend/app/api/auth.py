@@ -1,3 +1,5 @@
+from datetime import datetime, timedelta, UTC
+
 from fastapi import (
     APIRouter,
     Depends,
@@ -91,21 +93,77 @@ def login(
             detail="Invalid email or password",
         )
 
-    if not verify_password(
-        login_data.password,
-        user.password,
-    ):
-        raise HTTPException(
-            status_code=401,
-            detail="Invalid email or password",
-        )
-
+    # ======================================================
+    # ACCOUNT STATUS / LOCKOUT SECURITY
+    # ======================================================
 
     if not user.is_active:
         raise HTTPException(
             status_code=403,
             detail="Account is inactive",
         )
+
+
+    now = datetime.now(UTC).replace(tzinfo=None)
+
+
+    # Existing lockout still active
+    if (
+        user.locked_until is not None
+        and user.locked_until > now
+    ):
+        raise HTTPException(
+            status_code=423,
+            detail="Account is temporarily locked",
+        )
+
+
+    # Expired lockout: reset state
+    if (
+        user.locked_until is not None
+        and user.locked_until <= now
+    ):
+        user.failed_login_attempts = 0
+        user.locked_until = None
+        db.commit()
+
+
+    # Password validation
+    if not verify_password(
+        login_data.password,
+        user.password,
+    ):
+        user.failed_login_attempts += 1
+
+        if (
+            user.failed_login_attempts
+            >= settings.MAX_FAILED_LOGIN_ATTEMPTS
+        ):
+            user.locked_until = (
+                now
+                + timedelta(
+                    minutes=(
+                        settings.ACCOUNT_LOCKOUT_MINUTES
+                    )
+                )
+            )
+
+        db.commit()
+
+        raise HTTPException(
+            status_code=401,
+            detail="Invalid email or password",
+        )
+
+
+    # Successful login resets failed attempts
+    if (
+        user.failed_login_attempts != 0
+        or user.locked_until is not None
+    ):
+        user.failed_login_attempts = 0
+        user.locked_until = None
+        db.commit()
 
 
     token_data = {

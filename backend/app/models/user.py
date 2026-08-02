@@ -3,6 +3,7 @@ from sqlalchemy import (
     Integer,
     String,
     Boolean,
+    DateTime,
     ForeignKey,
 )
 
@@ -56,6 +57,24 @@ class User(Base):
         nullable=False,
         default=True,
         server_default="true",
+    )
+
+
+    # ==========================================================
+    # ACCOUNT LOCKOUT
+    # ==========================================================
+
+    failed_login_attempts = Column(
+        Integer,
+        nullable=False,
+        default=0,
+        server_default="0",
+    )
+
+
+    locked_until = Column(
+        DateTime,
+        nullable=True,
     )
 
 
