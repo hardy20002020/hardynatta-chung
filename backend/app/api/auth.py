@@ -17,6 +17,8 @@ from app.schemas.auth import (
     LoginResponse,
     CurrentUserResponse,
     ChangePasswordRequest,
+    RefreshTokenRequest,
+    RefreshTokenResponse,
 )
 
 from app.core.security import (
@@ -247,6 +249,146 @@ def login(
 
 
 # ==========================================================
+# REFRESH TOKEN ROTATION
+# ==========================================================
+
+@router.post(
+    "/refresh",
+    response_model=RefreshTokenResponse,
+)
+def refresh_access_token(
+    refresh_data: RefreshTokenRequest,
+    db: Session = Depends(get_db),
+):
+    """
+    Rotate a valid refresh token and issue
+    a new access token and refresh token.
+    """
+
+    now = datetime.now(UTC).replace(
+        tzinfo=None
+    )
+
+    token_hash = hash_refresh_token(
+        refresh_data.refresh_token
+    )
+
+    session = (
+        db.query(UserSession)
+        .filter(
+            UserSession.refresh_token_hash
+            == token_hash
+        )
+        .first()
+    )
+
+    if session is None:
+        raise HTTPException(
+            status_code=401,
+            detail="Invalid refresh token",
+        )
+
+    if session.revoked_at is not None:
+        raise HTTPException(
+            status_code=401,
+            detail="Refresh token has been revoked",
+        )
+
+    if session.expires_at <= now:
+        session.revoked_at = now
+        db.commit()
+
+        raise HTTPException(
+            status_code=401,
+            detail="Refresh token has expired",
+        )
+
+    user = (
+        db.query(User)
+        .filter(
+            User.id == session.user_id
+        )
+        .first()
+    )
+
+    if user is None:
+        session.revoked_at = now
+        db.commit()
+
+        raise HTTPException(
+            status_code=401,
+            detail="Invalid refresh token",
+        )
+
+    if not user.is_active:
+        session.revoked_at = now
+        db.commit()
+
+        raise HTTPException(
+            status_code=403,
+            detail="Account is inactive",
+        )
+
+
+    # ======================================================
+    # ROTATE CURRENT SESSION
+    # ======================================================
+
+    new_refresh_token = create_refresh_token()
+
+    session.last_used_at = now
+    session.revoked_at = now
+
+    new_session = UserSession(
+        user_id=user.id,
+        refresh_token_hash=hash_refresh_token(
+            new_refresh_token
+        ),
+        expires_at=get_refresh_token_expiry(),
+        created_at=now,
+        user_agent=session.user_agent,
+        ip_address=session.ip_address,
+    )
+
+    db.add(new_session)
+
+
+    # ======================================================
+    # CREATE NEW ACCESS TOKEN
+    # ======================================================
+
+    token_data = {
+        "sub": str(user.id),
+        "email": user.email,
+        "role": user.role,
+        "role_id": user.role_id,
+        "token_version": user.token_version,
+    }
+
+    access_token = create_access_token(
+        data=token_data
+    )
+
+    db.commit()
+
+
+    audit_service.create_log(
+        db,
+        user_id=user.id,
+        action="TOKEN_REFRESH",
+        resource="AUTH",
+        description="Refresh token rotated successfully",
+    )
+
+
+    return {
+        "access_token": access_token,
+        "refresh_token": new_refresh_token,
+        "token_type": "bearer",
+    }
+
+
+# ==========================================================
 # LOGOUT / TOKEN REVOCATION
 # ==========================================================
 
@@ -263,6 +405,24 @@ def logout(
     """
 
     current_user.token_version += 1
+
+    now = datetime.now(UTC).replace(
+        tzinfo=None
+    )
+
+    (
+        db.query(UserSession)
+        .filter(
+            UserSession.user_id == current_user.id,
+            UserSession.revoked_at.is_(None),
+        )
+        .update(
+            {
+                UserSession.revoked_at: now,
+            },
+            synchronize_session=False,
+        )
+    )
 
     db.commit()
     db.refresh(current_user)
@@ -338,6 +498,24 @@ def change_password(
     # Revoke every token issued before
     # this password change.
     current_user.token_version += 1
+
+    now = datetime.now(UTC).replace(
+        tzinfo=None
+    )
+
+    (
+        db.query(UserSession)
+        .filter(
+            UserSession.user_id == current_user.id,
+            UserSession.revoked_at.is_(None),
+        )
+        .update(
+            {
+                UserSession.revoked_at: now,
+            },
+            synchronize_session=False,
+        )
+    )
 
     db.commit()
     db.refresh(current_user)
