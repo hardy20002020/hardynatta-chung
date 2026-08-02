@@ -301,6 +301,7 @@ def admin_test(
             "role_id": current_user.role_id,
             "province_id": current_user.province_id,
             "city_id": current_user.city_id,
+            "is_active": current_user.is_active,
             "permissions": get_user_permissions(current_user),
         },
     }

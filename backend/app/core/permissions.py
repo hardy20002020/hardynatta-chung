@@ -99,18 +99,10 @@ def get_current_user(
 
 def check_admin(user: User):
 
-    # RBAC Baru
-    if user.role_ref is not None:
-        if user.role_ref.name != "admin":
-            raise HTTPException(
-                status_code=status.HTTP_403_FORBIDDEN,
-                detail="Admin access required",
-            )
-
-        return user
-
-    # RBAC Lama
-    if user.role != "admin":
+    if (
+        user.role_ref is None
+        or user.role_ref.name != "admin"
+    ):
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Admin access required",
@@ -139,25 +131,16 @@ def has_permission(
     permission_name: str,
 ) -> bool:
     """
-    Mengecek apakah user memiliki permission tertentu.
-
-    Prioritas:
-    1. Role + Permission (RBAC Baru)
-    2. Fallback ke role lama
+    Check whether the user has the required
+    RBAC permission.
     """
 
-    # RBAC Baru
-    if user.role_ref is not None:
-
-        for permission in user.role_ref.permissions:
-            if permission.name == permission_name:
-                return True
-
+    if user.role_ref is None:
         return False
 
-    # RBAC Lama
-    if user.role == "admin":
-        return True
+    for permission in user.role_ref.permissions:
+        if permission.name == permission_name:
+            return True
 
     return False
 
