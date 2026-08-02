@@ -1,7 +1,11 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from slowapi import _rate_limit_exceeded_handler
+from slowapi.errors import RateLimitExceeded
+
 from app.core.config import settings
+from app.core.rate_limit import limiter
 
 from app.api.auth import router as auth_router
 from app.api.users import router as user_router
@@ -22,6 +26,18 @@ app = FastAPI(
     title="MAJE API",
     description="MAJE Backend API",
     version="1.1.0",
+)
+
+
+# ==========================================================
+# RATE LIMIT SECURITY
+# ==========================================================
+
+app.state.limiter = limiter
+
+app.add_exception_handler(
+    RateLimitExceeded,
+    _rate_limit_exceeded_handler,
 )
 
 

@@ -1,4 +1,9 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import (
+    APIRouter,
+    Depends,
+    HTTPException,
+    Request,
+)
 from sqlalchemy.orm import Session
 
 from app.db.database import get_db
@@ -19,6 +24,9 @@ from app.core.permissions import (
     get_current_user,
     require_admin,
 )
+
+from app.core.config import settings
+from app.core.rate_limit import limiter
 
 from app.services.audit_log_service import AuditLogService
 
@@ -56,18 +64,24 @@ def get_user_permissions(user: User) -> list[str]:
     return []
 
 
+# ==========================================================
+# LOGIN
+# ==========================================================
+
 @router.post(
     "/login",
     response_model=LoginResponse,
 )
+@limiter.limit(settings.LOGIN_RATE_LIMIT)
 def login(
-    request: LoginRequest,
+    request: Request,
+    login_data: LoginRequest,
     db: Session = Depends(get_db),
 ):
 
     user = (
         db.query(User)
-        .filter(User.email == request.email)
+        .filter(User.email == login_data.email)
         .first()
     )
 
@@ -78,7 +92,7 @@ def login(
         )
 
     if not verify_password(
-        request.password,
+        login_data.password,
         user.password,
     ):
         raise HTTPException(
@@ -129,6 +143,10 @@ def login(
     }
 
 
+# ==========================================================
+# CURRENT USER
+# ==========================================================
+
 @router.get(
     "/me",
     response_model=CurrentUserResponse,
@@ -152,6 +170,10 @@ def get_me(
         },
     }
 
+
+# ==========================================================
+# ADMIN TEST
+# ==========================================================
 
 @router.get(
     "/admin-test",
