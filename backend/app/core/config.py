@@ -159,6 +159,12 @@ class Settings(BaseSettings):
                 "in production"
             )
 
+        if len(self.JWT_SECRET_KEY) < 32:
+            raise ValueError(
+                "JWT_SECRET_KEY must be at least "
+                "32 characters in production"
+            )
+
         return self
 
 

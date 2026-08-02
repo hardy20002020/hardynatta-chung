@@ -78,3 +78,18 @@ def test_production_accepts_secure_configuration():
 
     assert settings.ENVIRONMENT == "production"
     assert settings.DEBUG is False
+
+
+def test_production_rejects_short_jwt_secret():
+    with pytest.raises(
+        ValidationError,
+        match=(
+            "JWT_SECRET_KEY must be at least "
+            "32 characters in production"
+        ),
+    ):
+        make_settings(
+            ENVIRONMENT="production",
+            DEBUG=False,
+            JWT_SECRET_KEY="Short-Secret-2026!",
+        )
