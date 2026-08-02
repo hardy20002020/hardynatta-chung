@@ -37,7 +37,7 @@ def test_login_rate_limit_rejects_excess_requests():
         # blocked by the rate limiter.
         assert response.status_code == 401
         assert (
-            response.json()["detail"]
+            response.json()["message"]
             == "Invalid email or password"
         )
 

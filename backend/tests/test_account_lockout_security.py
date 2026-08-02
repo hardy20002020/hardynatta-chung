@@ -65,7 +65,7 @@ def test_account_lockout_and_expiry_reset():
 
             assert response.status_code == 401
             assert (
-                response.json()["detail"]
+                response.json()["message"]
                 == "Invalid email or password"
             )
 
@@ -110,7 +110,7 @@ def test_account_lockout_and_expiry_reset():
 
         assert response.status_code == 423
         assert (
-            response.json()["detail"]
+            response.json()["message"]
             == "Account is temporarily locked"
         )
 

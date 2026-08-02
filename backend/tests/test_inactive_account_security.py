@@ -86,7 +86,7 @@ def test_inactive_user_cannot_login_or_refresh():
 
         assert response.status_code == 403
         assert (
-            response.json()["detail"]
+            response.json()["message"]
             == "Account is inactive"
         )
 
@@ -103,7 +103,7 @@ def test_inactive_user_cannot_login_or_refresh():
 
         assert response.status_code == 403
         assert (
-            response.json()["detail"]
+            response.json()["message"]
             == "Account is inactive"
         )
 

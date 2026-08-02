@@ -29,7 +29,7 @@ def test_invalid_refresh_token_is_rejected():
 
     assert response.status_code == 401
     assert (
-        response.json()["detail"]
+        response.json()["message"]
         == "Invalid refresh token"
     )
 
@@ -124,7 +124,7 @@ def test_expired_refresh_token_is_rejected():
 
         assert response.status_code == 401
         assert (
-            response.json()["detail"]
+            response.json()["message"]
             == "Refresh token has expired"
         )
 

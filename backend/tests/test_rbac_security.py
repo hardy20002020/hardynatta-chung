@@ -73,7 +73,7 @@ def test_user_without_permission_cannot_access_dashboard():
 
         assert response.status_code == 403
         assert (
-            response.json()["detail"]
+            response.json()["message"]
             == "Permission 'dashboard.read' required"
         )
 
@@ -156,7 +156,7 @@ def test_forged_admin_claim_cannot_bypass_admin_role():
 
         assert response.status_code == 403
         assert (
-            response.json()["detail"]
+            response.json()["message"]
             == "Admin access required"
         )
 

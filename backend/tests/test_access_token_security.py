@@ -36,7 +36,7 @@ def test_malformed_access_token_is_rejected():
 
     assert response.status_code == 401
     assert (
-        response.json()["detail"]
+        response.json()["message"]
         == "Invalid or expired token"
     )
 
@@ -55,7 +55,7 @@ def test_access_token_without_sub_is_rejected():
 
     assert response.status_code == 401
     assert (
-        response.json()["detail"]
+        response.json()["message"]
         == "Invalid token"
     )
 
@@ -75,7 +75,7 @@ def test_access_token_with_invalid_sub_is_rejected():
 
     assert response.status_code == 401
     assert (
-        response.json()["detail"]
+        response.json()["message"]
         == "Invalid token"
     )
 
@@ -119,7 +119,7 @@ def test_access_token_without_token_version_is_rejected():
 
         assert response.status_code == 401
         assert (
-            response.json()["detail"]
+            response.json()["message"]
             == "Token has been revoked"
         )
 
@@ -191,7 +191,7 @@ def test_revoked_access_token_version_is_rejected():
 
         assert response.status_code == 401
         assert (
-            response.json()["detail"]
+            response.json()["message"]
             == "Token has been revoked"
         )
 
@@ -245,6 +245,6 @@ def test_expired_access_token_is_rejected():
 
     assert response.status_code == 401
     assert (
-        response.json()["detail"]
+        response.json()["message"]
         == "Invalid or expired token"
     )

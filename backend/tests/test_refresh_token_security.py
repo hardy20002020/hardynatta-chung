@@ -100,7 +100,7 @@ def test_refresh_token_reuse_revokes_family():
         assert response.status_code == 401
 
         assert (
-            response.json()["detail"]
+            response.json()["message"]
             == (
                 "Refresh token reuse detected; "
                 "session revoked"
