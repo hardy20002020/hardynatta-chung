@@ -1,3 +1,4 @@
+from pydantic import model_validator
 from pydantic_settings import (
     BaseSettings,
     SettingsConfigDict,
@@ -13,6 +14,8 @@ class Settings(BaseSettings):
     APP_NAME: str = "MAJE API"
 
     APP_VERSION: str = "1.0.0"
+
+    ENVIRONMENT: str = "development"
 
     DEBUG: bool = True
 
@@ -125,6 +128,38 @@ class Settings(BaseSettings):
             in self.ALLOWED_HOSTS.split(",")
             if host.strip()
         ]
+
+
+    # ==========================================================
+    # PRODUCTION SECURITY VALIDATION
+    # ==========================================================
+
+    @model_validator(mode="after")
+    def validate_production_security(self):
+        if self.ENVIRONMENT.strip().lower() != "production":
+            return self
+
+        if self.DEBUG:
+            raise ValueError(
+                "DEBUG must be False in production"
+            )
+
+        insecure_secrets = {
+            "development-only-change-this-secret",
+            "replace-with-a-strong-secret",
+        }
+
+        if (
+            not self.JWT_SECRET_KEY.strip()
+            or self.JWT_SECRET_KEY
+            in insecure_secrets
+        ):
+            raise ValueError(
+                "A secure JWT_SECRET_KEY is required "
+                "in production"
+            )
+
+        return self
 
 
     # ==========================================================
