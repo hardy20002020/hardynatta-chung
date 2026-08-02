@@ -373,6 +373,7 @@ def refresh_access_token(
 
     if not user.is_active:
         session.revoked_at = now
+        session.revoke_reason = "account_inactive"
         db.commit()
 
         raise HTTPException(

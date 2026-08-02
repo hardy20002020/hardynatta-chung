@@ -127,6 +127,10 @@ def test_inactive_user_cannot_login_or_refresh():
 
         assert len(sessions) == 1
         assert sessions[0].revoked_at is not None
+        assert (
+            sessions[0].revoke_reason
+            == "account_inactive"
+        )
 
         # ==============================================
         # EXISTING ACCESS TOKEN MUST FAIL
