@@ -46,26 +46,19 @@ audit_service = AuditLogService()
 
 def get_user_permissions(user: User) -> list[str]:
     """
-    Mengambil seluruh permission dari role user.
-
-    Prioritas:
-    1. RBAC Baru (Role -> Permissions)
-    2. Fallback RBAC Lama
+    Return all permissions assigned through
+    the user's RBAC role.
     """
 
-    if user.role_ref is not None:
-        return sorted(
-            [
-                permission.name
-                for permission in user.role_ref.permissions
-            ]
-        )
+    if user.role_ref is None:
+        return []
 
-    # Fallback untuk admin lama
-    if user.role == "admin":
-        return ["*"]
-
-    return []
+    return sorted(
+        [
+            permission.name
+            for permission in user.role_ref.permissions
+        ]
+    )
 
 
 # ==========================================================

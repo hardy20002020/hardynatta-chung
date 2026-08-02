@@ -94,7 +94,7 @@ def get_current_user(
 
 
 # ==========================================================
-# Legacy RBAC (Dipertahankan)
+# ROLE CHECKS
 # ==========================================================
 
 def check_admin(user: User):
@@ -169,7 +169,7 @@ def require_permission(permission_name: str):
 
 
 # ==========================================================
-# Existing Dependencies (Backward Compatibility)
+# ROLE DEPENDENCIES
 # ==========================================================
 
 def require_admin(
