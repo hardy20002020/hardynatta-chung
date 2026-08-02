@@ -1,4 +1,6 @@
 from datetime import datetime, timedelta, timezone
+import hashlib
+import secrets
 
 from jose import JWTError, jwt
 from passlib.context import CryptContext
@@ -122,3 +124,46 @@ def decode_access_token(
 
     except JWTError:
         return None
+
+
+# ==========================================================
+# REFRESH TOKEN SECURITY
+# ==========================================================
+
+def create_refresh_token() -> str:
+    """
+    Create a cryptographically secure opaque
+    refresh token.
+
+    The raw token must only be returned to the
+    client and must never be stored in the database.
+    """
+
+    return secrets.token_urlsafe(48)
+
+
+def hash_refresh_token(
+    token: str,
+) -> str:
+    """
+    Return the SHA-256 hexadecimal digest of
+    a refresh token for database storage.
+    """
+
+    return hashlib.sha256(
+        token.encode("utf-8")
+    ).hexdigest()
+
+
+def get_refresh_token_expiry() -> datetime:
+    """
+    Return the refresh-token expiration timestamp
+    as a naive UTC datetime for database storage.
+    """
+
+    return (
+        datetime.now(timezone.utc)
+        + timedelta(
+            days=settings.REFRESH_TOKEN_EXPIRE_DAYS
+        )
+    ).replace(tzinfo=None)
