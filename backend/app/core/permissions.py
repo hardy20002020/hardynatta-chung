@@ -56,6 +56,12 @@ def get_current_user(
             detail="Invalid authentication credentials",
         )
 
+    if not user.is_active:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Account is inactive",
+        )
+
     return user
 
 

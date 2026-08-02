@@ -101,6 +101,13 @@ def login(
         )
 
 
+    if not user.is_active:
+        raise HTTPException(
+            status_code=403,
+            detail="Account is inactive",
+        )
+
+
     token_data = {
         "sub": str(user.id),
         "email": user.email,
@@ -138,6 +145,7 @@ def login(
             "role_id": user.role_id,
             "province_id": user.province_id,
             "city_id": user.city_id,
+            "is_active": user.is_active,
             "permissions": get_user_permissions(user),
         },
     }
@@ -166,6 +174,7 @@ def get_me(
             "role_id": current_user.role_id,
             "province_id": current_user.province_id,
             "city_id": current_user.city_id,
+            "is_active": current_user.is_active,
             "permissions": get_user_permissions(current_user),
         },
     }

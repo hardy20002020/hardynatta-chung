@@ -2,6 +2,7 @@ from sqlalchemy import (
     Column,
     Integer,
     String,
+    Boolean,
     ForeignKey,
 )
 
@@ -43,6 +44,18 @@ class User(Base):
     password = Column(
         String,
         nullable=False,
+    )
+
+
+    # ==========================================================
+    # ACCOUNT STATUS
+    # ==========================================================
+
+    is_active = Column(
+        Boolean,
+        nullable=False,
+        default=True,
+        server_default="true",
     )
 
 

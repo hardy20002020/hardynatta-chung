@@ -19,6 +19,7 @@ class UserAuthResponse(BaseModel):
     role_id: int | None = None
     province_id: int | None = None
     city_id: int | None = None
+    is_active: bool
 
     # Baru
     permissions: list[str] = []
