@@ -96,3 +96,36 @@ def test_disallowed_cors_method_is_rejected():
     )
 
     assert response.status_code == 400
+
+
+def test_hsts_is_disabled_in_development(monkeypatch):
+    monkeypatch.setattr(
+        "app.core.security_headers.settings.ENVIRONMENT",
+        "development",
+    )
+
+    response = client.get("/")
+
+    assert response.status_code == 200
+    assert (
+        "Strict-Transport-Security"
+        not in response.headers
+    )
+
+
+def test_hsts_is_enabled_in_production(monkeypatch):
+    monkeypatch.setattr(
+        "app.core.security_headers.settings.ENVIRONMENT",
+        "production",
+    )
+
+    response = client.get("/")
+
+    assert response.status_code == 200
+    assert (
+        response.headers["Strict-Transport-Security"]
+        == (
+            "max-age=31536000; "
+            "includeSubDomains"
+        )
+    )

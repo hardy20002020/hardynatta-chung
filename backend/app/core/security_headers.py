@@ -1,6 +1,8 @@
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.requests import Request
 
+from app.core.config import settings
+
 
 class SecurityHeadersMiddleware(BaseHTTPMiddleware):
     """
@@ -24,5 +26,16 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
             "default-src 'none'; "
             "frame-ancestors 'none'"
         )
+
+        if (
+            settings.ENVIRONMENT.strip().lower()
+            == "production"
+        ):
+            response.headers[
+                "Strict-Transport-Security"
+            ] = (
+                "max-age=31536000; "
+                "includeSubDomains"
+            )
 
         return response
