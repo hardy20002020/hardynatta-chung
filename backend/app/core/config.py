@@ -41,6 +41,54 @@ class Settings(BaseSettings):
 
 
     # ==========================================================
+    # CORS SECURITY
+    # ==========================================================
+
+    CORS_ALLOWED_ORIGINS: str = (
+        "http://localhost:5173,"
+        "http://localhost:5174"
+    )
+
+    CORS_ALLOWED_METHODS: str = (
+        "GET,POST,PUT,DELETE,OPTIONS"
+    )
+
+    CORS_ALLOWED_HEADERS: str = (
+        "Authorization,Content-Type"
+    )
+
+
+    @property
+    def cors_allowed_origins(self) -> list[str]:
+        return [
+            origin.strip()
+            for origin
+            in self.CORS_ALLOWED_ORIGINS.split(",")
+            if origin.strip()
+        ]
+
+
+    @property
+    def cors_allowed_methods(self) -> list[str]:
+        return [
+            method.strip()
+            for method
+            in self.CORS_ALLOWED_METHODS.split(",")
+            if method.strip()
+        ]
+
+
+    @property
+    def cors_allowed_headers(self) -> list[str]:
+        return [
+            header.strip()
+            for header
+            in self.CORS_ALLOWED_HEADERS.split(",")
+            if header.strip()
+        ]
+
+
+    # ==========================================================
     # SETTINGS
     # ==========================================================
 
