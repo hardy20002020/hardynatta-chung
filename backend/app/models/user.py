@@ -148,6 +148,13 @@ class User(Base):
     )
 
 
+    sessions = relationship(
+        "UserSession",
+        back_populates="user",
+        cascade="all, delete-orphan",
+    )
+
+
     # ==========================================================
     # COMPATIBILITY FOR RESPONSE SCHEMA
     # ==========================================================
