@@ -4,10 +4,7 @@ from jose import jwt
 from passlib.context import CryptContext
 from fastapi.security import HTTPBearer
 
-
-SECRET_KEY = "super-secret-key-change-this"
-ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24
+from app.core.config import settings
 
 
 pwd_context = CryptContext(
@@ -41,7 +38,7 @@ def create_access_token(
     expire = datetime.now(
         timezone.utc
     ) + timedelta(
-        minutes=ACCESS_TOKEN_EXPIRE_MINUTES
+        minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES
     )
 
     to_encode.update(
@@ -52,8 +49,8 @@ def create_access_token(
 
     return jwt.encode(
         to_encode,
-        SECRET_KEY,
-        algorithm=ALGORITHM,
+        settings.JWT_SECRET_KEY,
+        algorithm=settings.JWT_ALGORITHM,
     )
 
 
@@ -62,6 +59,8 @@ def decode_access_token(
 ):
     return jwt.decode(
         token,
-        SECRET_KEY,
-        algorithms=[ALGORITHM],
+        settings.JWT_SECRET_KEY,
+        algorithms=[
+            settings.JWT_ALGORITHM
+        ],
     )
