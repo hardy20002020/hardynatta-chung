@@ -55,9 +55,17 @@ def create_user(
 
     service = UserService(db)
 
-    result = service.create_user(
-        user
-    )
+
+    try:
+        result = service.create_user(
+            user
+        )
+
+    except ValueError as e:
+        raise HTTPException(
+            status_code=400,
+            detail=str(e),
+        ) from e
 
 
     audit_service.create_log(

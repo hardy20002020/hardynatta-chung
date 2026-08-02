@@ -16,7 +16,61 @@ pwd_context = CryptContext(
 security = HTTPBearer()
 
 
+def validate_password_strength(
+    password: str,
+) -> None:
+    """
+    Validate password against the MAJE security policy.
+
+    Requirements:
+    - Minimum 12 characters
+    - At least one uppercase letter
+    - At least one lowercase letter
+    - At least one number
+    - At least one special character
+    """
+
+    if len(password) < 12:
+        raise ValueError(
+            "Password must be at least 12 characters"
+        )
+
+    if not any(
+        char.isupper()
+        for char in password
+    ):
+        raise ValueError(
+            "Password must contain an uppercase letter"
+        )
+
+    if not any(
+        char.islower()
+        for char in password
+    ):
+        raise ValueError(
+            "Password must contain a lowercase letter"
+        )
+
+    if not any(
+        char.isdigit()
+        for char in password
+    ):
+        raise ValueError(
+            "Password must contain a number"
+        )
+
+    if not any(
+        not char.isalnum()
+        for char in password
+    ):
+        raise ValueError(
+            "Password must contain a special character"
+        )
+
+
 def hash_password(password: str) -> str:
+    validate_password_strength(password)
+
     return pwd_context.hash(password)
 
 
