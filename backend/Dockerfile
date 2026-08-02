@@ -1,12 +1,22 @@
-FROM python:3.12-slim
+FROM python:3.13-slim
 
 WORKDIR /app
 
+RUN useradd \
+    --create-home \
+    maje
+
 COPY requirements.txt .
 
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install \
+    --no-cache-dir \
+    -r requirements.txt
 
 COPY . .
+
+RUN chown -R maje:maje /app
+
+USER maje
 
 EXPOSE 8000
 
