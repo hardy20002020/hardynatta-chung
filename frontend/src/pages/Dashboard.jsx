@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 
 import { useAuth } from "../auth/AuthContext";
+import { hasPermission } from "../auth/permissionHelper";
 
 import dashboardService from "../api/dashboardService";
 
@@ -14,6 +15,9 @@ import AuditSummary from "../components/dashboard/AuditSummary";
 export default function Dashboard() {
 
   const { user } = useAuth();
+
+  const canReadAudit =
+    hasPermission(user, "audit.read");
 
 
   const [stats, setStats] = useState({
@@ -33,11 +37,12 @@ export default function Dashboard() {
   });
 
 
+  const [recentLogs, setRecentLogs] =
+    useState([]);
 
-  const [recentLogs, setRecentLogs] = useState([]);
 
-
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] =
+    useState(true);
 
 
 
@@ -45,14 +50,16 @@ export default function Dashboard() {
 
     loadDashboard();
 
-  }, []);
-
+  }, [user]);
 
 
 
   async function loadDashboard() {
 
     try {
+
+      setLoading(true);
+
 
       const data =
         await dashboardService.getDashboard();
@@ -62,13 +69,21 @@ export default function Dashboard() {
 
 
 
-      const logs =
-        await getRecentAuditLogs();
+      if (hasPermission(user, "audit.read")) {
+
+        const logs =
+          await getRecentAuditLogs();
 
 
-      setRecentLogs(
-        logs.items || []
-      );
+        setRecentLogs(
+          logs.items || []
+        );
+
+      } else {
+
+        setRecentLogs([]);
+
+      }
 
 
     } catch (error) {
@@ -88,7 +103,6 @@ export default function Dashboard() {
 
 
 
-
   return (
 
     <div>
@@ -97,7 +111,6 @@ export default function Dashboard() {
       <h1>
         MAJE Dashboard
       </h1>
-
 
 
 
@@ -132,13 +145,9 @@ export default function Dashboard() {
 
           </p>
 
-
         </div>
 
       )}
-
-
-
 
 
 
@@ -148,13 +157,11 @@ export default function Dashboard() {
 
 
 
-
       {loading ? (
 
         <p>
           Loading...
         </p>
-
 
       ) : (
 
@@ -179,7 +186,6 @@ export default function Dashboard() {
 
 
 
-
           <div className="stat-card">
 
             <div className="stat-icon">
@@ -195,7 +201,6 @@ export default function Dashboard() {
             </div>
 
           </div>
-
 
 
 
@@ -217,7 +222,6 @@ export default function Dashboard() {
 
 
 
-
           <div className="stat-card">
 
             <div className="stat-icon">
@@ -236,7 +240,6 @@ export default function Dashboard() {
 
 
 
-
           <div className="stat-card">
 
             <div className="stat-icon">
@@ -252,7 +255,6 @@ export default function Dashboard() {
             </div>
 
           </div>
-
 
 
 
@@ -279,86 +281,83 @@ export default function Dashboard() {
 
 
 
+      {canReadAudit && (
+
+        <>
+
+          <h2 className="mt-3">
+            Analytics
+          </h2>
+
+
+          <AuditSummary />
 
 
 
-      <h2 className="mt-3">
-        Analytics
-      </h2>
+          <h2 className="mt-3">
+            Recent Activity
+          </h2>
 
 
-      <AuditSummary />
+          <div className="card">
 
 
-
-
-
-
-      <h2 className="mt-3">
-        Recent Activity
-      </h2>
-
-
-
-      <div className="card">
-
-
-        {recentLogs.length === 0 ? (
-
-          <p>
-            No activity found.
-          </p>
-
-
-        ) : (
-
-
-          recentLogs.map((log) => (
-
-            <div
-              key={log.id}
-              style={{
-
-                padding: "12px 0",
-
-                borderBottom:
-                  "1px solid #eee",
-
-              }}
-            >
-
-              <strong>
-                {log.action}
-              </strong>
-
+            {recentLogs.length === 0 ? (
 
               <p>
-                {log.description}
+                No activity found.
               </p>
 
+            ) : (
 
-              <small>
+              recentLogs.map((log) => (
 
-                {log.resource}
+                <div
+                  key={log.id}
+                  style={{
 
-                {" | "}
+                    padding: "12px 0",
 
-                {new Date(
-                  log.created_at
-                ).toLocaleString()}
+                    borderBottom:
+                      "1px solid #eee",
 
-              </small>
+                  }}
+                >
 
-
-            </div>
-
-          ))
-
-        )}
+                  <strong>
+                    {log.action}
+                  </strong>
 
 
-      </div>
+                  <p>
+                    {log.description}
+                  </p>
 
+
+                  <small>
+
+                    {log.resource}
+
+                    {" | "}
+
+                    {new Date(
+                      log.created_at
+                    ).toLocaleString()}
+
+                  </small>
+
+                </div>
+
+              ))
+
+            )}
+
+
+          </div>
+
+        </>
+
+      )}
 
 
     </div>
