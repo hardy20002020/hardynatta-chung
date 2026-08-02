@@ -74,6 +74,11 @@ def test_production_accepts_secure_configuration():
             "MAJE-Production-Secure-Secret-"
             "2026-Enterprise"
         ),
+        DATABASE_URL=(
+            "postgresql+psycopg://"
+            "maje_app:StrongDatabasePassword2026!"
+            "@db.internal:5432/maje"
+        ),
     )
 
     assert settings.ENVIRONMENT == "production"
@@ -93,3 +98,43 @@ def test_production_rejects_short_jwt_secret():
             DEBUG=False,
             JWT_SECRET_KEY="Short-Secret-2026!",
         )
+
+
+def test_production_rejects_default_database_credentials():
+    with pytest.raises(
+        ValidationError,
+        match=(
+            "Default database credentials "
+            "are not allowed in production"
+        ),
+    ):
+        make_settings(
+            ENVIRONMENT="production",
+            DEBUG=False,
+            JWT_SECRET_KEY=(
+                "MAJE-Production-Secure-Secret-"
+                "2026-Enterprise"
+            ),
+            DATABASE_URL=(
+                "postgresql+psycopg://"
+                "postgres:postgres@localhost:5432/maje"
+            ),
+        )
+
+
+def test_production_accepts_secure_database_credentials():
+    settings = make_settings(
+        ENVIRONMENT="production",
+        DEBUG=False,
+        JWT_SECRET_KEY=(
+            "MAJE-Production-Secure-Secret-"
+            "2026-Enterprise"
+        ),
+        DATABASE_URL=(
+            "postgresql+psycopg://"
+            "maje_app:StrongDatabasePassword2026!"
+            "@db.internal:5432/maje"
+        ),
+    )
+
+    assert settings.ENVIRONMENT == "production"

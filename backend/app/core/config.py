@@ -165,6 +165,23 @@ class Settings(BaseSettings):
                 "32 characters in production"
             )
 
+        insecure_database_urls = {
+            (
+                "postgresql+psycopg://"
+                "postgres:postgres@localhost:5432/maje"
+            ),
+            (
+                "postgresql+psycopg://"
+                "postgres:postgres@postgres:5432/maje"
+            ),
+        }
+
+        if self.DATABASE_URL in insecure_database_urls:
+            raise ValueError(
+                "Default database credentials "
+                "are not allowed in production"
+            )
+
         return self
 
 
