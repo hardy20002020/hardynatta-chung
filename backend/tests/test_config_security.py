@@ -228,3 +228,33 @@ def test_production_accepts_secure_cors_and_hosts():
     assert settings.allowed_hosts == [
         "api.maje.example.com"
     ]
+
+
+def test_api_docs_enabled_in_development():
+    settings = make_settings(
+        ENVIRONMENT="development",
+    )
+
+    assert settings.api_docs_enabled is True
+
+
+def test_api_docs_disabled_in_production():
+    settings = make_settings(
+        ENVIRONMENT="production",
+        DEBUG=False,
+        JWT_SECRET_KEY=(
+            "MAJE-Production-Secure-Secret-"
+            "2026-Enterprise"
+        ),
+        DATABASE_URL=(
+            "postgresql+psycopg://"
+            "maje_app:StrongDatabasePassword2026!"
+            "@db.internal:5432/maje"
+        ),
+        CORS_ALLOWED_ORIGINS=(
+            "https://app.maje.example.com"
+        ),
+        ALLOWED_HOSTS="api.maje.example.com",
+    )
+
+    assert settings.api_docs_enabled is False

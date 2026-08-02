@@ -28,6 +28,21 @@ app = FastAPI(
     title="MAJE API",
     description="MAJE Backend API",
     version="1.1.0",
+    docs_url=(
+        "/docs"
+        if settings.api_docs_enabled
+        else None
+    ),
+    redoc_url=(
+        "/redoc"
+        if settings.api_docs_enabled
+        else None
+    ),
+    openapi_url=(
+        "/openapi.json"
+        if settings.api_docs_enabled
+        else None
+    ),
 )
 
 

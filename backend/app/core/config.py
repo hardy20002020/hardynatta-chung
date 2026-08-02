@@ -20,6 +20,14 @@ class Settings(BaseSettings):
     DEBUG: bool = True
 
 
+    @property
+    def api_docs_enabled(self) -> bool:
+        return (
+            self.ENVIRONMENT.strip().lower()
+            != "production"
+        )
+
+
     # ==========================================================
     # DATABASE
     # ==========================================================
