@@ -171,6 +171,7 @@ def login(
         "email": user.email,
         "role": user.role,
         "role_id": user.role_id,
+        "token_version": user.token_version,
     }
 
 
@@ -206,6 +207,45 @@ def login(
             "is_active": user.is_active,
             "permissions": get_user_permissions(user),
         },
+    }
+
+
+# ==========================================================
+# LOGOUT / TOKEN REVOCATION
+# ==========================================================
+
+@router.post(
+    "/logout",
+)
+def logout(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """
+    Revoke all access tokens issued with the
+    current token version.
+    """
+
+    current_user.token_version += 1
+
+    db.commit()
+    db.refresh(current_user)
+
+    # ======================================================
+    # AUDIT LOG - USER LOGOUT
+    # ======================================================
+
+    audit_service.create_log(
+        db,
+        user_id=current_user.id,
+        action="LOGOUT",
+        resource="AUTH",
+        description="User logout successfully",
+    )
+
+    return {
+        "success": True,
+        "message": "Logout successful",
     }
 
 

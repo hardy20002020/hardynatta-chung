@@ -51,6 +51,7 @@ class AuthService:
                 "email": user.email,
                 "role": role_name,
                 "role_id": user.role_id,
+                "token_version": user.token_version,
             }
         )
 
