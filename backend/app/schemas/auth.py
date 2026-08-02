@@ -50,3 +50,12 @@ class CurrentUserResponse(BaseModel):
     model_config = ConfigDict(
         from_attributes=True
     )
+
+
+# ==========================================================
+# CHANGE PASSWORD
+# ==========================================================
+
+class ChangePasswordRequest(BaseModel):
+    current_password: str
+    new_password: str

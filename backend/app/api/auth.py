@@ -15,10 +15,12 @@ from app.schemas.auth import (
     LoginRequest,
     LoginResponse,
     CurrentUserResponse,
+    ChangePasswordRequest,
 )
 
 from app.core.security import (
     verify_password,
+    hash_password,
     create_access_token,
 )
 
@@ -246,6 +248,77 @@ def logout(
     return {
         "success": True,
         "message": "Logout successful",
+    }
+
+
+# ==========================================================
+# CHANGE PASSWORD
+# ==========================================================
+
+@router.post(
+    "/change-password",
+)
+def change_password(
+    password_data: ChangePasswordRequest,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """
+    Change the authenticated user's password
+    and revoke all previously issued tokens.
+    """
+
+    if not verify_password(
+        password_data.current_password,
+        current_user.password,
+    ):
+        raise HTTPException(
+            status_code=400,
+            detail="Current password is incorrect",
+        )
+
+    if verify_password(
+        password_data.new_password,
+        current_user.password,
+    ):
+        raise HTTPException(
+            status_code=400,
+            detail=(
+                "New password must be different "
+                "from current password"
+            ),
+        )
+
+    try:
+        new_password_hash = hash_password(
+            password_data.new_password
+        )
+    except ValueError as exc:
+        raise HTTPException(
+            status_code=400,
+            detail=str(exc),
+        ) from exc
+
+    current_user.password = new_password_hash
+
+    # Revoke every token issued before
+    # this password change.
+    current_user.token_version += 1
+
+    db.commit()
+    db.refresh(current_user)
+
+    audit_service.create_log(
+        db,
+        user_id=current_user.id,
+        action="PASSWORD_CHANGE",
+        resource="AUTH",
+        description="User password changed successfully",
+    )
+
+    return {
+        "success": True,
+        "message": "Password changed successfully",
     }
 
 
