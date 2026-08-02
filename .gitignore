@@ -1,2 +1,6 @@
 openapi.json
 *.sql
+
+# Environment secrets
+.env
+*.env
