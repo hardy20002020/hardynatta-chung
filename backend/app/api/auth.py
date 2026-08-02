@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta, UTC
+import secrets
 
 from fastapi import (
     APIRouter,
@@ -187,6 +188,11 @@ def login(
 
     refresh_token = create_refresh_token()
 
+    # Every login starts a new refresh-token family.
+    # All rotations originating from this login
+    # retain the same family identifier.
+    token_family = secrets.token_hex(32)
+
     user_agent = request.headers.get(
         "user-agent"
     )
@@ -209,6 +215,7 @@ def login(
         ),
         expires_at=get_refresh_token_expiry(),
         created_at=now,
+        token_family=token_family,
         user_agent=user_agent,
         ip_address=client_ip,
     )
@@ -289,6 +296,49 @@ def refresh_access_token(
         )
 
     if session.revoked_at is not None:
+
+        # A refresh token that was already rotated and is
+        # presented again indicates possible token replay.
+        # Revoke the complete token family so any descendant
+        # refresh token can no longer be used.
+        if session.revoke_reason == "rotated":
+            (
+                db.query(UserSession)
+                .filter(
+                    UserSession.token_family
+                    == session.token_family,
+                )
+                .update(
+                    {
+                        UserSession.revoked_at: now,
+                        UserSession.revoke_reason:
+                            "reuse_detected",
+                    },
+                    synchronize_session=False,
+                )
+            )
+
+            db.commit()
+
+            audit_service.create_log(
+                db,
+                user_id=session.user_id,
+                action="REFRESH_TOKEN_REUSE",
+                resource="AUTH",
+                description=(
+                    "Refresh token reuse detected; "
+                    "token family revoked"
+                ),
+            )
+
+            raise HTTPException(
+                status_code=401,
+                detail=(
+                    "Refresh token reuse detected; "
+                    "session revoked"
+                ),
+            )
+
         raise HTTPException(
             status_code=401,
             detail="Refresh token has been revoked",
@@ -296,6 +346,7 @@ def refresh_access_token(
 
     if session.expires_at <= now:
         session.revoked_at = now
+        session.revoke_reason = "expired"
         db.commit()
 
         raise HTTPException(
@@ -338,6 +389,7 @@ def refresh_access_token(
 
     session.last_used_at = now
     session.revoked_at = now
+    session.revoke_reason = "rotated"
 
     new_session = UserSession(
         user_id=user.id,
@@ -346,6 +398,7 @@ def refresh_access_token(
         ),
         expires_at=get_refresh_token_expiry(),
         created_at=now,
+        token_family=session.token_family,
         user_agent=session.user_agent,
         ip_address=session.ip_address,
     )
@@ -419,6 +472,7 @@ def logout(
         .update(
             {
                 UserSession.revoked_at: now,
+                UserSession.revoke_reason: "logout",
             },
             synchronize_session=False,
         )
@@ -512,6 +566,7 @@ def change_password(
         .update(
             {
                 UserSession.revoked_at: now,
+                UserSession.revoke_reason: "password_change",
             },
             synchronize_session=False,
         )

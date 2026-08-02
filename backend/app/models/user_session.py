@@ -65,6 +65,28 @@ class UserSession(Base):
     )
 
 
+    # Stable identifier shared by every refresh-token
+    # generation that belongs to the same login session.
+    token_family = Column(
+        String(64),
+        nullable=False,
+        index=True,
+    )
+
+
+    # Identifies why a session/token was revoked.
+    # Examples:
+    # - rotated
+    # - logout
+    # - password_change
+    # - reuse_detected
+    # - expired
+    revoke_reason = Column(
+        String(32),
+        nullable=True,
+    )
+
+
     user_agent = Column(
         String(512),
         nullable=True,
