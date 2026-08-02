@@ -8,6 +8,7 @@ from slowapi.errors import RateLimitExceeded
 from app.core.config import settings
 from app.core.rate_limit import limiter
 from app.core.security_headers import SecurityHeadersMiddleware
+
 from app.exceptions.handlers import register_exception_handlers
 
 from app.api.auth import router as auth_router
@@ -57,6 +58,11 @@ app.add_exception_handler(
     RateLimitExceeded,
     _rate_limit_exceeded_handler,
 )
+
+
+# ==========================================================
+# EXCEPTION HANDLING
+# ==========================================================
 
 register_exception_handlers(app)
 
@@ -110,6 +116,18 @@ app.include_router(audit_log_router)
 
 # ==========================================================
 # HEALTH CHECK
+# ==========================================================
+
+@app.get("/health")
+def health():
+    return {
+        "success": True,
+        "message": "MAJE healthy",
+    }
+
+
+# ==========================================================
+# ROOT
 # ==========================================================
 
 @app.get("/")
