@@ -10,6 +10,7 @@ from sqlalchemy.orm import Session
 
 from app.db.database import get_db
 from app.models.user import User
+from app.models.user_session import UserSession
 
 from app.schemas.auth import (
     LoginRequest,
@@ -22,6 +23,9 @@ from app.core.security import (
     verify_password,
     hash_password,
     create_access_token,
+    create_refresh_token,
+    hash_refresh_token,
+    get_refresh_token_expiry,
 )
 
 from app.core.permissions import (
@@ -176,6 +180,42 @@ def login(
 
 
     # ======================================================
+    # REFRESH TOKEN / SESSION
+    # ======================================================
+
+    refresh_token = create_refresh_token()
+
+    user_agent = request.headers.get(
+        "user-agent"
+    )
+
+    if user_agent is not None:
+        user_agent = user_agent[:512]
+
+    client_ip = None
+
+    if request.client is not None:
+        client_ip = request.client.host
+
+        if client_ip is not None:
+            client_ip = client_ip[:45]
+
+    session = UserSession(
+        user_id=user.id,
+        refresh_token_hash=hash_refresh_token(
+            refresh_token
+        ),
+        expires_at=get_refresh_token_expiry(),
+        created_at=now,
+        user_agent=user_agent,
+        ip_address=client_ip,
+    )
+
+    db.add(session)
+    db.commit()
+
+
+    # ======================================================
     # AUDIT LOG - USER LOGIN
     # ======================================================
 
@@ -190,6 +230,7 @@ def login(
 
     return {
         "access_token": access_token,
+        "refresh_token": refresh_token,
         "token_type": "bearer",
         "user": {
             "id": user.id,
