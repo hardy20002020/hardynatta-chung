@@ -10,6 +10,10 @@ from app.db.database import get_db
 from app.models.user import User
 
 
+# ==========================================================
+# CURRENT USER / JWT AUTHENTICATION
+# ==========================================================
+
 def get_current_user(
     credentials: HTTPAuthorizationCredentials = Depends(security),
     db: Session = Depends(get_db),
@@ -17,6 +21,12 @@ def get_current_user(
     token = credentials.credentials
 
     payload = decode_access_token(token)
+
+    if payload is None:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid or expired token",
+        )
 
     user_id = payload.get("sub")
 
@@ -26,16 +36,24 @@ def get_current_user(
             detail="Invalid token",
         )
 
+    try:
+        user_id = int(user_id)
+    except (TypeError, ValueError):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid token",
+        )
+
     user = (
         db.query(User)
-        .filter(User.id == int(user_id))
+        .filter(User.id == user_id)
         .first()
     )
 
     if not user:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="User not found",
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid authentication credentials",
         )
 
     return user
@@ -54,6 +72,7 @@ def check_admin(user: User):
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail="Admin access required",
             )
+
         return user
 
     # RBAC Lama
@@ -121,7 +140,10 @@ def require_permission(permission_name: str):
         ):
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
-                detail=f"Permission '{permission_name}' required",
+                detail=(
+                    f"Permission "
+                    f"'{permission_name}' required"
+                ),
             )
 
         return current_user

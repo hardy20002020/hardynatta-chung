@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta, timezone
 
-from jose import jwt
+from jose import JWTError, jwt
 from passlib.context import CryptContext
 from fastapi.security import HTTPBearer
 
@@ -56,11 +56,15 @@ def create_access_token(
 
 def decode_access_token(
     token: str,
-):
-    return jwt.decode(
-        token,
-        settings.JWT_SECRET_KEY,
-        algorithms=[
-            settings.JWT_ALGORITHM
-        ],
-    )
+) -> dict | None:
+    try:
+        return jwt.decode(
+            token,
+            settings.JWT_SECRET_KEY,
+            algorithms=[
+                settings.JWT_ALGORITHM
+            ],
+        )
+
+    except JWTError:
+        return None
