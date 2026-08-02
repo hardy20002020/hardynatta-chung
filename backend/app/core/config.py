@@ -182,6 +182,35 @@ class Settings(BaseSettings):
                 "are not allowed in production"
             )
 
+        insecure_cors_origins = {
+            "http://localhost:5173",
+            "http://localhost:5174",
+        }
+
+        if any(
+            origin in insecure_cors_origins
+            for origin in self.cors_allowed_origins
+        ):
+            raise ValueError(
+                "Development CORS origins are not "
+                "allowed in production"
+            )
+
+        insecure_hosts = {
+            "localhost",
+            "127.0.0.1",
+            "testserver",
+        }
+
+        if any(
+            host in insecure_hosts
+            for host in self.allowed_hosts
+        ):
+            raise ValueError(
+                "Development trusted hosts are not "
+                "allowed in production"
+            )
+
         return self
 
 

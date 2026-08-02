@@ -79,6 +79,10 @@ def test_production_accepts_secure_configuration():
             "maje_app:StrongDatabasePassword2026!"
             "@db.internal:5432/maje"
         ),
+        CORS_ALLOWED_ORIGINS=(
+            "https://app.maje.example.com"
+        ),
+        ALLOWED_HOSTS="api.maje.example.com",
     )
 
     assert settings.ENVIRONMENT == "production"
@@ -135,6 +139,92 @@ def test_production_accepts_secure_database_credentials():
             "maje_app:StrongDatabasePassword2026!"
             "@db.internal:5432/maje"
         ),
+        CORS_ALLOWED_ORIGINS=(
+            "https://app.maje.example.com"
+        ),
+        ALLOWED_HOSTS="api.maje.example.com",
     )
 
     assert settings.ENVIRONMENT == "production"
+
+
+def test_production_rejects_development_cors_origins():
+    with pytest.raises(
+        ValidationError,
+        match=(
+            "Development CORS origins are not "
+            "allowed in production"
+        ),
+    ):
+        make_settings(
+            ENVIRONMENT="production",
+            DEBUG=False,
+            JWT_SECRET_KEY=(
+                "MAJE-Production-Secure-Secret-"
+                "2026-Enterprise"
+            ),
+            DATABASE_URL=(
+                "postgresql+psycopg://"
+                "maje_app:StrongDatabasePassword2026!"
+                "@db.internal:5432/maje"
+            ),
+            CORS_ALLOWED_ORIGINS=(
+                "http://localhost:5173"
+            ),
+            ALLOWED_HOSTS="api.maje.example.com",
+        )
+
+
+def test_production_rejects_development_trusted_hosts():
+    with pytest.raises(
+        ValidationError,
+        match=(
+            "Development trusted hosts are not "
+            "allowed in production"
+        ),
+    ):
+        make_settings(
+            ENVIRONMENT="production",
+            DEBUG=False,
+            JWT_SECRET_KEY=(
+                "MAJE-Production-Secure-Secret-"
+                "2026-Enterprise"
+            ),
+            DATABASE_URL=(
+                "postgresql+psycopg://"
+                "maje_app:StrongDatabasePassword2026!"
+                "@db.internal:5432/maje"
+            ),
+            CORS_ALLOWED_ORIGINS=(
+                "https://app.maje.example.com"
+            ),
+            ALLOWED_HOSTS="localhost",
+        )
+
+
+def test_production_accepts_secure_cors_and_hosts():
+    settings = make_settings(
+        ENVIRONMENT="production",
+        DEBUG=False,
+        JWT_SECRET_KEY=(
+            "MAJE-Production-Secure-Secret-"
+            "2026-Enterprise"
+        ),
+        DATABASE_URL=(
+            "postgresql+psycopg://"
+            "maje_app:StrongDatabasePassword2026!"
+            "@db.internal:5432/maje"
+        ),
+        CORS_ALLOWED_ORIGINS=(
+            "https://app.maje.example.com"
+        ),
+        ALLOWED_HOSTS="api.maje.example.com",
+    )
+
+    assert settings.cors_allowed_origins == [
+        "https://app.maje.example.com"
+    ]
+
+    assert settings.allowed_hosts == [
+        "api.maje.example.com"
+    ]
