@@ -4,3 +4,5 @@ openapi.json
 # Environment secrets
 .env
 *.env
+# Production secrets
+.env.production

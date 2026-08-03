@@ -2,25 +2,25 @@ services:
 
   postgres:
     image: postgres:17
-    container_name: maje-postgres-dev
+    container_name: maje-postgres-prod
     restart: unless-stopped
 
-    environment:
-      POSTGRES_DB: maje
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+    env_file:
+      - ./backend/.env.production
 
-    ports:
-      - "5432:5432"
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
 
     volumes:
-      - postgres_dev_data:/var/lib/postgresql/data
+      - postgres_prod_data:/var/lib/postgresql/data
 
     healthcheck:
       test:
         [
           "CMD-SHELL",
-          "pg_isready -U postgres -d maje"
+          "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"
         ]
       interval: 10s
       timeout: 5s
@@ -31,11 +31,11 @@ services:
     build:
       context: ./backend
 
-    container_name: hardynatta-backend-dev
+    container_name: hardynatta-backend-prod
     restart: unless-stopped
 
     env_file:
-      - ./backend/.env.development
+      - ./backend/.env.production
 
     depends_on:
       postgres:
@@ -44,21 +44,14 @@ services:
     ports:
       - "8000:8000"
 
-    volumes:
-      - ./backend:/app
-
-    command:
-      uvicorn app.main:app
-      --host 0.0.0.0
-      --port 8000
-      --reload
-
     healthcheck:
       test:
         [
           "CMD",
           "curl",
           "-f",
+          "-H",
+          "Host: api.maje.example.com",
           "http://localhost:8000/health"
         ]
       interval: 30s
@@ -67,4 +60,4 @@ services:
 
 
 volumes:
-  postgres_dev_data:
+  postgres_prod_data:

@@ -2,7 +2,6 @@ from sqlalchemy.orm import Session
 
 from app.models.permission import Permission
 from app.models.role import Role
-from app.models.role_permission import RolePermission
 
 
 PERMISSIONS = [
@@ -29,10 +28,27 @@ PERMISSIONS = [
 ]
 
 
-def seed_permissions(db: Session):
+ROLE_PERMISSIONS = {
+    "admin": PERMISSIONS,
+
+    "manager": [
+        "dashboard.read",
+    ],
+
+    "user": [
+        "user.read",
+    ],
+}
+
+
+def seed_permissions(db: Session) -> None:
+    """
+    Seed all MAJE permissions.
+
+    This operation is idempotent.
+    """
 
     for permission_name in PERMISSIONS:
-
         permission = (
             db.query(Permission)
             .filter(
@@ -42,91 +58,70 @@ def seed_permissions(db: Session):
         )
 
         if permission is None:
-
             db.add(
                 Permission(
-                    name=permission_name
+                    name=permission_name,
                 )
             )
 
     db.commit()
 
 
-def seed_role_permissions(db: Session):
+def seed_role_permissions(db: Session) -> None:
+    """
+    Synchronize default role permissions.
 
-    admin = (
-        db.query(Role)
-        .filter(Role.name == "admin")
-        .first()
-    )
+    Existing role permissions are replaced with
+    the permissions defined in ROLE_PERMISSIONS.
 
-    user = (
-        db.query(Role)
-        .filter(Role.name == "user")
-        .first()
-    )
+    This prevents obsolete permissions from
+    remaining assigned after the RBAC policy
+    changes.
+    """
 
-    permissions = db.query(Permission).all()
-
-    #
-    # ADMIN
-    #
-
-    for permission in permissions:
-
-        exists = (
-            db.query(RolePermission)
-            .filter(
-                RolePermission.role_id == admin.id,
-                RolePermission.permission_id == permission.id,
-            )
+    for role_name, permission_names in (
+        ROLE_PERMISSIONS.items()
+    ):
+        role = (
+            db.query(Role)
+            .filter(Role.name == role_name)
             .first()
         )
 
-        if exists is None:
-
-            db.add(
-                RolePermission(
-                    role_id=admin.id,
-                    permission_id=permission.id,
-                )
+        if role is None:
+            raise RuntimeError(
+                f"Required role '{role_name}' "
+                "does not exist"
             )
 
-    #
-    # USER
-    #
-
-    user_permissions = [
-        "dashboard.read",
-        "user.read",
-    ]
-
-    for permission_name in user_permissions:
-
-        permission = (
+        permissions = (
             db.query(Permission)
             .filter(
-                Permission.name == permission_name
-            )
-            .first()
-        )
-
-        exists = (
-            db.query(RolePermission)
-            .filter(
-                RolePermission.role_id == user.id,
-                RolePermission.permission_id == permission.id,
-            )
-            .first()
-        )
-
-        if exists is None:
-
-            db.add(
-                RolePermission(
-                    role_id=user.id,
-                    permission_id=permission.id,
+                Permission.name.in_(
+                    permission_names
                 )
             )
+            .all()
+        )
+
+        found_names = {
+            permission.name
+            for permission in permissions
+        }
+
+        missing_names = (
+            set(permission_names)
+            - found_names
+        )
+
+        if missing_names:
+            raise RuntimeError(
+                "Missing required permissions: "
+                + ", ".join(
+                    sorted(missing_names)
+                )
+            )
+
+        role.permissions = permissions
 
     db.commit()
