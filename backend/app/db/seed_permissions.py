@@ -31,6 +31,12 @@ PERMISSIONS = [
     "competition.read",
     "competition.update",
     "competition.delete",
+
+    # Competition Groups
+    "competition_group.create",
+    "competition_group.read",
+    "competition_group.update",
+    "competition_group.delete",
 ]
 
 
@@ -40,6 +46,7 @@ ROLE_PERMISSIONS = {
     "manager": [
         "dashboard.read",
         "competition.read",
+        "competition_group.read",
     ],
 
     "user": [

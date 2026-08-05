@@ -19,6 +19,7 @@ from app.models import (
     AuditLog,
     UserSession,
     Competition,
+    CompetitionGroup,
 )
 
 

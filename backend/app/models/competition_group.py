@@ -4,16 +4,29 @@ from sqlalchemy import (
     Boolean,
     Column,
     DateTime,
+    ForeignKey,
     Integer,
     String,
+    UniqueConstraint,
 )
 from sqlalchemy.orm import relationship
 
 from app.db.base import Base
 
 
-class Competition(Base):
-    __tablename__ = "competitions"
+class CompetitionGroup(Base):
+    __tablename__ = "competition_groups"
+
+    __table_args__ = (
+        UniqueConstraint(
+            "competition_id",
+            "code",
+            name=(
+                "uq_competition_groups_"
+                "competition_id_code"
+            ),
+        ),
+    )
 
     id = Column(
         Integer,
@@ -21,21 +34,28 @@ class Competition(Base):
         index=True,
     )
 
-    name = Column(
-        String(200),
+    competition_id = Column(
+        Integer,
+        ForeignKey("competitions.id"),
         nullable=False,
+        index=True,
     )
 
     code = Column(
-        String(50),
-        unique=True,
-        index=True,
+        String(20),
         nullable=False,
     )
 
-    year = Column(
+    name = Column(
+        String(100),
+        nullable=False,
+    )
+
+    sort_order = Column(
         Integer,
         nullable=False,
+        default=0,
+        server_default="0",
     )
 
     is_active = Column(
@@ -58,8 +78,7 @@ class Competition(Base):
         nullable=False,
     )
 
-    groups = relationship(
-        "CompetitionGroup",
-        back_populates="competition",
-        cascade="all, delete-orphan",
+    competition = relationship(
+        "Competition",
+        back_populates="groups",
     )
