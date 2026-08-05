@@ -1,8 +1,9 @@
-from datetime import datetime
+from datetime import date, datetime
 
 from sqlalchemy import (
     Boolean,
     Column,
+    Date,
     DateTime,
     Integer,
     String,
@@ -36,6 +37,15 @@ class Competition(Base):
     year = Column(
         Integer,
         nullable=False,
+    )
+
+    # ======================================================
+    # AGE GROUP CLASSIFICATION
+    # ======================================================
+
+    age_reference_date = Column(
+        Date,
+        nullable=True,
     )
 
     is_active = Column(

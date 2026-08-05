@@ -1,3 +1,5 @@
+from datetime import date
+
 from sqlalchemy.orm import Session
 
 from app.models.competition import Competition
@@ -11,6 +13,9 @@ class CompetitionRepository:
     ):
         self.db = db
 
+    # ======================================================
+    # READ
+    # ======================================================
 
     def get_all(self):
         return (
@@ -23,7 +28,6 @@ class CompetitionRepository:
             .all()
         )
 
-
     def get_by_id(
         self,
         competition_id: int,
@@ -32,11 +36,11 @@ class CompetitionRepository:
             self.db
             .query(Competition)
             .filter(
-                Competition.id == competition_id
+                Competition.id
+                == competition_id
             )
             .first()
         )
-
 
     def get_by_code(
         self,
@@ -46,11 +50,15 @@ class CompetitionRepository:
             self.db
             .query(Competition)
             .filter(
-                Competition.code == code
+                Competition.code
+                == code
             )
             .first()
         )
 
+    # ======================================================
+    # CREATE
+    # ======================================================
 
     def create(
         self,
@@ -62,6 +70,9 @@ class CompetitionRepository:
 
         return competition
 
+    # ======================================================
+    # UPDATE
+    # ======================================================
 
     def update(
         self,
@@ -69,11 +80,17 @@ class CompetitionRepository:
         name: str,
         code: str,
         year: int,
+        age_reference_date: date | None,
         is_active: bool,
     ):
         competition.name = name
         competition.code = code
         competition.year = year
+
+        competition.age_reference_date = (
+            age_reference_date
+        )
+
         competition.is_active = is_active
 
         self.db.commit()
@@ -81,6 +98,9 @@ class CompetitionRepository:
 
         return competition
 
+    # ======================================================
+    # DELETE
+    # ======================================================
 
     def delete(
         self,

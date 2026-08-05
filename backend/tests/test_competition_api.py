@@ -169,6 +169,7 @@ def test_admin_competition_crud():
         )
         assert created["code"] == code
         assert created["year"] == 2026
+        assert created["age_reference_date"] is None
         assert created["is_active"] is True
 
         competition_id = created["id"]
@@ -207,6 +208,7 @@ def test_admin_competition_crud():
                 ),
                 "code": updated_code,
                 "year": 2027,
+                "age_reference_date": None,
                 "is_active": False,
             },
         )
@@ -220,6 +222,7 @@ def test_admin_competition_crud():
         )
         assert updated["code"] == updated_code
         assert updated["year"] == 2027
+        assert updated["age_reference_date"] is None
         assert updated["is_active"] is False
 
         delete_response = client.delete(
@@ -241,6 +244,118 @@ def test_admin_competition_crud():
         )
 
         assert missing_response.status_code == 404
+
+    finally:
+        cleanup_test_data(
+            db,
+            user_ids,
+            competition_codes,
+        )
+
+        db.close()
+
+
+def test_admin_competition_age_reference_date():
+    db = SessionLocal()
+
+    user_ids = []
+
+    code = (
+        "TEST-AGE-REF-"
+        f"{uuid4().hex[:12].upper()}"
+    )
+
+    updated_code = (
+        "TEST-AGE-REF-UPD-"
+        f"{uuid4().hex[:8].upper()}"
+    )
+
+    competition_codes = [
+        code,
+        updated_code,
+    ]
+
+    try:
+        admin, token = create_test_user(
+            db,
+            "admin",
+        )
+
+        user_ids.append(admin.id)
+
+        headers = authorization_header(
+            token
+        )
+
+        create_response = client.post(
+            "/competitions/",
+            headers=headers,
+            json={
+                "name": (
+                    "MAJE Age Reference Test"
+                ),
+                "code": code,
+                "year": 2026,
+                "age_reference_date": (
+                    "2026-06-30"
+                ),
+            },
+        )
+
+        assert create_response.status_code == 201
+
+        created = create_response.json()
+
+        assert created["age_reference_date"] == (
+            "2026-06-30"
+        )
+
+        competition_id = created["id"]
+
+        detail_response = client.get(
+            f"/competitions/{competition_id}",
+            headers=headers,
+        )
+
+        assert detail_response.status_code == 200
+
+        assert (
+            detail_response.json()[
+                "age_reference_date"
+            ]
+            == "2026-06-30"
+        )
+
+        update_response = client.put(
+            f"/competitions/{competition_id}",
+            headers=headers,
+            json={
+                "name": (
+                    "MAJE Age Reference Updated"
+                ),
+                "code": updated_code,
+                "year": 2027,
+                "age_reference_date": (
+                    "2027-01-01"
+                ),
+                "is_active": True,
+            },
+        )
+
+        assert update_response.status_code == 200
+
+        updated = update_response.json()
+
+        assert updated["age_reference_date"] == (
+            "2027-01-01"
+        )
+
+        delete_response = client.delete(
+            f"/competitions/{competition_id}",
+            headers=headers,
+        )
+
+        assert delete_response.status_code == 200
 
     finally:
         cleanup_test_data(
@@ -457,6 +572,7 @@ def test_manager_cannot_update_competition():
                 ),
                 "code": "TEST-MANAGER-UPDATE",
                 "year": 2026,
+                "age_reference_date": None,
                 "is_active": True,
             },
         )

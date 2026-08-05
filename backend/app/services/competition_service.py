@@ -20,10 +20,12 @@ class CompetitionService:
             db
         )
 
+    # ======================================================
+    # READ
+    # ======================================================
 
     def get_competitions(self):
         return self.repository.get_all()
-
 
     def get_competition_by_id(
         self,
@@ -33,6 +35,9 @@ class CompetitionService:
             competition_id
         )
 
+    # ======================================================
+    # CREATE
+    # ======================================================
 
     def create_competition(
         self,
@@ -51,20 +56,29 @@ class CompetitionService:
             name=data.name,
             code=data.code,
             year=data.year,
+            age_reference_date=(
+                data.age_reference_date
+            ),
         )
 
         return self.repository.create(
             competition
         )
 
+    # ======================================================
+    # UPDATE
+    # ======================================================
 
     def update_competition(
         self,
         competition_id: int,
         data: CompetitionUpdate,
     ):
-        competition = self.repository.get_by_id(
-            competition_id
+        competition = (
+            self.repository
+            .get_by_id(
+                competition_id
+            )
         )
 
         if competition is None:
@@ -83,20 +97,29 @@ class CompetitionService:
             )
 
         return self.repository.update(
-            competition,
-            data.name,
-            data.code,
-            data.year,
-            data.is_active,
+            competition=competition,
+            name=data.name,
+            code=data.code,
+            year=data.year,
+            age_reference_date=(
+                data.age_reference_date
+            ),
+            is_active=data.is_active,
         )
 
+    # ======================================================
+    # DELETE
+    # ======================================================
 
     def delete_competition(
         self,
         competition_id: int,
     ):
-        competition = self.repository.get_by_id(
-            competition_id
+        competition = (
+            self.repository
+            .get_by_id(
+                competition_id
+            )
         )
 
         if competition is None:

@@ -2,6 +2,7 @@ from datetime import datetime
 
 from sqlalchemy import (
     Boolean,
+    CheckConstraint,
     Column,
     DateTime,
     ForeignKey,
@@ -24,6 +25,37 @@ class CompetitionGroup(Base):
             name=(
                 "uq_competition_groups_"
                 "competition_id_code"
+            ),
+        ),
+        CheckConstraint(
+            (
+                "min_age IS NULL "
+                "OR min_age >= 0"
+            ),
+            name=(
+                "ck_competition_groups_"
+                "min_age_nonnegative"
+            ),
+        ),
+        CheckConstraint(
+            (
+                "max_age IS NULL "
+                "OR max_age >= 0"
+            ),
+            name=(
+                "ck_competition_groups_"
+                "max_age_nonnegative"
+            ),
+        ),
+        CheckConstraint(
+            (
+                "min_age IS NULL "
+                "OR max_age IS NULL "
+                "OR min_age <= max_age"
+            ),
+            name=(
+                "ck_competition_groups_"
+                "age_range"
             ),
         ),
     )
@@ -51,6 +83,24 @@ class CompetitionGroup(Base):
         nullable=False,
     )
 
+    # ======================================================
+    # AGE GROUP RULES
+    # ======================================================
+
+    min_age = Column(
+        Integer,
+        nullable=True,
+    )
+
+    max_age = Column(
+        Integer,
+        nullable=True,
+    )
+
+    # ======================================================
+    # DISPLAY ORDER
+    # ======================================================
+
     sort_order = Column(
         Integer,
         nullable=False,
@@ -58,12 +108,20 @@ class CompetitionGroup(Base):
         server_default="0",
     )
 
+    # ======================================================
+    # STATUS
+    # ======================================================
+
     is_active = Column(
         Boolean,
         nullable=False,
         default=True,
         server_default="true",
     )
+
+    # ======================================================
+    # TIMESTAMPS
+    # ======================================================
 
     created_at = Column(
         DateTime,

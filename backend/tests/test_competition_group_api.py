@@ -193,6 +193,8 @@ def test_admin_competition_group_crud():
                 "competition_id": competition.id,
                 "code": "GA",
                 "name": "Anak-Anak",
+                "min_age": None,
+                "max_age": None,
                 "sort_order": 10,
             },
         )
@@ -207,6 +209,8 @@ def test_admin_competition_group_crud():
         )
         assert created["code"] == "GA"
         assert created["name"] == "Anak-Anak"
+        assert created["min_age"] is None
+        assert created["max_age"] is None
         assert created["sort_order"] == 10
         assert created["is_active"] is True
 
@@ -241,6 +245,8 @@ def test_admin_competition_group_crud():
             json={
                 "code": "GR",
                 "name": "Remaja",
+                "min_age": None,
+                "max_age": None,
                 "sort_order": 20,
                 "is_active": False,
             },
@@ -252,6 +258,8 @@ def test_admin_competition_group_crud():
 
         assert updated["code"] == "GR"
         assert updated["name"] == "Remaja"
+        assert updated["min_age"] is None
+        assert updated["max_age"] is None
         assert updated["sort_order"] == 20
         assert updated["is_active"] is False
 
@@ -275,6 +283,266 @@ def test_admin_competition_group_crud():
         )
 
         assert missing_response.status_code == 404
+
+    finally:
+        cleanup_test_data(
+            db,
+            user_ids,
+            competition_codes,
+        )
+
+        db.close()
+
+
+def test_admin_competition_group_age_range():
+    db = SessionLocal()
+
+    user_ids = []
+
+    competition_code = (
+        "TEST-GROUP-AGE-"
+        f"{uuid4().hex[:12].upper()}"
+    )
+
+    competition_codes = [
+        competition_code,
+    ]
+
+    try:
+        admin, token = create_test_user(
+            db,
+            "admin",
+        )
+
+        user_ids.append(admin.id)
+
+        competition = create_test_competition(
+            db,
+            competition_code,
+        )
+
+        headers = authorization_header(
+            token
+        )
+
+        create_response = client.post(
+            "/competition-groups/",
+            headers=headers,
+            json={
+                "competition_id": competition.id,
+                "code": "AGE-A",
+                "name": "Age Group A",
+                "min_age": 8,
+                "max_age": 12,
+                "sort_order": 10,
+            },
+        )
+
+        assert create_response.status_code == 201
+
+        created = create_response.json()
+
+        assert created["min_age"] == 8
+        assert created["max_age"] == 12
+
+        group_id = created["id"]
+
+        detail_response = client.get(
+            f"/competition-groups/{group_id}",
+            headers=headers,
+        )
+
+        assert detail_response.status_code == 200
+        assert (
+            detail_response.json()["min_age"]
+            == 8
+        )
+        assert (
+            detail_response.json()["max_age"]
+            == 12
+        )
+
+        update_response = client.put(
+            f"/competition-groups/{group_id}",
+            headers=headers,
+            json={
+                "code": "AGE-B",
+                "name": "Age Group B",
+                "min_age": 13,
+                "max_age": 17,
+                "sort_order": 20,
+                "is_active": True,
+            },
+        )
+
+        assert update_response.status_code == 200
+
+        updated = update_response.json()
+
+        assert updated["min_age"] == 13
+        assert updated["max_age"] == 17
+
+    finally:
+        cleanup_test_data(
+            db,
+            user_ids,
+            competition_codes,
+        )
+
+        db.close()
+
+
+def test_negative_min_age_is_rejected():
+    db = SessionLocal()
+
+    user_ids = []
+
+    competition_code = (
+        "TEST-GROUP-NEG-MIN-"
+        f"{uuid4().hex[:10].upper()}"
+    )
+
+    competition_codes = [
+        competition_code,
+    ]
+
+    try:
+        admin, token = create_test_user(
+            db,
+            "admin",
+        )
+
+        user_ids.append(admin.id)
+
+        competition = create_test_competition(
+            db,
+            competition_code,
+        )
+
+        response = client.post(
+            "/competition-groups/",
+            headers=authorization_header(
+                token
+            ),
+            json={
+                "competition_id": competition.id,
+                "code": "NEG",
+                "name": "Negative Age",
+                "min_age": -1,
+                "max_age": 10,
+                "sort_order": 10,
+            },
+        )
+
+        assert response.status_code == 400
+
+    finally:
+        cleanup_test_data(
+            db,
+            user_ids,
+            competition_codes,
+        )
+
+        db.close()
+
+
+def test_negative_max_age_is_rejected():
+    db = SessionLocal()
+
+    user_ids = []
+
+    competition_code = (
+        "TEST-GROUP-NEG-MAX-"
+        f"{uuid4().hex[:10].upper()}"
+    )
+
+    competition_codes = [
+        competition_code,
+    ]
+
+    try:
+        admin, token = create_test_user(
+            db,
+            "admin",
+        )
+
+        user_ids.append(admin.id)
+
+        competition = create_test_competition(
+            db,
+            competition_code,
+        )
+
+        response = client.post(
+            "/competition-groups/",
+            headers=authorization_header(
+                token
+            ),
+            json={
+                "competition_id": competition.id,
+                "code": "NEGMAX",
+                "name": "Negative Max Age",
+                "min_age": 0,
+                "max_age": -1,
+                "sort_order": 10,
+            },
+        )
+
+        assert response.status_code == 400
+
+    finally:
+        cleanup_test_data(
+            db,
+            user_ids,
+            competition_codes,
+        )
+
+        db.close()
+
+
+def test_min_age_greater_than_max_age_is_rejected():
+    db = SessionLocal()
+
+    user_ids = []
+
+    competition_code = (
+        "TEST-GROUP-RANGE-"
+        f"{uuid4().hex[:10].upper()}"
+    )
+
+    competition_codes = [
+        competition_code,
+    ]
+
+    try:
+        admin, token = create_test_user(
+            db,
+            "admin",
+        )
+
+        user_ids.append(admin.id)
+
+        competition = create_test_competition(
+            db,
+            competition_code,
+        )
+
+        response = client.post(
+            "/competition-groups/",
+            headers=authorization_header(
+                token
+            ),
+            json={
+                "competition_id": competition.id,
+                "code": "BADRANGE",
+                "name": "Invalid Age Range",
+                "min_age": 18,
+                "max_age": 12,
+                "sort_order": 10,
+            },
+        )
+
+        assert response.status_code == 400
 
     finally:
         cleanup_test_data(
@@ -739,6 +1007,8 @@ def test_manager_cannot_update_competition_group():
             json={
                 "code": "GD",
                 "name": "Dewasa",
+                "min_age": None,
+                "max_age": None,
                 "sort_order": 30,
                 "is_active": True,
             },

@@ -23,6 +23,25 @@ router = APIRouter(
 )
 
 
+def _get_value_error_status_code(
+    detail: str,
+) -> int:
+    """
+    Map competition group service validation errors
+    to the appropriate HTTP status code.
+    """
+
+    if detail == "Competition not found":
+        return 404
+
+    if detail == (
+        "Competition group code already exists"
+    ):
+        return 409
+
+    return 400
+
+
 @router.get(
     "/",
     response_model=list[CompetitionGroupResponse],
@@ -106,13 +125,12 @@ def create_competition_group(
     except ValueError as exc:
         detail = str(exc)
 
-        if detail == "Competition not found":
-            status_code = 404
-        else:
-            status_code = 409
-
         raise HTTPException(
-            status_code=status_code,
+            status_code=(
+                _get_value_error_status_code(
+                    detail
+                )
+            ),
             detail=detail,
         ) from exc
 
@@ -140,9 +158,15 @@ def update_competition_group(
         )
 
     except ValueError as exc:
+        detail = str(exc)
+
         raise HTTPException(
-            status_code=409,
-            detail=str(exc),
+            status_code=(
+                _get_value_error_status_code(
+                    detail
+                )
+            ),
+            detail=detail,
         ) from exc
 
     if group is None:

@@ -13,6 +13,9 @@ class CompetitionGroupRepository:
     ):
         self.db = db
 
+    # ======================================================
+    # READ
+    # ======================================================
 
     def get_all(self):
         return (
@@ -25,7 +28,6 @@ class CompetitionGroupRepository:
             )
             .all()
         )
-
 
     def get_by_competition(
         self,
@@ -45,7 +47,6 @@ class CompetitionGroupRepository:
             .all()
         )
 
-
     def get_by_id(
         self,
         group_id: int,
@@ -54,11 +55,11 @@ class CompetitionGroupRepository:
             self.db
             .query(CompetitionGroup)
             .filter(
-                CompetitionGroup.id == group_id
+                CompetitionGroup.id
+                == group_id
             )
             .first()
         )
-
 
     def get_by_code(
         self,
@@ -71,11 +72,15 @@ class CompetitionGroupRepository:
             .filter(
                 CompetitionGroup.competition_id
                 == competition_id,
-                CompetitionGroup.code == code,
+                CompetitionGroup.code
+                == code,
             )
             .first()
         )
 
+    # ======================================================
+    # CREATE
+    # ======================================================
 
     def create(
         self,
@@ -87,17 +92,26 @@ class CompetitionGroupRepository:
 
         return group
 
+    # ======================================================
+    # UPDATE
+    # ======================================================
 
     def update(
         self,
         group: CompetitionGroup,
         code: str,
         name: str,
+        min_age: int | None,
+        max_age: int | None,
         sort_order: int,
         is_active: bool,
     ):
         group.code = code
         group.name = name
+
+        group.min_age = min_age
+        group.max_age = max_age
+
         group.sort_order = sort_order
         group.is_active = is_active
 
@@ -106,6 +120,9 @@ class CompetitionGroupRepository:
 
         return group
 
+    # ======================================================
+    # DELETE
+    # ======================================================
 
     def delete(
         self,
