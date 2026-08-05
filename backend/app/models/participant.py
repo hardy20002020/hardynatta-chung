@@ -1,7 +1,8 @@
-from datetime import datetime
+from datetime import date, datetime
 
 from sqlalchemy import (
     Column,
+    Date,
     DateTime,
     ForeignKey,
     Integer,
@@ -45,6 +46,11 @@ class Participant(Base):
     gender = Column(
         String(20),
         nullable=False,
+    )
+
+    date_of_birth = Column(
+        Date,
+        nullable=True,
     )
 
     # ======================================================
@@ -108,4 +114,10 @@ class Participant(Base):
     ethnicity = relationship(
         "Ethnicity",
         back_populates="participants",
+    )
+
+    registrations = relationship(
+        "CompetitionRegistration",
+        back_populates="participant",
+        cascade="all, delete-orphan",
     )

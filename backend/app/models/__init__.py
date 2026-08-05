@@ -9,6 +9,9 @@ from app.models.user_session import UserSession
 
 from app.models.competition import Competition
 from app.models.competition_group import CompetitionGroup
+from app.models.competition_registration import (
+    CompetitionRegistration,
+)
 
 from app.models.chinese_surname import ChineseSurname
 from app.models.chinese_surname_alias import (
@@ -30,6 +33,7 @@ __all__ = [
 
     "Competition",
     "CompetitionGroup",
+    "CompetitionRegistration",
 
     "ChineseSurname",
     "ChineseSurnameAlias",

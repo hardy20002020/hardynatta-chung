@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import date, datetime
 
 from pydantic import BaseModel, ConfigDict
 
@@ -10,6 +10,8 @@ from pydantic import BaseModel, ConfigDict
 class ParticipantCreate(BaseModel):
     chinese_name: str | None = None
     gender: str
+    date_of_birth: date
+
     chinese_surname_id: int | None = None
     ethnicity_id: int | None = None
     ethnicity_other: str | None = None
@@ -22,6 +24,8 @@ class ParticipantCreate(BaseModel):
 class ParticipantUpdate(BaseModel):
     chinese_name: str | None = None
     gender: str
+    date_of_birth: date
+
     chinese_surname_id: int | None = None
     ethnicity_id: int | None = None
     ethnicity_other: str | None = None
@@ -37,6 +41,7 @@ class ParticipantResponse(BaseModel):
 
     chinese_name: str | None
     gender: str
+    date_of_birth: date
 
     chinese_surname_id: int | None
     ethnicity_id: int | None

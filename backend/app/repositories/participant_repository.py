@@ -1,3 +1,5 @@
+from datetime import date
+
 from sqlalchemy.orm import Session
 
 from app.models.chinese_surname import (
@@ -181,12 +183,14 @@ class ParticipantRepository:
         participant: Participant,
         chinese_name: str | None,
         gender: str,
+        date_of_birth: date,
         chinese_surname_id: int | None,
         ethnicity_id: int | None,
         ethnicity_other: str | None,
     ):
         participant.chinese_name = chinese_name
         participant.gender = gender
+        participant.date_of_birth = date_of_birth
 
         participant.chinese_surname_id = (
             chinese_surname_id

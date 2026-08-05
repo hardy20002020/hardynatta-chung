@@ -1,3 +1,4 @@
+from datetime import date, timedelta
 from uuid import uuid4
 
 from fastapi.testclient import TestClient
@@ -136,6 +137,7 @@ def test_user_participant_self_service():
             json={
                 "chinese_name": "测试用户",
                 "gender": "male",
+                "date_of_birth": "2000-01-15",
                 "chinese_surname_id": None,
                 "ethnicity_id": None,
                 "ethnicity_other": None,
@@ -149,6 +151,10 @@ def test_user_participant_self_service():
         assert created["user_id"] == user.id
         assert created["chinese_name"] == "测试用户"
         assert created["gender"] == "male"
+        assert (
+            created["date_of_birth"]
+            == "2000-01-15"
+        )
 
         participant_id = created["id"]
 
@@ -162,6 +168,10 @@ def test_user_participant_self_service():
             get_response.json()["id"]
             == participant_id
         )
+        assert (
+            get_response.json()["date_of_birth"]
+            == "2000-01-15"
+        )
 
         update_response = client.put(
             "/participants/me",
@@ -169,6 +179,7 @@ def test_user_participant_self_service():
             json={
                 "chinese_name": "更新用户",
                 "gender": "female",
+                "date_of_birth": "2001-02-20",
                 "chinese_surname_id": None,
                 "ethnicity_id": None,
                 "ethnicity_other": None,
@@ -183,6 +194,10 @@ def test_user_participant_self_service():
         assert updated["user_id"] == user.id
         assert updated["chinese_name"] == "更新用户"
         assert updated["gender"] == "female"
+        assert (
+            updated["date_of_birth"]
+            == "2001-02-20"
+        )
         assert updated["ethnicity_other"] is None
 
     finally:
@@ -214,6 +229,7 @@ def test_user_cannot_create_duplicate_self_profile():
         payload = {
             "chinese_name": "Duplicate Test",
             "gender": "male",
+            "date_of_birth": "2000-01-15",
             "chinese_surname_id": None,
             "ethnicity_id": None,
             "ethnicity_other": None,
@@ -341,6 +357,11 @@ def test_user_cannot_read_other_participant():
             user_id=other_user.id,
             chinese_name="Other Participant",
             gender="male",
+            date_of_birth=date(
+                2000,
+                1,
+                15,
+            ),
         )
 
         db.add(participant)
@@ -399,6 +420,7 @@ def test_admin_can_create_participant_for_user():
             json={
                 "chinese_name": "Admin Created",
                 "gender": "male",
+                "date_of_birth": "1998-05-10",
                 "chinese_surname_id": None,
                 "ethnicity_id": None,
                 "ethnicity_other": None,
@@ -415,6 +437,11 @@ def test_admin_can_create_participant_for_user():
         )
 
         assert created["gender"] == "male"
+
+        assert (
+            created["date_of_birth"]
+            == "1998-05-10"
+        )
 
     finally:
         cleanup_test_data(
@@ -487,6 +514,11 @@ def test_admin_can_update_participant():
             user_id=target_user.id,
             chinese_name="Before Update",
             gender="male",
+            date_of_birth=date(
+                2000,
+                1,
+                15,
+            ),
         )
 
         db.add(participant)
@@ -501,6 +533,7 @@ def test_admin_can_update_participant():
             json={
                 "chinese_name": "After Update",
                 "gender": "female",
+                "date_of_birth": "2001-06-20",
                 "chinese_surname_id": None,
                 "ethnicity_id": None,
                 "ethnicity_other": None,
@@ -517,6 +550,11 @@ def test_admin_can_update_participant():
         )
 
         assert updated["gender"] == "female"
+
+        assert (
+            updated["date_of_birth"]
+            == "2001-06-20"
+        )
 
         assert (
             updated["ethnicity_other"]
@@ -559,6 +597,11 @@ def test_admin_can_delete_participant():
             user_id=target_user.id,
             chinese_name="Delete Test",
             gender="male",
+            date_of_birth=date(
+                2000,
+                1,
+                15,
+            ),
         )
 
         db.add(participant)
@@ -667,6 +710,7 @@ def test_manager_cannot_create_participant():
             json={
                 "chinese_name": "Forbidden",
                 "gender": "male",
+                "date_of_birth": "2000-01-15",
                 "chinese_surname_id": None,
                 "ethnicity_id": None,
                 "ethnicity_other": None,
@@ -682,6 +726,95 @@ def test_manager_cannot_create_participant():
                 "'participant.create' required"
             )
         )
+
+    finally:
+        cleanup_test_data(
+            db,
+            user_ids,
+        )
+
+        db.close()
+
+
+def test_future_date_of_birth_is_rejected():
+    db = SessionLocal()
+
+    user_ids = []
+
+    try:
+        user, token = create_test_user(
+            db,
+            "user",
+        )
+
+        user_ids.append(user.id)
+
+        future_date = (
+            date.today()
+            + timedelta(days=1)
+        )
+
+        response = client.post(
+            "/participants/me",
+            headers=authorization_header(
+                token
+            ),
+            json={
+                "chinese_name": "Future DOB",
+                "gender": "male",
+                "date_of_birth": (
+                    future_date.isoformat()
+                ),
+                "chinese_surname_id": None,
+                "ethnicity_id": None,
+                "ethnicity_other": None,
+            },
+        )
+
+        assert response.status_code == 400
+
+        assert (
+            response.json()["message"]
+            == "Date of birth cannot be in the future"
+        )
+
+    finally:
+        cleanup_test_data(
+            db,
+            user_ids,
+        )
+
+        db.close()
+
+
+def test_date_of_birth_is_required():
+    db = SessionLocal()
+
+    user_ids = []
+
+    try:
+        user, token = create_test_user(
+            db,
+            "user",
+        )
+
+        user_ids.append(user.id)
+
+        response = client.post(
+            "/participants/me",
+            headers=authorization_header(
+                token
+            ),
+            json={
+                "chinese_name": "Missing DOB",
+                "gender": "male",
+                "chinese_surname_id": None,
+                "ethnicity_id": None,
+                "ethnicity_other": None,
+            },
+        )
+
+        assert response.status_code == 422
 
     finally:
         cleanup_test_data(

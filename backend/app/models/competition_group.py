@@ -78,7 +78,16 @@ class CompetitionGroup(Base):
         nullable=False,
     )
 
+    # ======================================================
+    # RELATIONSHIPS
+    # ======================================================
+
     competition = relationship(
         "Competition",
         back_populates="groups",
+    )
+
+    registrations = relationship(
+        "CompetitionRegistration",
+        back_populates="competition_group",
     )

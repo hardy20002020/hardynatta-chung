@@ -1,3 +1,5 @@
+from datetime import date
+
 from sqlalchemy.orm import Session
 
 from app.models.participant import Participant
@@ -93,6 +95,21 @@ class ParticipantService:
             )
 
         return normalized
+
+    # ======================================================
+    # DATE OF BIRTH VALIDATION
+    # ======================================================
+
+    def _validate_date_of_birth(
+        self,
+        date_of_birth: date,
+    ) -> date:
+        if date_of_birth > date.today():
+            raise ValueError(
+                "Date of birth cannot be in the future"
+            )
+
+        return date_of_birth
 
     # ======================================================
     # CHINESE SURNAME VALIDATION
@@ -258,6 +275,12 @@ class ParticipantService:
             data.gender
         )
 
+        date_of_birth = (
+            self._validate_date_of_birth(
+                data.date_of_birth
+            )
+        )
+
         self._validate_chinese_surname(
             data.chinese_surname_id
         )
@@ -282,6 +305,7 @@ class ParticipantService:
             user_id=user_id,
             chinese_name=chinese_name,
             gender=gender,
+            date_of_birth=date_of_birth,
             chinese_surname_id=(
                 data.chinese_surname_id
             ),
@@ -320,6 +344,12 @@ class ParticipantService:
             data.gender
         )
 
+        date_of_birth = (
+            self._validate_date_of_birth(
+                data.date_of_birth
+            )
+        )
+
         self._validate_chinese_surname(
             data.chinese_surname_id
         )
@@ -344,6 +374,7 @@ class ParticipantService:
             participant=participant,
             chinese_name=chinese_name,
             gender=gender,
+            date_of_birth=date_of_birth,
             chinese_surname_id=(
                 data.chinese_surname_id
             ),
