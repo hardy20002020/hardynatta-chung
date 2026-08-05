@@ -37,6 +37,17 @@ PERMISSIONS = [
     "competition_group.read",
     "competition_group.update",
     "competition_group.delete",
+
+    # Participants - Administration
+    "participant.create",
+    "participant.read",
+    "participant.update",
+    "participant.delete",
+
+    # Participants - Self Service Portal
+    "participant.self.create",
+    "participant.self.read",
+    "participant.self.update",
 ]
 
 
@@ -47,10 +58,14 @@ ROLE_PERMISSIONS = {
         "dashboard.read",
         "competition.read",
         "competition_group.read",
+        "participant.read",
     ],
 
     "user": [
         "user.read",
+        "participant.self.create",
+        "participant.self.read",
+        "participant.self.update",
     ],
 }
 
@@ -66,7 +81,8 @@ def seed_permissions(db: Session) -> None:
         permission = (
             db.query(Permission)
             .filter(
-                Permission.name == permission_name
+                Permission.name
+                == permission_name
             )
             .first()
         )
@@ -81,7 +97,9 @@ def seed_permissions(db: Session) -> None:
     db.commit()
 
 
-def seed_role_permissions(db: Session) -> None:
+def seed_role_permissions(
+    db: Session,
+) -> None:
     """
     Synchronize default role permissions.
 
@@ -93,12 +111,16 @@ def seed_role_permissions(db: Session) -> None:
     changes.
     """
 
-    for role_name, permission_names in (
-        ROLE_PERMISSIONS.items()
-    ):
+    for (
+        role_name,
+        permission_names,
+    ) in ROLE_PERMISSIONS.items():
+
         role = (
             db.query(Role)
-            .filter(Role.name == role_name)
+            .filter(
+                Role.name == role_name
+            )
             .first()
         )
 

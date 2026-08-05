@@ -6,8 +6,16 @@ from app.models.permission import Permission
 from app.models.role_permission import RolePermission
 from app.models.audit_log import AuditLog
 from app.models.user_session import UserSession
+
 from app.models.competition import Competition
 from app.models.competition_group import CompetitionGroup
+
+from app.models.chinese_surname import ChineseSurname
+from app.models.chinese_surname_alias import (
+    ChineseSurnameAlias,
+)
+from app.models.ethnicity import Ethnicity
+from app.models.participant import Participant
 
 
 __all__ = [
@@ -19,6 +27,12 @@ __all__ = [
     "RolePermission",
     "AuditLog",
     "UserSession",
+
     "Competition",
     "CompetitionGroup",
+
+    "ChineseSurname",
+    "ChineseSurnameAlias",
+    "Ethnicity",
+    "Participant",
 ]

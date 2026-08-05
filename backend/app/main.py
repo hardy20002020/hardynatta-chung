@@ -1,28 +1,47 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from starlette.middleware.trustedhost import TrustedHostMiddleware
+from starlette.middleware.trustedhost import (
+    TrustedHostMiddleware,
+)
 
 from slowapi import _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
 
 from app.core.config import settings
 from app.core.rate_limit import limiter
-from app.core.security_headers import SecurityHeadersMiddleware
+from app.core.security_headers import (
+    SecurityHeadersMiddleware,
+)
 
-from app.exceptions.handlers import register_exception_handlers
+from app.exceptions.handlers import (
+    register_exception_handlers,
+)
 
 from app.api.auth import router as auth_router
 from app.api.users import router as user_router
 from app.api.provinces import router as province_router
 from app.api.cities import router as city_router
-from app.api.dashboard import router as dashboard_router
+from app.api.dashboard import (
+    router as dashboard_router,
+)
 from app.api.roles import router as role_router
-from app.api.permissions import router as permission_router
-from app.api.role_permissions import router as role_permission_router
-from app.api.audit_logs import router as audit_log_router
-from app.api.competitions import router as competition_router
+from app.api.permissions import (
+    router as permission_router,
+)
+from app.api.role_permissions import (
+    router as role_permission_router,
+)
+from app.api.audit_logs import (
+    router as audit_log_router,
+)
+from app.api.competitions import (
+    router as competition_router,
+)
 from app.api.competition_groups import (
     router as competition_group_router,
+)
+from app.api.participants import (
+    router as participant_router,
 )
 
 
@@ -118,6 +137,7 @@ app.include_router(role_permission_router)
 app.include_router(audit_log_router)
 app.include_router(competition_router)
 app.include_router(competition_group_router)
+app.include_router(participant_router)
 
 
 # ==========================================================

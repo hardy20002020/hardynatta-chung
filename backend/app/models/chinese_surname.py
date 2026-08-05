@@ -1,0 +1,77 @@
+from datetime import datetime
+
+from sqlalchemy import (
+    Boolean,
+    Column,
+    DateTime,
+    Integer,
+    String,
+)
+from sqlalchemy.orm import relationship
+
+from app.db.base import Base
+
+
+class ChineseSurname(Base):
+    __tablename__ = "chinese_surnames"
+
+    id = Column(
+        Integer,
+        primary_key=True,
+        index=True,
+    )
+
+    chinese_character = Column(
+        String(10),
+        nullable=False,
+        unique=True,
+        index=True,
+    )
+
+    pinyin = Column(
+        String(50),
+        nullable=False,
+    )
+
+    local_name = Column(
+        String(100),
+        nullable=True,
+    )
+
+    sort_order = Column(
+        Integer,
+        nullable=False,
+        default=0,
+        server_default="0",
+    )
+
+    is_active = Column(
+        Boolean,
+        nullable=False,
+        default=True,
+        server_default="true",
+    )
+
+    created_at = Column(
+        DateTime,
+        default=datetime.utcnow,
+        nullable=False,
+    )
+
+    updated_at = Column(
+        DateTime,
+        default=datetime.utcnow,
+        onupdate=datetime.utcnow,
+        nullable=False,
+    )
+
+    participants = relationship(
+        "Participant",
+        back_populates="chinese_surname",
+    )
+
+    aliases = relationship(
+        "ChineseSurnameAlias",
+        back_populates="chinese_surname",
+        cascade="all, delete-orphan",
+    )

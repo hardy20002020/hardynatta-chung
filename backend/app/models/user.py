@@ -155,6 +155,13 @@ class User(Base):
     )
 
 
+    participant = relationship(
+        "Participant",
+        back_populates="user",
+        uselist=False,
+    )
+
+
     # ==========================================================
     # COMPATIBILITY FOR RESPONSE SCHEMA
     # ==========================================================
