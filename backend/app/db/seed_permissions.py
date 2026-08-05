@@ -25,6 +25,12 @@ PERMISSIONS = [
 
     # Dashboard
     "dashboard.read",
+
+    # Competitions
+    "competition.create",
+    "competition.read",
+    "competition.update",
+    "competition.delete",
 ]
 
 
@@ -33,6 +39,7 @@ ROLE_PERMISSIONS = {
 
     "manager": [
         "dashboard.read",
+        "competition.read",
     ],
 
     "user": [

@@ -18,6 +18,7 @@ from app.models import (
     RolePermission,
     AuditLog,
     UserSession,
+    Competition,
 )
 
 
