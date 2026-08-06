@@ -1,12 +1,13 @@
 from datetime import datetime
 
 from sqlalchemy import (
-    Boolean,
     Column,
     DateTime,
     ForeignKey,
     Integer,
+    Numeric,
     String,
+    Text,
     UniqueConstraint,
 )
 from sqlalchemy.orm import relationship
@@ -14,16 +15,16 @@ from sqlalchemy.orm import relationship
 from app.db.base import Base
 
 
-class CompetitionRound(Base):
-    __tablename__ = "competition_rounds"
+class CompetitionJudgeScoreDetail(Base):
+    __tablename__ = "competition_judge_score_details"
 
     __table_args__ = (
         UniqueConstraint(
-            "competition_id",
-            "code",
+            "competition_judge_score_id",
+            "competition_scoring_criterion_id",
             name=(
-                "uq_competition_rounds_"
-                "competition_id_code"
+                "uq_competition_judge_score_details_"
+                "score_criterion"
             ),
         ),
     )
@@ -35,55 +36,55 @@ class CompetitionRound(Base):
     )
 
     # ======================================================
-    # COMPETITION
+    # JUDGE SCORE
     # ======================================================
 
-    competition_id = Column(
+    competition_judge_score_id = Column(
         Integer,
-        ForeignKey("competitions.id"),
+        ForeignKey("competition_judge_scores.id"),
         nullable=False,
         index=True,
     )
 
     # ======================================================
-    # ROUND
+    # SCORING CRITERION
     # ======================================================
 
-    code = Column(
-        String(50),
+    competition_scoring_criterion_id = Column(
+        Integer,
+        ForeignKey("competition_scoring_criteria.id"),
+        nullable=False,
+        index=True,
+    )
+
+    # ======================================================
+    # SCORE
+    # ======================================================
+
+    score = Column(
+        Numeric(10, 4),
         nullable=False,
     )
 
-    name = Column(
-        String(150),
-        nullable=False,
-    )
-
-    description = Column(
-        String(500),
+    weighted_score = Column(
+        Numeric(10, 4),
         nullable=True,
     )
 
     # ======================================================
-    # DISPLAY ORDER
+    # SOURCE
     # ======================================================
 
-    sort_order = Column(
-        Integer,
+    source = Column(
+        String(30),
         nullable=False,
-        default=0,
-        server_default="0",
+        default="human",
+        server_default="human",
     )
 
-    # ======================================================
-    # STATUS
-    # ======================================================
-
-    is_active = Column(
-        Boolean,
-        nullable=False,
-        default=True,
-        server_default="true",
+    notes = Column(
+        Text,
+        nullable=True,
     )
 
     # ======================================================
@@ -107,25 +108,12 @@ class CompetitionRound(Base):
     # RELATIONSHIPS
     # ======================================================
 
-    competition = relationship(
-        "Competition",
-        back_populates="rounds",
+    competition_judge_score = relationship(
+        "CompetitionJudgeScore",
+        back_populates="score_details",
     )
 
-    entries = relationship(
-        "CompetitionRoundEntry",
-        back_populates="competition_round",
-        cascade="all, delete-orphan",
-    )
-
-    judges = relationship(
-        "CompetitionRoundJudge",
-        back_populates="competition_round",
-        cascade="all, delete-orphan",
-    )
-
-    scoring_criteria = relationship(
+    scoring_criterion = relationship(
         "CompetitionScoringCriterion",
-        back_populates="competition_round",
-        cascade="all, delete-orphan",
+        back_populates="score_details",
     )

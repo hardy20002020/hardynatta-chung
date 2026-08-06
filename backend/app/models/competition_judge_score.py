@@ -113,3 +113,9 @@ class CompetitionJudgeScore(Base):
         "CompetitionRoundJudge",
         back_populates="judge_scores",
     )
+
+    score_details = relationship(
+        "CompetitionJudgeScoreDetail",
+        back_populates="competition_judge_score",
+        cascade="all, delete-orphan",
+    )

@@ -6,6 +6,7 @@ from sqlalchemy import (
     DateTime,
     ForeignKey,
     Integer,
+    Numeric,
     String,
     UniqueConstraint,
 )
@@ -14,16 +15,16 @@ from sqlalchemy.orm import relationship
 from app.db.base import Base
 
 
-class CompetitionRound(Base):
-    __tablename__ = "competition_rounds"
+class CompetitionScoringCriterion(Base):
+    __tablename__ = "competition_scoring_criteria"
 
     __table_args__ = (
         UniqueConstraint(
-            "competition_id",
+            "competition_round_id",
             "code",
             name=(
-                "uq_competition_rounds_"
-                "competition_id_code"
+                "uq_competition_scoring_criteria_"
+                "round_code"
             ),
         ),
     )
@@ -35,18 +36,18 @@ class CompetitionRound(Base):
     )
 
     # ======================================================
-    # COMPETITION
+    # COMPETITION ROUND
     # ======================================================
 
-    competition_id = Column(
+    competition_round_id = Column(
         Integer,
-        ForeignKey("competitions.id"),
+        ForeignKey("competition_rounds.id"),
         nullable=False,
         index=True,
     )
 
     # ======================================================
-    # ROUND
+    # CRITERION
     # ======================================================
 
     code = Column(
@@ -62,6 +63,29 @@ class CompetitionRound(Base):
     description = Column(
         String(500),
         nullable=True,
+    )
+
+    # ======================================================
+    # SCORING
+    # ======================================================
+
+    weight = Column(
+        Numeric(7, 4),
+        nullable=False,
+    )
+
+    min_score = Column(
+        Numeric(10, 4),
+        nullable=False,
+        default=0,
+        server_default="0",
+    )
+
+    max_score = Column(
+        Numeric(10, 4),
+        nullable=False,
+        default=100,
+        server_default="100",
     )
 
     # ======================================================
@@ -107,25 +131,13 @@ class CompetitionRound(Base):
     # RELATIONSHIPS
     # ======================================================
 
-    competition = relationship(
-        "Competition",
-        back_populates="rounds",
+    competition_round = relationship(
+        "CompetitionRound",
+        back_populates="scoring_criteria",
     )
 
-    entries = relationship(
-        "CompetitionRoundEntry",
-        back_populates="competition_round",
-        cascade="all, delete-orphan",
-    )
-
-    judges = relationship(
-        "CompetitionRoundJudge",
-        back_populates="competition_round",
-        cascade="all, delete-orphan",
-    )
-
-    scoring_criteria = relationship(
-        "CompetitionScoringCriterion",
-        back_populates="competition_round",
+    score_details = relationship(
+        "CompetitionJudgeScoreDetail",
+        back_populates="scoring_criterion",
         cascade="all, delete-orphan",
     )
