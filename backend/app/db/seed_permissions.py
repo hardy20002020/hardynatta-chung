@@ -38,6 +38,12 @@ PERMISSIONS = [
     "competition_group.update",
     "competition_group.delete",
 
+    # Competition Categories
+    "competition_category.create",
+    "competition_category.read",
+    "competition_category.update",
+    "competition_category.delete",
+
     # Competition Registrations
     "competition_registration.create",
     "competition_registration.read",
@@ -64,6 +70,7 @@ ROLE_PERMISSIONS = {
         "dashboard.read",
         "competition.read",
         "competition_group.read",
+        "competition_category.read",
         "competition_registration.read",
         "participant.read",
     ],
@@ -77,9 +84,7 @@ ROLE_PERMISSIONS = {
 }
 
 
-def seed_permissions(
-    db: Session,
-) -> None:
+def seed_permissions(db: Session) -> None:
     """
     Seed all MAJE permissions.
 
