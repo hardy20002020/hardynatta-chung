@@ -1,7 +1,6 @@
 from datetime import datetime
 
 from sqlalchemy import (
-    Boolean,
     Column,
     DateTime,
     ForeignKey,
@@ -14,16 +13,16 @@ from sqlalchemy.orm import relationship
 from app.db.base import Base
 
 
-class CompetitionRound(Base):
-    __tablename__ = "competition_rounds"
+class CompetitionRoundEntry(Base):
+    __tablename__ = "competition_round_entries"
 
     __table_args__ = (
         UniqueConstraint(
-            "competition_id",
-            "code",
+            "competition_round_id",
+            "competition_registration_id",
             name=(
-                "uq_competition_rounds_"
-                "competition_id_code"
+                "uq_competition_round_entries_"
+                "round_registration"
             ),
         ),
     )
@@ -35,55 +34,41 @@ class CompetitionRound(Base):
     )
 
     # ======================================================
-    # COMPETITION
+    # COMPETITION ROUND
     # ======================================================
 
-    competition_id = Column(
+    competition_round_id = Column(
         Integer,
-        ForeignKey("competitions.id"),
+        ForeignKey("competition_rounds.id"),
         nullable=False,
         index=True,
     )
 
     # ======================================================
-    # ROUND
+    # COMPETITION REGISTRATION
     # ======================================================
 
-    code = Column(
-        String(50),
+    competition_registration_id = Column(
+        Integer,
+        ForeignKey("competition_registrations.id"),
         nullable=False,
+        index=True,
     )
 
-    name = Column(
-        String(150),
-        nullable=False,
-    )
+    # ======================================================
+    # PERFORMANCE
+    # ======================================================
 
-    description = Column(
-        String(500),
+    performance_order = Column(
+        Integer,
         nullable=True,
     )
 
-    # ======================================================
-    # DISPLAY ORDER
-    # ======================================================
-
-    sort_order = Column(
-        Integer,
+    status = Column(
+        String(30),
         nullable=False,
-        default=0,
-        server_default="0",
-    )
-
-    # ======================================================
-    # STATUS
-    # ======================================================
-
-    is_active = Column(
-        Boolean,
-        nullable=False,
-        default=True,
-        server_default="true",
+        default="scheduled",
+        server_default="scheduled",
     )
 
     # ======================================================
@@ -107,13 +92,12 @@ class CompetitionRound(Base):
     # RELATIONSHIPS
     # ======================================================
 
-    competition = relationship(
-        "Competition",
-        back_populates="rounds",
+    competition_round = relationship(
+        "CompetitionRound",
+        back_populates="entries",
     )
 
-    entries = relationship(
-        "CompetitionRoundEntry",
-        back_populates="competition_round",
-        cascade="all, delete-orphan",
+    competition_registration = relationship(
+        "CompetitionRegistration",
+        back_populates="round_entries",
     )

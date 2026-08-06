@@ -142,3 +142,9 @@ class CompetitionRegistration(Base):
         "Participant",
         back_populates="registrations",
     )
+
+    round_entries = relationship(
+        "CompetitionRoundEntry",
+        back_populates="competition_registration",
+        cascade="all, delete-orphan",
+    )

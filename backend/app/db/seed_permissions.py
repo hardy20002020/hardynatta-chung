@@ -50,6 +50,12 @@ PERMISSIONS = [
     "competition_round.update",
     "competition_round.delete",
 
+    # Competition Round Entries
+    "competition_round_entry.create",
+    "competition_round_entry.read",
+    "competition_round_entry.update",
+    "competition_round_entry.delete",
+
     # Competition Registrations
     "competition_registration.create",
     "competition_registration.read",
@@ -78,6 +84,7 @@ ROLE_PERMISSIONS = {
         "competition_group.read",
         "competition_category.read",
         "competition_round.read",
+        "competition_round_entry.read",
         "competition_registration.read",
         "participant.read",
     ],
