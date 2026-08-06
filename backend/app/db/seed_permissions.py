@@ -62,6 +62,12 @@ PERMISSIONS = [
     "competition_round_judge.update",
     "competition_round_judge.delete",
 
+    # Competition Scoring Criteria
+    "competition_scoring_criterion.create",
+    "competition_scoring_criterion.read",
+    "competition_scoring_criterion.update",
+    "competition_scoring_criterion.delete",
+
     # Competition Registrations
     "competition_registration.create",
     "competition_registration.read",
@@ -86,18 +92,25 @@ ROLE_PERMISSIONS = {
 
     "manager": [
         "dashboard.read",
+
         "competition.read",
         "competition_group.read",
         "competition_category.read",
         "competition_round.read",
+
         "competition_round_entry.read",
         "competition_round_judge.read",
+
+        "competition_scoring_criterion.read",
+
         "competition_registration.read",
+
         "participant.read",
     ],
 
     "user": [
         "user.read",
+
         "participant.self.create",
         "participant.self.read",
         "participant.self.update",
