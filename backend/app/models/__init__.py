@@ -12,6 +12,9 @@ from app.models.competition_group import CompetitionGroup
 from app.models.competition_category import (
     CompetitionCategory,
 )
+from app.models.competition_round import (
+    CompetitionRound,
+)
 from app.models.competition_registration import (
     CompetitionRegistration,
 )
@@ -37,6 +40,7 @@ __all__ = [
     "Competition",
     "CompetitionGroup",
     "CompetitionCategory",
+    "CompetitionRound",
     "CompetitionRegistration",
 
     "ChineseSurname",
