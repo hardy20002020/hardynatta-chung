@@ -34,6 +34,7 @@ from app.api.role_permissions import (
 from app.api.audit_logs import (
     router as audit_log_router,
 )
+
 from app.api.competitions import (
     router as competition_router,
 )
@@ -51,6 +52,9 @@ from app.api.competition_round_entries import (
 )
 from app.api.competition_round_judges import (
     router as competition_round_judge_router,
+)
+from app.api.competition_scoring_criteria import (
+    router as competition_scoring_criterion_router,
 )
 from app.api.competition_registrations import (
     router as competition_registration_router,
@@ -151,18 +155,41 @@ app.include_router(permission_router)
 app.include_router(role_permission_router)
 app.include_router(audit_log_router)
 
-app.include_router(competition_router)
-app.include_router(competition_group_router)
-app.include_router(competition_category_router)
-app.include_router(competition_round_router)
+app.include_router(
+    competition_router
+)
+
+app.include_router(
+    competition_group_router
+)
+
+app.include_router(
+    competition_category_router
+)
+
+app.include_router(
+    competition_round_router
+)
+
 app.include_router(
     competition_round_entry_router
 )
+
 app.include_router(
     competition_round_judge_router
 )
-app.include_router(competition_registration_router)
-app.include_router(participant_router)
+
+app.include_router(
+    competition_scoring_criterion_router
+)
+
+app.include_router(
+    competition_registration_router
+)
+
+app.include_router(
+    participant_router
+)
 
 
 # ==========================================================
