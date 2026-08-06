@@ -56,6 +56,12 @@ PERMISSIONS = [
     "competition_round_entry.update",
     "competition_round_entry.delete",
 
+    # Competition Round Judges
+    "competition_round_judge.create",
+    "competition_round_judge.read",
+    "competition_round_judge.update",
+    "competition_round_judge.delete",
+
     # Competition Registrations
     "competition_registration.create",
     "competition_registration.read",
@@ -85,6 +91,7 @@ ROLE_PERMISSIONS = {
         "competition_category.read",
         "competition_round.read",
         "competition_round_entry.read",
+        "competition_round_judge.read",
         "competition_registration.read",
         "participant.read",
     ],
@@ -98,7 +105,9 @@ ROLE_PERMISSIONS = {
 }
 
 
-def seed_permissions(db: Session) -> None:
+def seed_permissions(
+    db: Session,
+) -> None:
     """
     Seed all MAJE permissions.
 

@@ -162,6 +162,13 @@ class User(Base):
     )
 
 
+    competition_round_judges = relationship(
+        "CompetitionRoundJudge",
+        back_populates="user",
+        cascade="all, delete-orphan",
+    )
+
+
     # ==========================================================
     # COMPATIBILITY FOR RESPONSE SCHEMA
     # ==========================================================

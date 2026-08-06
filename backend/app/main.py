@@ -49,6 +49,9 @@ from app.api.competition_rounds import (
 from app.api.competition_round_entries import (
     router as competition_round_entry_router,
 )
+from app.api.competition_round_judges import (
+    router as competition_round_judge_router,
+)
 from app.api.competition_registrations import (
     router as competition_registration_router,
 )
@@ -154,6 +157,9 @@ app.include_router(competition_category_router)
 app.include_router(competition_round_router)
 app.include_router(
     competition_round_entry_router
+)
+app.include_router(
+    competition_round_judge_router
 )
 app.include_router(competition_registration_router)
 app.include_router(participant_router)

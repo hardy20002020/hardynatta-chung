@@ -18,6 +18,9 @@ from app.models.competition_round import (
 from app.models.competition_round_entry import (
     CompetitionRoundEntry,
 )
+from app.models.competition_round_judge import (
+    CompetitionRoundJudge,
+)
 from app.models.competition_registration import (
     CompetitionRegistration,
 )
@@ -45,6 +48,7 @@ __all__ = [
     "CompetitionCategory",
     "CompetitionRound",
     "CompetitionRoundEntry",
+    "CompetitionRoundJudge",
     "CompetitionRegistration",
 
     "ChineseSurname",
