@@ -10,6 +10,7 @@ from pydantic import BaseModel, ConfigDict
 class CompetitionRegistrationCreate(BaseModel):
     competition_id: int
     competition_group_id: int
+    competition_category_id: int
     participant_id: int
     registration_number: str
 
@@ -20,6 +21,7 @@ class CompetitionRegistrationCreate(BaseModel):
 
 class CompetitionRegistrationUpdate(BaseModel):
     competition_group_id: int
+    competition_category_id: int
     registration_number: str
     status: str
 
@@ -33,6 +35,7 @@ class CompetitionRegistrationResponse(BaseModel):
 
     competition_id: int
     competition_group_id: int
+    competition_category_id: int
     participant_id: int
 
     registration_number: str

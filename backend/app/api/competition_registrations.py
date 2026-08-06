@@ -24,6 +24,47 @@ router = APIRouter(
 
 
 # ==========================================================
+# ERROR MAPPING
+# ==========================================================
+
+NOT_FOUND_ERRORS = {
+    "Competition not found",
+    "Competition group not found",
+    "Competition category not found",
+    "Participant not found",
+}
+
+
+CONFLICT_ERRORS = {
+    (
+        "Participant already registered "
+        "for competition category"
+    ),
+    "Registration number already exists",
+}
+
+
+def raise_registration_error(
+    exc: ValueError,
+):
+    detail = str(exc)
+
+    if detail in NOT_FOUND_ERRORS:
+        status_code = 404
+
+    elif detail in CONFLICT_ERRORS:
+        status_code = 409
+
+    else:
+        status_code = 400
+
+    raise HTTPException(
+        status_code=status_code,
+        detail=detail,
+    ) from exc
+
+
+# ==========================================================
 # LIST / FILTER
 # ==========================================================
 
@@ -36,6 +77,7 @@ router = APIRouter(
 def get_competition_registrations(
     competition_id: int | None = None,
     participant_id: int | None = None,
+    competition_category_id: int | None = None,
     db: Session = Depends(get_db),
     current_user=Depends(
         require_permission(
@@ -51,13 +93,15 @@ def get_competition_registrations(
         return service.get_registrations(
             competition_id=competition_id,
             participant_id=participant_id,
+            competition_category_id=(
+                competition_category_id
+            ),
         )
 
     except ValueError as exc:
-        raise HTTPException(
-            status_code=404,
-            detail=str(exc),
-        ) from exc
+        raise_registration_error(
+            exc
+        )
 
 
 # ==========================================================
@@ -127,35 +171,9 @@ def create_competition_registration(
         )
 
     except ValueError as exc:
-        detail = str(exc)
-
-        not_found_errors = {
-            "Competition not found",
-            "Competition group not found",
-            "Participant not found",
-        }
-
-        conflict_errors = {
-            (
-                "Participant already registered "
-                "for competition"
-            ),
-            "Registration number already exists",
-        }
-
-        if detail in not_found_errors:
-            status_code = 404
-
-        elif detail in conflict_errors:
-            status_code = 409
-
-        else:
-            status_code = 400
-
-        raise HTTPException(
-            status_code=status_code,
-            detail=detail,
-        ) from exc
+        raise_registration_error(
+            exc
+        )
 
 
 # ==========================================================
@@ -189,30 +207,9 @@ def update_competition_registration(
         )
 
     except ValueError as exc:
-        detail = str(exc)
-
-        not_found_errors = {
-            "Competition not found",
-            "Competition group not found",
-            "Participant not found",
-        }
-
-        if detail in not_found_errors:
-            status_code = 404
-
-        elif (
-            detail
-            == "Registration number already exists"
-        ):
-            status_code = 409
-
-        else:
-            status_code = 400
-
-        raise HTTPException(
-            status_code=status_code,
-            detail=detail,
-        ) from exc
+        raise_registration_error(
+            exc
+        )
 
     if registration is None:
         raise HTTPException(

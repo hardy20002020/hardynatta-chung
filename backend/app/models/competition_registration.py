@@ -20,9 +20,10 @@ class CompetitionRegistration(Base):
         UniqueConstraint(
             "competition_id",
             "participant_id",
+            "competition_category_id",
             name=(
                 "uq_competition_registrations_"
-                "competition_participant"
+                "competition_participant_category"
             ),
         ),
         UniqueConstraint(
@@ -59,6 +60,17 @@ class CompetitionRegistration(Base):
     competition_group_id = Column(
         Integer,
         ForeignKey("competition_groups.id"),
+        nullable=False,
+        index=True,
+    )
+
+    # ======================================================
+    # COMPETITION CATEGORY
+    # ======================================================
+
+    competition_category_id = Column(
+        Integer,
+        ForeignKey("competition_categories.id"),
         nullable=False,
         index=True,
     )
@@ -118,6 +130,11 @@ class CompetitionRegistration(Base):
 
     competition_group = relationship(
         "CompetitionGroup",
+        back_populates="registrations",
+    )
+
+    competition_category = relationship(
+        "CompetitionCategory",
         back_populates="registrations",
     )
 

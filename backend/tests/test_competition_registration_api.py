@@ -12,6 +12,9 @@ from app.db.session import SessionLocal
 from app.main import app
 from app.models.audit_log import AuditLog
 from app.models.competition import Competition
+from app.models.competition_category import (
+    CompetitionCategory,
+)
 from app.models.competition_group import CompetitionGroup
 from app.models.competition_registration import (
     CompetitionRegistration,
@@ -133,6 +136,31 @@ def create_test_group(
     return group
 
 
+def create_test_category(
+    db,
+    competition_id: int,
+    code: str,
+    name: str,
+):
+    category = CompetitionCategory(
+        competition_id=competition_id,
+        code=code,
+        name=name,
+        description=(
+            "MAJE competition registration "
+            "test category"
+        ),
+        sort_order=10,
+        is_active=True,
+    )
+
+    db.add(category)
+    db.commit()
+    db.refresh(category)
+
+    return category
+
+
 def create_test_participant(
     db,
     user_id: int,
@@ -183,6 +211,17 @@ def cleanup_test_data(
                     CompetitionRegistration
                 ).where(
                     CompetitionRegistration
+                    .competition_id.in_(
+                        competition_ids
+                    )
+                )
+            )
+
+            db.execute(
+                delete(
+                    CompetitionCategory
+                ).where(
+                    CompetitionCategory
                     .competition_id.in_(
                         competition_ids
                     )
@@ -319,6 +358,20 @@ def test_admin_competition_registration_crud():
             max_age=25,
         )
 
+        first_category = create_test_category(
+            db,
+            competition.id,
+            "MANDARIN",
+            "Mandarin",
+        )
+
+        second_category = create_test_category(
+            db,
+            competition.id,
+            "HOKKIEN",
+            "Hokkien",
+        )
+
         participant = create_test_participant(
             db,
             participant_user.id,
@@ -348,6 +401,9 @@ def test_admin_competition_registration_crud():
                 "competition_group_id": (
                     first_group.id
                 ),
+                "competition_category_id": (
+                    first_category.id
+                ),
                 "participant_id": (
                     participant.id
                 ),
@@ -369,6 +425,11 @@ def test_admin_competition_registration_crud():
         assert (
             created["competition_group_id"]
             == first_group.id
+        )
+
+        assert (
+            created["competition_category_id"]
+            == first_category.id
         )
 
         assert (
@@ -432,6 +493,9 @@ def test_admin_competition_registration_crud():
                 "competition_group_id": (
                     second_group.id
                 ),
+                "competition_category_id": (
+                    second_category.id
+                ),
                 "registration_number": (
                     updated_number
                 ),
@@ -446,6 +510,11 @@ def test_admin_competition_registration_crud():
         assert (
             updated["competition_group_id"]
             == second_group.id
+        )
+
+        assert (
+            updated["competition_category_id"]
+            == second_category.id
         )
 
         assert (
@@ -546,6 +615,13 @@ def test_filter_registrations_by_competition():
             max_age=30,
         )
 
+        category = create_test_category(
+            db,
+            competition.id,
+            "FILTER-CAT",
+            "Filter Category",
+        )
+
         participant = create_test_participant(
             db,
             participant_user.id,
@@ -559,6 +635,7 @@ def test_filter_registrations_by_competition():
         registration = CompetitionRegistration(
             competition_id=competition.id,
             competition_group_id=group.id,
+            competition_category_id=category.id,
             participant_id=participant.id,
             registration_number=(
                 "FILTER-"
@@ -646,6 +723,13 @@ def test_filter_registrations_by_participant():
             max_age=30,
         )
 
+        category = create_test_category(
+            db,
+            competition.id,
+            "PF-CAT",
+            "Participant Filter Category",
+        )
+
         participant = create_test_participant(
             db,
             participant_user.id,
@@ -659,6 +743,7 @@ def test_filter_registrations_by_participant():
         registration = CompetitionRegistration(
             competition_id=competition.id,
             competition_group_id=group.id,
+            competition_category_id=category.id,
             participant_id=participant.id,
             registration_number=(
                 "PF-"
@@ -690,6 +775,124 @@ def test_filter_registrations_by_participant():
         assert (
             registrations[0]["id"]
             == registration.id
+        )
+
+    finally:
+        cleanup_test_data(
+            db,
+            user_ids,
+            competition_codes,
+        )
+
+        db.close()
+
+
+def test_filter_registrations_by_category():
+    db = SessionLocal()
+
+    user_ids = []
+
+    competition_code = (
+        "TEST-REG-CAT-FILTER-"
+        f"{uuid4().hex[:10].upper()}"
+    )
+
+    competition_codes = [
+        competition_code,
+    ]
+
+    try:
+        admin, token = create_test_user(
+            db,
+            "admin",
+        )
+
+        participant_user, _ = create_test_user(
+            db,
+            "user",
+        )
+
+        user_ids.extend(
+            [
+                admin.id,
+                participant_user.id,
+            ]
+        )
+
+        competition = create_test_competition(
+            db,
+            competition_code,
+        )
+
+        group = create_test_group(
+            db,
+            competition.id,
+            "CF",
+            "Category Filter Group",
+            min_age=10,
+            max_age=30,
+        )
+
+        category = create_test_category(
+            db,
+            competition.id,
+            "CF-CAT",
+            "Category Filter",
+        )
+
+        participant = create_test_participant(
+            db,
+            participant_user.id,
+            date(
+                2005,
+                1,
+                1,
+            ),
+        )
+
+        registration = CompetitionRegistration(
+            competition_id=competition.id,
+            competition_group_id=group.id,
+            competition_category_id=category.id,
+            participant_id=participant.id,
+            registration_number=(
+                "CF-"
+                f"{uuid4().hex[:10].upper()}"
+            ),
+            status="registered",
+        )
+
+        db.add(registration)
+        db.commit()
+        db.refresh(registration)
+
+        response = client.get(
+            (
+                "/competition-registrations/"
+                "?competition_category_id="
+                f"{category.id}"
+            ),
+            headers=authorization_header(
+                token
+            ),
+        )
+
+        assert response.status_code == 200
+
+        registrations = response.json()
+
+        assert len(registrations) == 1
+
+        assert (
+            registrations[0]["id"]
+            == registration.id
+        )
+
+        assert (
+            registrations[0][
+                "competition_category_id"
+            ]
+            == category.id
         )
 
     finally:
@@ -752,6 +955,13 @@ def test_duplicate_participant_registration_is_rejected():
             max_age=30,
         )
 
+        category = create_test_category(
+            db,
+            competition.id,
+            "DUP-PART",
+            "Duplicate Participant Category",
+        )
+
         participant = create_test_participant(
             db,
             participant_user.id,
@@ -772,6 +982,7 @@ def test_duplicate_participant_registration_is_rejected():
             json={
                 "competition_id": competition.id,
                 "competition_group_id": group.id,
+                "competition_category_id": category.id,
                 "participant_id": participant.id,
                 "registration_number": (
                     "DUP-A-"
@@ -788,6 +999,7 @@ def test_duplicate_participant_registration_is_rejected():
             json={
                 "competition_id": competition.id,
                 "competition_group_id": group.id,
+                "competition_category_id": category.id,
                 "participant_id": participant.id,
                 "registration_number": (
                     "DUP-B-"
@@ -860,6 +1072,13 @@ def test_duplicate_registration_number_is_rejected():
             max_age=30,
         )
 
+        category = create_test_category(
+            db,
+            competition.id,
+            "DUP-NUM",
+            "Duplicate Number Category",
+        )
+
         first_participant = create_test_participant(
             db,
             first_user.id,
@@ -895,6 +1114,7 @@ def test_duplicate_registration_number_is_rejected():
             json={
                 "competition_id": competition.id,
                 "competition_group_id": group.id,
+                "competition_category_id": category.id,
                 "participant_id": (
                     first_participant.id
                 ),
@@ -912,6 +1132,7 @@ def test_duplicate_registration_number_is_rejected():
             json={
                 "competition_id": competition.id,
                 "competition_group_id": group.id,
+                "competition_category_id": category.id,
                 "participant_id": (
                     second_participant.id
                 ),
@@ -998,6 +1219,13 @@ def test_group_from_different_competition_is_rejected():
             max_age=30,
         )
 
+        category = create_test_category(
+            db,
+            first_competition.id,
+            "RELATION",
+            "Relation Validation Category",
+        )
+
         participant = create_test_participant(
             db,
             participant_user.id,
@@ -1019,6 +1247,9 @@ def test_group_from_different_competition_is_rejected():
                 ),
                 "competition_group_id": (
                     wrong_group.id
+                ),
+                "competition_category_id": (
+                    category.id
                 ),
                 "participant_id": (
                     participant.id
@@ -1063,6 +1294,7 @@ def test_missing_competition_returns_404():
             json={
                 "competition_id": 2147483647,
                 "competition_group_id": 2147483647,
+                "competition_category_id": 2147483647,
                 "participant_id": 2147483647,
                 "registration_number": "MISSING-COMP",
             },
@@ -1170,6 +1402,13 @@ def test_participant_below_minimum_age_is_rejected():
             max_age=17,
         )
 
+        category = create_test_category(
+            db,
+            competition.id,
+            "AGE-MIN",
+            "Minimum Age Category",
+        )
+
         participant = create_test_participant(
             db,
             participant_user.id,
@@ -1188,6 +1427,7 @@ def test_participant_below_minimum_age_is_rejected():
             json={
                 "competition_id": competition.id,
                 "competition_group_id": group.id,
+                "competition_category_id": category.id,
                 "participant_id": participant.id,
                 "registration_number": (
                     "AGE-MIN-"
@@ -1259,6 +1499,13 @@ def test_participant_at_minimum_age_is_accepted():
             max_age=17,
         )
 
+        category = create_test_category(
+            db,
+            competition.id,
+            "AGE-BOUND",
+            "Age Boundary Category",
+        )
+
         participant = create_test_participant(
             db,
             participant_user.id,
@@ -1277,6 +1524,7 @@ def test_participant_at_minimum_age_is_accepted():
             json={
                 "competition_id": competition.id,
                 "competition_group_id": group.id,
+                "competition_category_id": category.id,
                 "participant_id": participant.id,
                 "registration_number": (
                     "AGE-BOUND-"
@@ -1348,6 +1596,13 @@ def test_participant_above_maximum_age_is_rejected():
             max_age=17,
         )
 
+        category = create_test_category(
+            db,
+            competition.id,
+            "AGE-MAX",
+            "Maximum Age Category",
+        )
+
         participant = create_test_participant(
             db,
             participant_user.id,
@@ -1366,6 +1621,7 @@ def test_participant_above_maximum_age_is_rejected():
             json={
                 "competition_id": competition.id,
                 "competition_group_id": group.id,
+                "competition_category_id": category.id,
                 "participant_id": participant.id,
                 "registration_number": (
                     "AGE-MAX-"
@@ -1433,6 +1689,13 @@ def test_missing_age_reference_date_is_rejected():
             max_age=30,
         )
 
+        category = create_test_category(
+            db,
+            competition.id,
+            "NOREF",
+            "No Reference Date Category",
+        )
+
         participant = create_test_participant(
             db,
             participant_user.id,
@@ -1451,6 +1714,7 @@ def test_missing_age_reference_date_is_rejected():
             json={
                 "competition_id": competition.id,
                 "competition_group_id": group.id,
+                "competition_category_id": category.id,
                 "participant_id": participant.id,
                 "registration_number": (
                     "NOREF-"
@@ -1528,6 +1792,7 @@ def test_manager_cannot_create_registration():
             json={
                 "competition_id": 2147483647,
                 "competition_group_id": 2147483647,
+                "competition_category_id": 2147483647,
                 "participant_id": 2147483647,
                 "registration_number": "FORBIDDEN",
             },
@@ -1577,6 +1842,7 @@ def test_manager_cannot_update_registration():
             ),
             json={
                 "competition_group_id": 2147483647,
+                "competition_category_id": 2147483647,
                 "registration_number": "FORBIDDEN",
                 "status": "confirmed",
             },

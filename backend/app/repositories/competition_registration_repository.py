@@ -13,6 +13,9 @@ class CompetitionRegistrationRepository:
     ):
         self.db = db
 
+    # ======================================================
+    # READ
+    # ======================================================
 
     def get_all(self):
         return (
@@ -23,7 +26,6 @@ class CompetitionRegistrationRepository:
             )
             .all()
         )
-
 
     def get_by_id(
         self,
@@ -38,7 +40,6 @@ class CompetitionRegistrationRepository:
             )
             .first()
         )
-
 
     def get_by_competition(
         self,
@@ -57,7 +58,6 @@ class CompetitionRegistrationRepository:
             .all()
         )
 
-
     def get_by_participant(
         self,
         participant_id: int,
@@ -75,11 +75,28 @@ class CompetitionRegistrationRepository:
             .all()
         )
 
+    def get_by_category(
+        self,
+        competition_category_id: int,
+    ):
+        return (
+            self.db
+            .query(CompetitionRegistration)
+            .filter(
+                CompetitionRegistration.competition_category_id
+                == competition_category_id
+            )
+            .order_by(
+                CompetitionRegistration.id
+            )
+            .all()
+        )
 
-    def get_by_competition_and_participant(
+    def get_by_competition_participant_category(
         self,
         competition_id: int,
         participant_id: int,
+        competition_category_id: int,
     ):
         return (
             self.db
@@ -89,10 +106,11 @@ class CompetitionRegistrationRepository:
                 == competition_id,
                 CompetitionRegistration.participant_id
                 == participant_id,
+                CompetitionRegistration.competition_category_id
+                == competition_category_id,
             )
             .first()
         )
-
 
     def get_by_registration_number(
         self,
@@ -111,6 +129,9 @@ class CompetitionRegistrationRepository:
             .first()
         )
 
+    # ======================================================
+    # CREATE
+    # ======================================================
 
     def create(
         self,
@@ -122,20 +143,30 @@ class CompetitionRegistrationRepository:
 
         return registration
 
+    # ======================================================
+    # UPDATE
+    # ======================================================
 
     def update(
         self,
         registration: CompetitionRegistration,
         competition_group_id: int,
+        competition_category_id: int,
         registration_number: str,
         status: str,
     ):
         registration.competition_group_id = (
             competition_group_id
         )
+
+        registration.competition_category_id = (
+            competition_category_id
+        )
+
         registration.registration_number = (
             registration_number
         )
+
         registration.status = status
 
         self.db.commit()
@@ -143,6 +174,9 @@ class CompetitionRegistrationRepository:
 
         return registration
 
+    # ======================================================
+    # DELETE
+    # ======================================================
 
     def delete(
         self,

@@ -111,3 +111,8 @@ class CompetitionCategory(Base):
         "Competition",
         back_populates="categories",
     )
+
+    registrations = relationship(
+        "CompetitionRegistration",
+        back_populates="competition_category",
+    )
