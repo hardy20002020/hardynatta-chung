@@ -79,6 +79,10 @@ from app.api.competition_registrations import (
     router as competition_registration_router,
 )
 
+from app.api.competition_results import (
+    router as competition_result_router,
+)
+
 from app.api.participants import (
     router as participant_router,
 )
@@ -261,6 +265,10 @@ app.include_router(
 
 app.include_router(
     competition_registration_router
+)
+
+app.include_router(
+    competition_result_router
 )
 
 app.include_router(

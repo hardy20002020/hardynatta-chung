@@ -133,6 +133,14 @@ PERMISSIONS = [
 
 
     # ======================================================
+    # Competition Results
+    # ======================================================
+
+    "competition_result.read",
+    "competition_result.finalize",
+
+
+    # ======================================================
     # Competition Registrations
     # ======================================================
 
@@ -201,6 +209,8 @@ ROLE_PERMISSIONS = {
         "competition_judge_score.read",
 
         "competition_judge_score_detail.read",
+
+        "competition_result.read",
 
         "competition_registration.read",
 
