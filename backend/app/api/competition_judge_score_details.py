@@ -35,9 +35,9 @@ NOT_FOUND_ERRORS = {
     "Competition scoring criterion not found",
 }
 
-
 CONFLICT_ERRORS = {
     "Score detail already exists",
+    "Submitted or locked score cannot be modified",
 }
 
 
@@ -59,7 +59,6 @@ def raise_score_detail_error(
         status_code=status_code,
         detail=detail,
     ) from exc
-
 
 
 # ==========================================================
@@ -98,7 +97,6 @@ def get_competition_judge_score_details(
             competition_scoring_criterion_id
         ),
     )
-
 
 
 # ==========================================================
@@ -141,7 +139,6 @@ def get_competition_judge_score_detail(
     return detail
 
 
-
 # ==========================================================
 # CREATE
 # ==========================================================
@@ -178,7 +175,6 @@ def create_competition_judge_score_detail(
         )
 
 
-
 # ==========================================================
 # UPDATE
 # ==========================================================
@@ -205,10 +201,16 @@ def update_competition_judge_score_detail(
         db
     )
 
-    detail = service.update_detail(
-        detail_id,
-        data,
-    )
+    try:
+        detail = service.update_detail(
+            detail_id,
+            data,
+        )
+
+    except ValueError as exc:
+        raise_score_detail_error(
+            exc
+        )
 
     if detail is None:
         raise HTTPException(
@@ -220,7 +222,6 @@ def update_competition_judge_score_detail(
         )
 
     return detail
-
 
 
 # ==========================================================
@@ -246,9 +247,15 @@ def delete_competition_judge_score_detail(
         db
     )
 
-    deleted = service.delete_detail(
-        detail_id
-    )
+    try:
+        deleted = service.delete_detail(
+            detail_id
+        )
+
+    except ValueError as exc:
+        raise_score_detail_error(
+            exc
+        )
 
     if not deleted:
         raise HTTPException(
@@ -258,7 +265,6 @@ def delete_competition_judge_score_detail(
                 "not found"
             ),
         )
-
 
     return {
         "success": True,

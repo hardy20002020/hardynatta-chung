@@ -67,6 +67,10 @@ from app.api.competition_scoring_criteria import (
     router as competition_scoring_criterion_router,
 )
 
+from app.api.competition_judge_scores import (
+    router as competition_judge_score_router,
+)
+
 from app.api.competition_judge_score_details import (
     router as competition_judge_score_detail_router,
 )
@@ -245,6 +249,10 @@ app.include_router(
 
 app.include_router(
     competition_scoring_criterion_router
+)
+
+app.include_router(
+    competition_judge_score_router
 )
 
 app.include_router(

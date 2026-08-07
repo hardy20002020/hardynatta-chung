@@ -114,6 +114,15 @@ PERMISSIONS = [
 
 
     # ======================================================
+    # Competition Judge Scores
+    # ======================================================
+
+    "competition_judge_score.read",
+    "competition_judge_score.submit",
+    "competition_judge_score.lock",
+
+
+    # ======================================================
     # Competition Judge Score Detail
     # ======================================================
 
@@ -188,6 +197,8 @@ ROLE_PERMISSIONS = {
         "competition_round_judge.read",
 
         "competition_scoring_criterion.read",
+
+        "competition_judge_score.read",
 
         "competition_judge_score_detail.read",
 

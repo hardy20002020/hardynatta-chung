@@ -1,25 +1,20 @@
 from sqlalchemy.orm import Session
 
-
 from app.models.competition_judge_score_detail import (
     CompetitionJudgeScoreDetail,
 )
-
 
 from app.repositories.competition_judge_score_detail_repository import (
     CompetitionJudgeScoreDetailRepository,
 )
 
-
 from app.repositories.competition_judge_score_repository import (
     CompetitionJudgeScoreRepository,
 )
 
-
 from app.repositories.competition_scoring_criterion_repository import (
     CompetitionScoringCriterionRepository,
 )
-
 
 from app.schemas.competition_judge_score_detail import (
     CompetitionJudgeScoreDetailCreate,
@@ -27,9 +22,7 @@ from app.schemas.competition_judge_score_detail import (
 )
 
 
-
 class CompetitionJudgeScoreDetailService:
-
 
     def __init__(
         self,
@@ -54,7 +47,20 @@ class CompetitionJudgeScoreDetailService:
             )
         )
 
+    # ======================================================
+    # EDITABILITY
+    # ======================================================
 
+    def ensure_score_editable(
+        self,
+        judge_score,
+    ):
+
+        if judge_score.status != "draft":
+
+            raise ValueError(
+                "Submitted or locked score cannot be modified"
+            )
 
     # ======================================================
     # READ
@@ -66,12 +72,33 @@ class CompetitionJudgeScoreDetailService:
         competition_scoring_criterion_id: int | None = None,
     ):
 
-        return self.repository.get_all(
-            competition_judge_score_id=competition_judge_score_id,
-            competition_scoring_criterion_id=competition_scoring_criterion_id,
-        )
+        if (
+            competition_judge_score_id is not None
+            and competition_scoring_criterion_id is not None
+        ):
+            detail = (
+                self.repository.get_by_score_criterion(
+                    competition_judge_score_id,
+                    competition_scoring_criterion_id,
+                )
+            )
 
+            if detail is None:
+                return []
 
+            return [detail]
+
+        if competition_judge_score_id is not None:
+            return self.repository.get_by_judge_score(
+                competition_judge_score_id
+            )
+
+        if competition_scoring_criterion_id is not None:
+            return self.repository.get_by_criterion(
+                competition_scoring_criterion_id
+            )
+
+        return self.repository.get_all()
 
     def get_detail_by_id(
         self,
@@ -81,8 +108,6 @@ class CompetitionJudgeScoreDetailService:
         return self.repository.get_by_id(
             detail_id
         )
-
-
 
     # ======================================================
     # CALCULATION
@@ -96,8 +121,6 @@ class CompetitionJudgeScoreDetailService:
 
         return score * weight
 
-
-
     def refresh_total_score(
         self,
         competition_judge_score_id: int,
@@ -109,19 +132,15 @@ class CompetitionJudgeScoreDetailService:
             )
         )
 
-
         if judge_score is None:
 
             return None
-
-
 
         total_score = (
             self.score_repository.calculate_total_score(
                 competition_judge_score_id
             )
         )
-
 
         self.score_repository.update(
             judge_score,
@@ -131,10 +150,7 @@ class CompetitionJudgeScoreDetailService:
             submitted_at=judge_score.submitted_at,
         )
 
-
         return total_score
-
-
 
     # ======================================================
     # CREATE
@@ -145,13 +161,11 @@ class CompetitionJudgeScoreDetailService:
         data: CompetitionJudgeScoreDetailCreate,
     ):
 
-
         judge_score = (
             self.score_repository.get_by_id(
                 data.competition_judge_score_id
             )
         )
-
 
         if judge_score is None:
 
@@ -159,7 +173,9 @@ class CompetitionJudgeScoreDetailService:
                 "Competition judge score not found"
             )
 
-
+        self.ensure_score_editable(
+            judge_score
+        )
 
         criterion = (
             self.criterion_repository.get_by_id(
@@ -167,14 +183,11 @@ class CompetitionJudgeScoreDetailService:
             )
         )
 
-
         if criterion is None:
 
             raise ValueError(
                 "Competition scoring criterion not found"
             )
-
-
 
         existing = (
             self.repository.get_by_score_criterion(
@@ -183,14 +196,11 @@ class CompetitionJudgeScoreDetailService:
             )
         )
 
-
         if existing:
 
             raise ValueError(
                 "Score detail already exists"
             )
-
-
 
         weighted_score = (
             self.calculate_weighted_score(
@@ -198,8 +208,6 @@ class CompetitionJudgeScoreDetailService:
                 criterion.weight,
             )
         )
-
-
 
         detail = CompetitionJudgeScoreDetail(
 
@@ -221,15 +229,11 @@ class CompetitionJudgeScoreDetailService:
 
         )
 
-
-
         result = (
             self.repository.create(
                 detail
             )
         )
-
-
 
         # ==================================================
         # AUTO AGGREGATE PARENT SCORE
@@ -239,11 +243,7 @@ class CompetitionJudgeScoreDetailService:
             data.competition_judge_score_id
         )
 
-
-
         return result
-
-
 
     # ======================================================
     # UPDATE
@@ -255,22 +255,33 @@ class CompetitionJudgeScoreDetailService:
         data: CompetitionJudgeScoreDetailUpdate,
     ):
 
-
         detail = (
             self.repository.get_by_id(
                 detail_id
             )
         )
 
-
         if detail is None:
 
             return None
 
+        judge_score = (
+            self.score_repository.get_by_id(
+                detail.competition_judge_score_id
+            )
+        )
 
+        if judge_score is None:
+
+            raise ValueError(
+                "Competition judge score not found"
+            )
+
+        self.ensure_score_editable(
+            judge_score
+        )
 
         if data.score is not None:
-
 
             criterion = (
                 self.criterion_repository.get_by_id(
@@ -278,9 +289,13 @@ class CompetitionJudgeScoreDetailService:
                 )
             )
 
+            if criterion is None:
+
+                raise ValueError(
+                    "Competition scoring criterion not found"
+                )
 
             detail.score = data.score
-
 
             detail.weighted_score = (
                 self.calculate_weighted_score(
@@ -289,19 +304,13 @@ class CompetitionJudgeScoreDetailService:
                 )
             )
 
-
-
         if data.source is not None:
 
             detail.source = data.source
 
-
-
         if data.notes is not None:
 
             detail.notes = data.notes
-
-
 
         self.repository.db.commit()
 
@@ -309,17 +318,11 @@ class CompetitionJudgeScoreDetailService:
             detail
         )
 
-
-
         self.refresh_total_score(
             detail.competition_judge_score_id
         )
 
-
-
         return detail
-
-
 
     # ======================================================
     # DELETE
@@ -330,24 +333,35 @@ class CompetitionJudgeScoreDetailService:
         detail_id: int,
     ):
 
-
         detail = (
             self.repository.get_by_id(
                 detail_id
             )
         )
 
-
         if detail is None:
 
             return False
-
-
 
         score_id = (
             detail.competition_judge_score_id
         )
 
+        judge_score = (
+            self.score_repository.get_by_id(
+                score_id
+            )
+        )
+
+        if judge_score is None:
+
+            raise ValueError(
+                "Competition judge score not found"
+            )
+
+        self.ensure_score_editable(
+            judge_score
+        )
 
         result = (
             self.repository.delete(
@@ -355,10 +369,8 @@ class CompetitionJudgeScoreDetailService:
             )
         )
 
-
         self.refresh_total_score(
             score_id
         )
-
 
         return result
