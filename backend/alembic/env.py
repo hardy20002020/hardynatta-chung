@@ -8,7 +8,15 @@ from alembic import context
 from app.core.config import settings
 from app.db.base import Base
 
-# Load semua model agar Alembic mengenali metadata
+# ==========================================================
+# LOAD ALL MODELS
+# ==========================================================
+#
+# Semua model harus di-import agar seluruh SQLAlchemy
+# metadata terdaftar sebelum Alembic menjalankan
+# autogenerate.
+# ==========================================================
+
 from app.models import (
     User,
     Province,
@@ -24,6 +32,10 @@ from app.models import (
     CompetitionRound,
     CompetitionRoundEntry,
     CompetitionRoundJudge,
+    CompetitionJudgeScore,
+    CompetitionScoringCriterion,
+    CompetitionJudgeScoreDetail,
+    CompetitionResult,
     CompetitionRegistration,
     ChineseSurname,
     ChineseSurnameAlias,
@@ -32,25 +44,43 @@ from app.models import (
 )
 
 
-# Alembic Config object
+# ==========================================================
+# ALEMBIC CONFIG
+# ==========================================================
+
 config = context.config
 
 
-# Set database URL dari settings
+# ==========================================================
+# DATABASE URL
+# ==========================================================
+
 config.set_main_option(
     "sqlalchemy.url",
     settings.DATABASE_URL,
 )
 
 
-# Setup logging
+# ==========================================================
+# LOGGING
+# ==========================================================
+
 if config.config_file_name is not None:
-    fileConfig(config.config_file_name)
+    fileConfig(
+        config.config_file_name
+    )
 
 
-# Metadata untuk autogenerate migration
+# ==========================================================
+# SQLALCHEMY METADATA
+# ==========================================================
+
 target_metadata = Base.metadata
 
+
+# ==========================================================
+# OFFLINE MIGRATION
+# ==========================================================
 
 def run_migrations_offline() -> None:
     """
@@ -73,6 +103,10 @@ def run_migrations_offline() -> None:
     with context.begin_transaction():
         context.run_migrations()
 
+
+# ==========================================================
+# ONLINE MIGRATION
+# ==========================================================
 
 def run_migrations_online() -> None:
     """
@@ -97,6 +131,10 @@ def run_migrations_online() -> None:
         with context.begin_transaction():
             context.run_migrations()
 
+
+# ==========================================================
+# EXECUTION
+# ==========================================================
 
 if context.is_offline_mode():
     run_migrations_offline()

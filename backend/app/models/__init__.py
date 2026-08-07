@@ -30,6 +30,9 @@ from app.models.competition_scoring_criterion import (
 from app.models.competition_judge_score_detail import (
     CompetitionJudgeScoreDetail,
 )
+from app.models.competition_result import (
+    CompetitionResult,
+)
 from app.models.competition_registration import (
     CompetitionRegistration,
 )
@@ -61,6 +64,7 @@ __all__ = [
     "CompetitionJudgeScore",
     "CompetitionScoringCriterion",
     "CompetitionJudgeScoreDetail",
+    "CompetitionResult",
     "CompetitionRegistration",
 
     "ChineseSurname",

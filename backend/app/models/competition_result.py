@@ -5,6 +5,7 @@ from sqlalchemy import (
     DateTime,
     ForeignKey,
     Integer,
+    Numeric,
     String,
     UniqueConstraint,
 )
@@ -13,17 +14,16 @@ from sqlalchemy.orm import relationship
 from app.db.base import Base
 
 
-class CompetitionRoundEntry(Base):
+class CompetitionResult(Base):
 
-    __tablename__ = "competition_round_entries"
+    __tablename__ = "competition_results"
 
     __table_args__ = (
         UniqueConstraint(
-            "competition_round_id",
-            "competition_registration_id",
+            "competition_round_entry_id",
             name=(
-                "uq_competition_round_entries_"
-                "round_registration"
+                "uq_competition_results_"
+                "round_entry"
             ),
         ),
     )
@@ -35,41 +35,54 @@ class CompetitionRoundEntry(Base):
     )
 
     # ======================================================
-    # COMPETITION ROUND
+    # ROUND ENTRY
     # ======================================================
 
-    competition_round_id = Column(
+    competition_round_entry_id = Column(
         Integer,
-        ForeignKey("competition_rounds.id"),
+        ForeignKey(
+            "competition_round_entries.id"
+        ),
         nullable=False,
         index=True,
     )
 
     # ======================================================
-    # COMPETITION REGISTRATION
+    # OFFICIAL RESULT SNAPSHOT
     # ======================================================
 
-    competition_registration_id = Column(
-        Integer,
-        ForeignKey("competition_registrations.id"),
+    final_score = Column(
+        Numeric(10, 4),
         nullable=False,
-        index=True,
     )
 
-    # ======================================================
-    # PERFORMANCE
-    # ======================================================
-
-    performance_order = Column(
+    rank = Column(
         Integer,
-        nullable=True,
+        nullable=False,
     )
 
     status = Column(
         String(30),
         nullable=False,
-        default="scheduled",
-        server_default="scheduled",
+        default="finalized",
+        server_default="finalized",
+    )
+
+    # ======================================================
+    # FINALIZATION
+    # ======================================================
+
+    finalized_by_user_id = Column(
+        Integer,
+        ForeignKey("users.id"),
+        nullable=False,
+        index=True,
+    )
+
+    finalized_at = Column(
+        DateTime,
+        nullable=False,
+        default=datetime.utcnow,
     )
 
     # ======================================================
@@ -78,40 +91,27 @@ class CompetitionRoundEntry(Base):
 
     created_at = Column(
         DateTime,
-        default=datetime.utcnow,
         nullable=False,
+        default=datetime.utcnow,
     )
 
     updated_at = Column(
         DateTime,
+        nullable=False,
         default=datetime.utcnow,
         onupdate=datetime.utcnow,
-        nullable=False,
     )
 
     # ======================================================
     # RELATIONSHIPS
     # ======================================================
 
-    competition_round = relationship(
-        "CompetitionRound",
-        back_populates="entries",
+    competition_round_entry = relationship(
+        "CompetitionRoundEntry",
+        back_populates="result",
     )
 
-    competition_registration = relationship(
-        "CompetitionRegistration",
-        back_populates="round_entries",
-    )
-
-    judge_scores = relationship(
-        "CompetitionJudgeScore",
-        back_populates="competition_round_entry",
-        cascade="all, delete-orphan",
-    )
-
-    result = relationship(
-        "CompetitionResult",
-        back_populates="competition_round_entry",
-        uselist=False,
-        cascade="all, delete-orphan",
+    finalized_by_user = relationship(
+        "User",
+        back_populates="competition_results_finalized",
     )

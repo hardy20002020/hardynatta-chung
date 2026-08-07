@@ -168,6 +168,11 @@ class User(Base):
         cascade="all, delete-orphan",
     )
 
+    competition_results_finalized = relationship(
+        "CompetitionResult",
+        back_populates="finalized_by_user",
+    )
+
 
     # ==========================================================
     # COMPATIBILITY FOR RESPONSE SCHEMA
