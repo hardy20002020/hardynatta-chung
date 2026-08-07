@@ -36,6 +36,7 @@ from app.models import (
     CompetitionScoringCriterion,
     CompetitionJudgeScoreDetail,
     CompetitionResult,
+    CompetitionResultPublication,
     CompetitionRegistration,
     ChineseSurname,
     ChineseSurnameAlias,

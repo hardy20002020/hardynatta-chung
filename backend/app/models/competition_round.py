@@ -129,3 +129,10 @@ class CompetitionRound(Base):
         back_populates="competition_round",
         cascade="all, delete-orphan",
     )
+
+    result_publication = relationship(
+        "CompetitionResultPublication",
+        back_populates="competition_round",
+        uselist=False,
+        cascade="all, delete-orphan",
+    )

@@ -138,6 +138,8 @@ PERMISSIONS = [
 
     "competition_result.read",
     "competition_result.finalize",
+    "competition_result.approve",
+    "competition_result.publish",
 
 
     # ======================================================

@@ -173,6 +173,24 @@ class User(Base):
         back_populates="finalized_by_user",
     )
 
+    competition_result_publications_approved = relationship(
+        "CompetitionResultPublication",
+        foreign_keys=(
+            "CompetitionResultPublication."
+            "approved_by_user_id"
+        ),
+        back_populates="approved_by_user",
+    )
+
+    competition_result_publications_published = relationship(
+        "CompetitionResultPublication",
+        foreign_keys=(
+            "CompetitionResultPublication."
+            "published_by_user_id"
+        ),
+        back_populates="published_by_user",
+    )
+
 
     # ==========================================================
     # COMPATIBILITY FOR RESPONSE SCHEMA
