@@ -1,0 +1,40 @@
+........................................................................ [ 44%]
+........................................................................ [ 88%]
+..................                                                       [100%]
+============================== warnings summary ===============================
+tests/test_account_lockout_security.py: 1 warning
+tests/test_competition_api.py: 8 warnings
+tests/test_competition_category_api.py: 39 warnings
+tests/test_competition_group_api.py: 36 warnings
+tests/test_competition_judge_score_api.py: 35 warnings
+tests/test_competition_ranking_service.py: 98 warnings
+tests/test_competition_registration_api.py: 111 warnings
+tests/test_competition_result_api.py: 316 warnings
+tests/test_competition_result_finalization_service.py: 160 warnings
+tests/test_competition_round_api.py: 39 warnings
+tests/test_competition_round_entry_api.py: 79 warnings
+tests/test_competition_round_judge_api.py: 27 warnings
+tests/test_inactive_account_security.py: 1 warning
+tests/test_logout_security.py: 2 warnings
+tests/test_participant_api.py: 14 warnings
+tests/test_password_change_security.py: 3 warnings
+tests/test_refresh_token_invalid_expired.py: 1 warning
+tests/test_refresh_token_security.py: 3 warnings
+tests/test_session_metadata_security.py: 2 warnings
+  C:\Users\USER\Projects\hardynatta-chung\backend\.venv\Lib\site-packages\sqlalchemy\sql\schema.py:3624: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    return util.wrap_callable(lambda ctx: fn(), fn)  # type: ignore
+
+tests/test_competition_judge_score_api.py::test_competition_judge_score_submit_workflow
+  C:\Users\USER\Projects\hardynatta-chung\backend\app\services\competition_judge_score_service.py:188: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    submitted_at=datetime.utcnow(),
+
+tests/test_competition_result_api.py::test_admin_can_finalize_and_read_results
+tests/test_competition_result_api.py::test_second_finalization_returns_conflict
+tests/test_competition_result_api.py::test_manager_can_read_but_cannot_finalize
+tests/test_competition_result_finalization_service.py::test_finalize_round_persists_official_results
+tests/test_competition_result_finalization_service.py::test_finalize_round_rejects_second_finalization
+  C:\Users\USER\Projects\hardynatta-chung\backend\app\services\competition_result_finalization_service.py:106: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    finalized_at = datetime.utcnow()
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+162 passed, 981 warnings in 62.34s (0:01:02)
