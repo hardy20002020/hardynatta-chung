@@ -1,4 +1,4 @@
-from datetime import datetime
+from app.core.time import utcnow
 
 from sqlalchemy.orm import Session
 
@@ -103,7 +103,7 @@ class CompetitionResultFinalizationService:
             # CREATE OFFICIAL SNAPSHOT
             # ==================================================
 
-            finalized_at = datetime.utcnow()
+            finalized_at = utcnow()
 
             results = []
 

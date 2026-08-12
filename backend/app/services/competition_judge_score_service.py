@@ -1,4 +1,4 @@
-from datetime import datetime
+from app.core.time import utcnow
 
 from sqlalchemy.orm import Session
 
@@ -185,5 +185,5 @@ class CompetitionJudgeScoreService:
             total_score=total_score,
             status="submitted",
             notes=judge_score.notes,
-            submitted_at=datetime.utcnow(),
+            submitted_at=utcnow(),
         )

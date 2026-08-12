@@ -1,4 +1,4 @@
-from datetime import datetime
+from app.core.time import utcnow
 
 from sqlalchemy.orm import Session
 
@@ -160,7 +160,7 @@ class CompetitionResultPublicationService:
             # CREATE APPROVAL
             # ==================================================
 
-            approved_at = datetime.utcnow()
+            approved_at = utcnow()
 
             publication = (
                 CompetitionResultPublication(
@@ -262,7 +262,7 @@ class CompetitionResultPublicationService:
             # PUBLISH
             # ==================================================
 
-            published_at = datetime.utcnow()
+            published_at = utcnow()
 
             publication.status = "published"
 
