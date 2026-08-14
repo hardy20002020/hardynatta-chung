@@ -490,7 +490,81 @@ GAP-001-F005 defines the controlled assessment requirements for this area. Asses
 
 # 79. GAP-001-F006
 
-GAP-001-F006 defines the controlled assessment requirements for this area. Assessment must compare the approved baseline with current implementation and objective evidence, record dependencies and risk, and identify a measurable remediation or validation condition where a gap exists.
+GAP-001-F006 — ADR Gap Remediation Record
+
+Status: REMEDIATED — VALIDATION PENDING
+
+Original Finding:
+
+docs/adr previously contained README.md only. Closure requires ADR records for material architectural decisions.
+
+Remediation:
+
+The ADR governance gap has been remediated by establishing formal Architecture Decision Records for material MAJE architectural decisions.
+
+The following ADRs have been created and committed to the repository:
+
+- ADR-001 — PostgreSQL Architecture Decision
+- ADR-002 — Authentication Strategy
+
+ADR-001 records the approved PostgreSQL database architecture decision.
+
+ADR-002 records the approved JWT-based token authentication strategy and Role-Based Access Control (RBAC) authorization model.
+
+Both ADRs are governed through the applicable ADR governance framework and provide traceability between architecture baseline, architectural decision, implementation, validation, and evidence.
+
+Repository Location:
+
+docs/adr/
+
+Validation Evidence:
+
+ADR-001 and ADR-002 are present in the repository and have been committed to Git.
+
+ADR-002 commit:
+
+592eae5 — docs(adr): add authentication strategy
+
+ADR-001 commit:
+
+b8a4dba — docs(adr): add PostgreSQL architecture decision
+
+The current branch is:
+
+feature/docs-refactor-v2
+
+The branch has been synchronized with:
+
+origin/feature/docs-refactor-v2
+
+Validation Result:
+
+The repository contains formal ADR records for material architectural decisions covered by the current remediation scope.
+
+The ADR records establish controlled decision traceability and are no longer represented only by the previous README-only state.
+
+Closure Assessment:
+
+GAP-001-F006 remediation is substantively complete.
+
+Formal closure remains subject to final assessment confirmation and controlled update of the GAP-001 status.
+
+Closure Decision:
+
+PENDING FORMAL CLOSURE
+
+Closure Basis:
+
+- Material architectural decisions are now formally recorded.
+- ADR-001 has been committed and pushed.
+- ADR-002 has been committed and pushed.
+- The working tree is clean.
+- The feature branch is synchronized with origin.
+- ADR-002 explicitly records that it contributes to GAP-001 remediation but does not independently constitute GAP-001 closure.
+
+Next Action:
+
+Perform final GAP-001-F006 validation and formally record the closure decision.
 
 ---
 
