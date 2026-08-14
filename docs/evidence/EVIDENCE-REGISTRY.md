@@ -6,8 +6,8 @@
 | --- | --- |
 | Document ID | EVD-001 |
 | Document Name | Evidence Registry |
-| Version | 1.0 |
-| Status | Draft |
+| Version | 1.1 |
+| Status | Controlled |
 | Owner | HARDYNATTA CHUNG |
 | Domain | Evidence |
 | Primary Assessment | GAP-001 |
@@ -40,6 +40,7 @@ Evidence harus:
 | Evidence ID | Evidence | Source | Result | Status |
 | --- | --- | --- | --- | --- |
 | EVIDENCE-001 | Backend Test Validation | `docs/evidence/backend/EVIDENCE-001_backend_test_validation.txt` | 162 passed, 0 failed, 0 errors, 981 warnings | Valid |
+| EVIDENCE-002 | Backend Docker Test Validation - Current | `docs/evidence/backend/EVIDENCE-002_backend_docker_test_validation.txt` | 162 passed, 0 failed, 0 errors, 0 warnings | Valid - Current |
 
 ---
 
@@ -51,20 +52,25 @@ Evidence harus:
 
 ```text
 DATABASE_URL='postgresql+psycopg://postgres:postgres@localhost:5432/maje' ../backend/.venv/Scripts/python.exe -m pytest -q
+
 Result
 162 passed, 981 warnings in 62.34s (0:01:02)
 Evidence Location
+
 docs/evidence/backend/EVIDENCE-001_backend_test_validation.txt
+
 Validation Interpretation
 
-EVIDENCE-001 establishes objective evidence that the current backend automated test suite completed successfully with:
+EVIDENCE-001 establishes objective evidence that the historical backend automated test suite completed successfully with:
 
 162 passed;
 0 failed;
 0 errors;
 981 warnings.
 
-The warnings do not invalidate the successful test result, but they remain technical debt requiring future remediation.
+The warnings did not invalidate the successful test result, but they remain technical debt requiring future remediation.
+
+EVIDENCE-001 is retained as historical evidence and is not the current Docker validation baseline.
 
 5. Evidence Classification
 
@@ -160,16 +166,40 @@ Therefore evidence must remain traceable to the underlying implementation and go
 
 Current registered evidence:
 
-EVIDENCE-001
-Backend Test Validation
+EVIDENCE-002
+Backend Docker Test Validation
 162 passed
 0 failed
 0 errors
-981 warnings
+0 warnings
 
 Status:
 
-VALID
+VALID - CURRENT
+
+Historical evidence remains preserved as EVIDENCE-001.
+
+EVIDENCE-002 represents the current backend automated test validation executed inside the Docker Compose backend container.
+
+Execution context:
+
+Docker Compose backend container
+
+Command:
+
+docker compose exec backend python -m pytest -q
+
+Validation date:
+
+2026-08-14 09:31:08
+
+Git commit:
+
+474a478
+
+Git branch:
+
+feature/docs-refactor-v2
 12. Future Evidence
 
 Future evidence may include:
@@ -213,16 +243,22 @@ result integrity;
 assessment linkage;
 auditability;
 revision history.
+
+Evidence records must remain immutable as historical records once superseded.
+
+New validation executions must be registered as new evidence records or controlled revisions where appropriate.
+
 15. Revision History
 Version	Date	Change
 1.0	2026-08-10	Initial Evidence Registry establishing controlled objective evidence registration for GAP-001
+1.1	2026-08-14	Added EVIDENCE-002 Docker test validation and established current evidence baseline
 Final Statement
 
 EVD-001 — Evidence Registry
 
 HARDYNATTA CHUNG Enterprise Software Engineering Ecosystem
 
-Version 1.0 — Governed Evidence Registry
+Version 1.1 — Controlled Evidence Registry
 
 Evidence transforms implementation activity into auditable enterprise knowledge.
 
@@ -239,3 +275,14 @@ Assessment
 Remediation
 ↓
 Closure
+
+EVIDENCE-001 remains preserved as historical backend test evidence.
+
+EVIDENCE-002 is the current backend Docker test validation baseline and provides objective evidence that the backend automated test suite completed successfully with:
+
+162 passed
+0 failed
+0 errors
+0 warnings
+
+This evidence supports assessment and remediation activities but does not, by itself, constitute formal closure of any GAP-001 finding.

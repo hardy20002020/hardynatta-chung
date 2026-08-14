@@ -1,0 +1,17 @@
+EVIDENCE-002 — Backend Docker Test Validation
+
+Validation Date: 2026-08-14 09:31:08
+Git Commit: 474a478
+Git Branch: feature/docs-refactor-v2
+
+Execution Context:
+Docker Compose backend container
+
+Command:
+docker compose exec backend python -m pytest -q
+
+Result:
+........................................................................ [ 44%]
+........................................................................ [ 88%]
+..................                                                       [100%]
+162 passed in 63.71s (0:01:03)
