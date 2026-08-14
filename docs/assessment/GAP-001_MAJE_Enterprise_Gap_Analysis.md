@@ -492,7 +492,7 @@ GAP-001-F005 defines the controlled assessment requirements for this area. Asses
 
 GAP-001-F006 — ADR Gap Remediation Record
 
-Status: REMEDIATED — VALIDATION PENDING
+Status: CLOSED
 
 Original Finding:
 
@@ -506,6 +506,11 @@ The following ADRs have been created and committed to the repository:
 
 - ADR-001 — PostgreSQL Architecture Decision
 - ADR-002 — Authentication Strategy
+
+Repository Paths:
+
+- docs/adr/ADR-001_use_postgresql.md
+- docs/adr/ADR-002_authentication_strategy.md
 
 ADR-001 records the approved PostgreSQL database architecture decision.
 
@@ -545,26 +550,48 @@ The ADR records establish controlled decision traceability and are no longer rep
 
 Closure Assessment:
 
-GAP-001-F006 remediation is substantively complete.
+GAP-001-F006 remediation has been completed and independently validated against the current repository state.
 
-Formal closure remains subject to final assessment confirmation and controlled update of the GAP-001 status.
+Validation confirmed that the required ADR records exist, are tracked by Git, are associated with identifiable commits, and are present in the synchronized feature branch.
+
+Validation evidence:
+
+- ADR-001 exists at docs/adr/ADR-001_use_postgresql.md.
+- ADR-002 exists at docs/adr/ADR-002_authentication_strategy.md.
+- ADR-001 is recorded in commit b8a4dba.
+- ADR-002 is recorded in commit 592eae5.
+- Both ADRs are tracked by Git.
+- The feature/docs-refactor-v2 branch is synchronized with origin.
+- The working tree was clean after the remediation commits.
+- Git provenance was directly validated using git show --name-status.
 
 Closure Decision:
 
-PENDING FORMAL CLOSURE
+CLOSED
 
 Closure Basis:
 
-- Material architectural decisions are now formally recorded.
-- ADR-001 has been committed and pushed.
-- ADR-002 has been committed and pushed.
-- The working tree is clean.
-- The feature branch is synchronized with origin.
-- ADR-002 explicitly records that it contributes to GAP-001 remediation but does not independently constitute GAP-001 closure.
+GAP-001-F006 closure criteria have been satisfied.
 
-Next Action:
+Material architectural decisions within the assessed remediation scope are now formally documented through controlled Architecture Decision Records.
 
-Perform final GAP-001-F006 validation and formally record the closure decision.
+The ADR records provide traceability between architecture baseline, architectural decision, implementation, validation, and evidence.
+
+The original ADR finding is preserved as historical assessment context and has not been rewritten.
+
+Closure Evidence:
+
+- ADR-001 — docs/adr/ADR-001_use_postgresql.md
+- ADR-002 — docs/adr/ADR-002_authentication_strategy.md
+- Commit b8a4dba — docs(adr): add PostgreSQL architecture decision
+- Commit 592eae5 — docs(adr): add authentication strategy
+- Commit 74530c0 — docs(assessment): record GAP-001-F006 ADR remediation
+
+Closure Limitation:
+
+This closure applies specifically to GAP-001-F006 and does not constitute closure of GAP-001 as a whole or of any other GAP-001 finding.
+
+Future material architectural decisions remain subject to the applicable ADR governance requirements.
 
 ---
 
