@@ -1,0 +1,177 @@
+EVIDENCE-005 — Backup & Restore Validation
+
+Validation Date: 2026-08-15
+Git Baseline Commit: bd054dd
+Git Branch: feature/docs-refactor-v2
+
+Validation Scope:
+GAP-001-F009 — Backup and Recovery Evidence Gap
+
+Finding:
+GAP-001-F009 requires executable backup and restore validation
+with retained objective evidence.
+
+Validation Method:
+A PostgreSQL custom-format backup was created from the current
+MAJE database and restored into an isolated validation database.
+The restored database was then validated for restore success,
+table inventory, migration state, database accessibility, and
+row-count consistency.
+
+Validation Results:
+
+1. PostgreSQL Backup Tool Validation
+
+PASS — PostgreSQL backup and restore utilities were available:
+
+pg_dump (PostgreSQL) 17.10
+pg_restore (PostgreSQL) 17.10
+
+2. Source Database Validation
+
+PASS — Source database was accessible:
+
+Database:
+maje
+
+User:
+postgres
+
+Public table count:
+25
+
+Current Alembic migration:
+b7d725ec3821 (head)
+
+3. Backup Creation
+
+PASS — PostgreSQL custom-format backup was successfully created
+from the current MAJE database.
+
+The backup artifact was generated locally for the execution of this
+validation and was subsequently removed after successful isolated
+restore validation. The binary backup artifact is not retained as a
+Git-tracked repository artifact.
+
+Backup format:
+CUSTOM
+
+Backup size at validation time:
+113 KB
+
+Command:
+docker compose exec -T postgres \
+  pg_dump -U postgres -d maje --format=custom \
+  > docs/evidence/backend/f009-work/maje_f009_backup.dump
+
+4. Backup Archive Validation
+
+PASS — pg_restore successfully inspected the backup archive.
+
+TOC Entries:
+327
+
+Dump format:
+CUSTOM
+
+PostgreSQL version:
+17.10
+
+Command:
+docker compose exec -T postgres \
+  pg_restore --list \
+  < docs/evidence/backend/f009-work/maje_f009_backup.dump
+
+5. Restore Execution
+
+PASS — Backup was restored into an isolated validation database:
+
+maje_f009_restore
+
+Restore completed with:
+--exit-on-error
+
+Command:
+docker compose exec -T postgres \
+  pg_restore \
+  -U postgres \
+  -d maje_f009_restore \
+  --exit-on-error \
+  < docs/evidence/backend/f009-work/maje_f009_backup.dump
+
+6. Restored Database Structure
+
+PASS — Restored database contains:
+
+25 public tables
+
+The source and restored table inventories were compared using
+diff and produced no differences.
+
+7. Migration State Validation
+
+PASS — Source and restored databases both report:
+
+b7d725ec3821
+
+Source:
+docker compose exec backend alembic current
+
+Restore:
+SELECT version_num FROM alembic_version;
+
+8. Restored Database Accessibility
+
+PASS — Restored database was accessible and queryable.
+
+Validation confirmed:
+
+current_database = maje_f009_restore
+current_user = postgres
+
+9. Row Count Validation
+
+PASS — Row counts were generated for all 25 public tables in both
+source and restored databases.
+
+Source:
+25 tables
+
+Restore:
+25 tables
+
+The source and restored row-count inventories were compared using
+diff and produced no differences.
+
+Result:
+25/25 table row counts matched.
+
+10. Recovery Integrity Assessment
+
+PASS — The executed validation demonstrates that the PostgreSQL
+backup can be restored into an isolated database with matching
+table inventory, matching Alembic migration state, and matching
+row counts across all 25 public tables.
+
+Overall Result:
+PASS
+
+Readiness Status:
+VALID — F009 CLOSURE CANDIDATE
+
+Limitations:
+
+This evidence validates PostgreSQL backup and restore execution
+against the current MAJE development database.
+
+It does not claim production disaster recovery readiness,
+automated scheduled backups, off-site backup retention,
+encrypted backup storage, point-in-time recovery, replication,
+defined production RTO/RPO compliance, or production infrastructure
+recovery.
+
+The validation database maje_f009_restore is an isolated recovery
+test database and is not a production database.
+
+Formal closure of GAP-001-F009 remains subject to the GAP-001
+assessment record and controlled Evidence Registry update.

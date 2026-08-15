@@ -876,6 +876,151 @@ Future production releases remain subject to applicable deployment, release, sec
 
 # 82. GAP-001-F009
 
+## GAP-001-F009 — Backup and Recovery Evidence Gap Remediation Record
+
+Status: CLOSED
+
+Original Finding:
+
+GAP-001-F009 identified a backup and recovery evidence gap. Backup and restore capability could not be considered fully evidenced from repository inventory alone. Closure requires executable backup and restore validation with retained objective evidence.
+
+Remediation:
+
+The backup and recovery evidence gap has been remediated by executing a PostgreSQL custom-format backup, validating the backup archive, restoring the backup into an isolated recovery database, and validating restored database structure, migration state, accessibility, and row-count consistency.
+
+Backup and recovery evidence:
+
+EVIDENCE-005 — Backup & Restore Validation
+
+Evidence Location:
+
+docs/evidence/EVIDENCE-005_backup_restore_validation.txt
+
+The controlled Evidence Registry records EVIDENCE-005 as:
+
+EVD-001 — Evidence Registry, Version 1.4
+
+Closure Assessment:
+
+The remediation was assessed against the original GAP-001-F009 closure requirements.
+
+1. Backup Utility Validation
+
+PASS — PostgreSQL pg_dump and pg_restore utilities were available at version 17.10.
+
+2. Source Database Validation
+
+PASS — The MAJE source database was accessible and contained 25 public tables.
+
+3. Backup Creation
+
+PASS — A PostgreSQL custom-format backup was successfully created from the MAJE database.
+
+4. Backup Archive Validation
+
+PASS — The backup archive was successfully inspected using pg_restore and contained 327 TOC entries.
+
+5. Restore Execution
+
+PASS — The backup was restored successfully into the isolated validation database:
+
+maje_f009_restore
+
+The restore was executed with --exit-on-error.
+
+6. Restored Database Structure
+
+PASS — The restored database contained 25 public tables and the source and restored table inventories produced no differences.
+
+7. Migration State Validation
+
+PASS — Source and restored databases reported the same Alembic migration state:
+
+b7d725ec3821
+
+8. Restored Database Accessibility
+
+PASS — The restored database was accessible and queryable.
+
+9. Row Count Validation
+
+PASS — Row counts were generated for all 25 public tables and the source and restored row-count inventories produced no differences.
+
+Result:
+
+25/25 table row counts matched.
+
+10. Recovery Integrity Validation
+
+PASS — The executed validation demonstrated successful restoration of the PostgreSQL backup with matching table inventory, matching migration state, database accessibility, and matching row counts across all 25 public tables.
+
+Closure Criteria:
+
+All identified GAP-001-F009 closure requirements within the assessed scope have been satisfied:
+
+- executable PostgreSQL backup validation established;
+- backup archive integrity validated;
+- executable restore validation established;
+- isolated recovery database established;
+- restored database accessibility validated;
+- restored table inventory validated;
+- migration state consistency validated;
+- 25/25 table row counts validated;
+- EVIDENCE-005 registered in EVD-001 Version 1.4.
+
+Closure Decision:
+
+CLOSED
+
+Closure Basis:
+
+GAP-001-F009 closure criteria have been satisfied based on direct execution and objective backup and restore evidence.
+
+EVIDENCE-005 provides the primary validation evidence for the backup and recovery control baseline. EVD-001 Version 1.4 provides the controlled evidence registry and governance baseline.
+
+The validated recovery chain is:
+
+Source Database
+↓
+PostgreSQL Backup
+↓
+Backup Archive Validation
+↓
+Isolated Restore
+↓
+Structure Validation
+↓
+Migration Validation
+↓
+Row Count Validation
+↓
+Recovery Evidence
+↓
+Assessment
+↓
+Closure
+
+Closure Evidence:
+
+- EVIDENCE-005 — docs/evidence/EVIDENCE-005_backup_restore_validation.txt
+- EVD-001 Version 1.4 — docs/evidence/EVIDENCE-REGISTRY.md
+- GAP-001 Assessment — docs/assessment/GAP-001_MAJE_Enterprise_Gap_Analysis.md
+
+Closure Limitation:
+
+This closure applies specifically to GAP-001-F009 and does not constitute closure of GAP-001 as a whole or of any other GAP-001 finding.
+
+This closure validates executable backup and restore capability against the current MAJE database. It does not constitute production disaster recovery readiness.
+
+Automated scheduled backups, off-site backup retention, encrypted backup storage, point-in-time recovery, replication, defined production RTO/RPO compliance, and production infrastructure recovery remain outside the validation executed here.
+
+The validation database maje_f009_restore was an isolated recovery test database and is not a production database.
+
+Future production backup and recovery operations remain subject to applicable database, security, deployment, monitoring, recovery, and evidence governance requirements.
+
+---
+
+
 GAP-001-F009 defines the controlled assessment requirements for this area. Assessment must compare the approved baseline with current implementation and objective evidence, record dependencies and risk, and identify a measurable remediation or validation condition where a gap exists.
 
 ---
