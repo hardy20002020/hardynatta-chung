@@ -1,0 +1,177 @@
+EVIDENCE-004 — Production Readiness Validation
+
+Validation Date: 2026-08-15
+Git Baseline Commit: 1523d4e
+Git Branch: feature/docs-refactor-v2
+Validation State: 1523d4e plus uncommitted production compose remediation
+
+Validation Scope:
+GAP-001-F008 — Production Readiness Gap
+
+Finding:
+GAP-001-F008 requires an explicit production-readiness checklist
+and executable validation evidence.
+
+Validation Method:
+Production configuration, Docker Compose production definition,
+backend automated tests, security configuration tests, database
+migration state, runtime health, container health, image build,
+and configuration loading were validated directly.
+
+Validation Results:
+
+1. Backend Automated Test Validation
+
+PASS — Docker Compose backend test suite completed successfully:
+
+162 passed
+0 failed
+0 errors
+
+Command:
+docker compose exec backend python -m pytest -q
+
+2. Production Configuration Security Validation
+
+PASS — Production configuration security tests completed successfully:
+
+14 passed
+0 failed
+0 errors
+
+Command:
+docker compose exec backend python -m pytest -q tests/test_config_security.py
+
+3. Production Environment Configuration
+
+PASS — Production configuration loaded successfully with:
+
+ENVIRONMENT=production
+DEBUG=False
+
+Command:
+docker compose --env-file backend/.env.production \
+  -f docker-compose.prod.yml \
+  run --rm --no-deps backend \
+  python -c "from app.core.config import settings; print('PASS: production configuration loaded'); print(f'ENVIRONMENT={settings.ENVIRONMENT}'); print(f'DEBUG={settings.DEBUG}')"
+
+4. Production JWT Secret Validation
+
+PASS — Production JWT secret placeholder was removed and replaced
+with a locally generated secret.
+
+The secret value was not printed and is not registered as repository
+evidence.
+
+5. Production Secret Repository Protection
+
+PASS — backend/.env.production is excluded from Git tracking through
+the applicable repository ignore rules.
+
+Production secret values are not registered as source-controlled
+artifacts.
+
+6. Production Compose Configuration
+
+PASS — docker-compose.prod.yml resolves successfully using the
+production environment file.
+
+Command:
+docker compose --env-file backend/.env.production \
+  -f docker-compose.prod.yml \
+  config --quiet
+
+7. PostgreSQL Production Configuration
+
+PASS — PostgreSQL production service resolves with explicit:
+
+POSTGRES_DB
+POSTGRES_USER
+POSTGRES_PASSWORD
+
+The PostgreSQL service no longer receives the complete backend
+production environment through env_file.
+
+8. Backend Image Build
+
+PASS — production backend image was successfully built.
+
+Image:
+hardynatta-chung-backend:latest
+
+Command:
+docker compose --env-file backend/.env.production \
+  -f docker-compose.prod.yml \
+  build backend
+
+9. Database Migration State
+
+PASS — current PostgreSQL migration state was validated.
+
+Alembic Current:
+b7d725ec3821 (head)
+
+Command:
+docker compose exec backend alembic current
+
+10. Runtime Health
+
+PASS — backend health endpoint returned HTTP 200 with:
+
+{"success":true,"message":"MAJE healthy"}
+
+Security response headers were also present in the validated response.
+
+11. Current Docker Runtime Health
+
+PASS — backend and PostgreSQL containers in the current development
+Compose runtime were reported healthy during validation.
+
+This result is runtime health evidence for the current Docker
+environment and is not claimed as production-environment runtime
+validation.
+
+12. Production Readiness Configuration Controls
+
+PASS — repository contains governed production deployment
+documentation through:
+
+docs/architecture/ARC-008_Deployment_Architecture.md
+docs/hc/HC-008_Deployment_Governance.md
+docs/hc/HC-014_Release_Management.md
+docs/hc/HC-009_Monitoring_Observability_Governance.md
+
+Overall Result:
+PASS
+
+Assessment:
+The repository contains an explicit production-readiness control
+baseline supported by executable validation evidence.
+
+The validated baseline demonstrates successful automated testing,
+production configuration loading, production security configuration
+validation, Docker Compose production configuration validity, backend
+image buildability, migration state visibility, and current Docker
+runtime health.
+
+Production runtime health itself is not claimed because the
+production Compose stack was not started as part of this validation.
+
+Readiness Status:
+VALID — F008 CLOSURE CANDIDATE
+
+Limitations:
+
+This evidence does not claim that MAJE has been deployed to a real
+production environment.
+
+Actual production deployment approval, production infrastructure
+provisioning, production traffic validation, external DNS/TLS
+validation, production monitoring integration, and operational
+acceptance remain outside the validation executed here.
+
+Backup and restore execution is also not claimed by this evidence
+and remains subject to GAP-001-F009.
+
+Formal closure of GAP-001-F008 remains subject to the GAP-001
+assessment record and controlled Evidence Registry update.
