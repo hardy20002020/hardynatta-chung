@@ -1027,7 +1027,184 @@ GAP-001-F009 defines the controlled assessment requirements for this area. Asses
 
 # 83. GAP-001-F010
 
-GAP-001-F010 defines the controlled assessment requirements for this area. Assessment must compare the approved baseline with current implementation and objective evidence, record dependencies and risk, and identify a measurable remediation or validation condition where a gap exists.
+## GAP-001-F010 — Observability Validation Gap Remediation Record
+
+Status: CLOSED
+
+Original Finding:
+
+GAP-001-F010 identified an observability validation gap. Observability capability could not be considered fully evidenced from repository inventory and architecture documentation alone. Closure requires executable validation of applicable telemetry, health checks, logging, and operational evidence within the assessed implementation scope.
+
+Remediation:
+
+The observability validation gap has been remediated by validating the currently implemented MAJE runtime observability controls through direct Docker runtime execution and automated backend testing.
+
+The validation covered application health, container health, PostgreSQL health, runtime startup visibility, request/access logging, centralized HTTP exception logging, and automated backend test execution.
+
+Observability evidence:
+
+EVIDENCE-006 — Observability Validation
+
+Evidence Location:
+
+docs/evidence/EVIDENCE-006_observability_validation.txt
+
+The controlled Evidence Registry records EVIDENCE-006 as:
+
+EVD-001 — Evidence Registry, Version 1.5
+
+Closure Assessment:
+
+The remediation was assessed against the original GAP-001-F010 closure requirements.
+
+1. Backend Container Health
+
+PASS — The MAJE backend Docker container reported:
+
+healthy
+
+2. PostgreSQL Container Health
+
+PASS — The MAJE PostgreSQL Docker container reported:
+
+healthy
+
+3. Application Health Endpoint
+
+PASS — The MAJE health endpoint returned:
+
+HTTP 200 OK
+
+Response:
+
+{"success":true,"message":"MAJE healthy"}
+
+4. Runtime Startup Validation
+
+PASS — Docker runtime logs confirmed successful application startup, including:
+
+Started server process
+Application startup complete
+Uvicorn running on http://0.0.0.0:8000
+
+5. Runtime Request Logging
+
+PASS — Runtime request logging was observed through the active application server.
+
+Observed example:
+
+INFO: 172.19.0.1:52148 - "GET /health HTTP/1.1" 200 OK
+
+6. Centralized HTTP Exception Logging
+
+PASS — The centralized exception handler emitted application-level logging for HTTP exceptions.
+
+Observed example:
+
+HTTP exception: method=GET path=/users/not-a-valid-uuid status=403
+
+A second validation also produced:
+
+HTTP exception: method=POST path=/users/ status=403
+
+7. Automated Backend Validation
+
+PASS — Backend automated testing completed successfully with:
+
+162 passed
+0 failed
+
+Execution time:
+
+64.67s
+
+8. Observability Implementation Boundary
+
+PASS — The current implementation scope was explicitly validated and documented.
+
+Validated controls include:
+
+- application health endpoint;
+- Docker backend health;
+- PostgreSQL health;
+- runtime startup visibility;
+- runtime request/access logging;
+- centralized HTTP exception logging;
+- automated backend validation.
+
+The following capabilities remain outside the currently validated runtime implementation scope:
+
+- dedicated metrics platform;
+- Prometheus;
+- Grafana;
+- OpenTelemetry;
+- distributed tracing platform;
+- external alerting platform;
+- dedicated operational observability dashboard;
+- external incident management integration.
+
+These capabilities are not claimed as implemented by this closure.
+
+Closure Criteria:
+
+All GAP-001-F010 closure requirements within the assessed current implementation scope have been satisfied:
+
+- executable health validation established;
+- backend container health validated;
+- PostgreSQL health validated;
+- runtime startup validated;
+- runtime request logging validated;
+- centralized HTTP exception logging validated;
+- automated backend validation completed;
+- observability implementation boundaries explicitly documented;
+- EVIDENCE-006 registered in EVD-001 Version 1.5.
+
+Closure Decision:
+
+CLOSED
+
+Closure Basis:
+
+GAP-001-F010 closure criteria have been satisfied based on direct Docker runtime validation, application runtime evidence, centralized exception logging validation, and automated backend testing.
+
+EVIDENCE-006 provides the primary validation evidence for the currently implemented observability control baseline. EVD-001 Version 1.5 provides the controlled evidence registry and governance baseline.
+
+The validated observability chain is:
+
+Implementation
+↓
+Runtime Health
+↓
+Request Logging
+↓
+Exception Logging
+↓
+Automated Validation
+↓
+Observability Evidence
+↓
+Assessment
+↓
+Closure
+
+Closure Evidence:
+
+- EVIDENCE-006 — docs/evidence/EVIDENCE-006_observability_validation.txt
+- EVD-001 Version 1.5 — docs/evidence/EVIDENCE-REGISTRY.md
+- GAP-001 Assessment — docs/assessment/GAP-001_MAJE_Enterprise_Gap_Analysis.md
+
+Closure Limitation:
+
+This closure applies specifically to GAP-001-F010 and does not constitute closure of GAP-001 as a whole or of any other GAP-001 finding.
+
+This closure validates the currently implemented MAJE observability controls within the assessed scope. It does not constitute full enterprise observability platform implementation.
+
+Dedicated metrics infrastructure, distributed tracing, external alerting, operational dashboard deployment, external incident management integration, production monitoring integration, and production observability infrastructure remain outside this validation.
+
+Future observability enhancements remain subject to applicable architecture, security, deployment, monitoring, testing, and evidence governance requirements.
+
+---
+
 
 ---
 

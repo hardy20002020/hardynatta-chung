@@ -1,0 +1,273 @@
+EVIDENCE-006 — Observability Validation
+
+Document ID:
+EVIDENCE-006
+
+Title:
+Observability Validation
+
+Project:
+MAJE Platform
+
+Assessment Finding:
+GAP-001-F010 — Observability Validation Gap
+
+Purpose:
+This evidence record documents executable validation of the currently
+implemented MAJE observability controls, including application health,
+container health, runtime request logging, centralized HTTP exception
+logging, and automated backend validation.
+
+Validation Scope:
+
+- backend application health endpoint;
+- Docker backend health status;
+- PostgreSQL container health status;
+- runtime application startup;
+- runtime request/access logging;
+- centralized HTTP exception logging;
+- backend automated test validation;
+- observability implementation boundary.
+
+Validation Environment:
+
+- MAJE backend running in Docker Compose;
+- PostgreSQL 17 container;
+- backend exposed on localhost:8000;
+- branch: feature/docs-refactor-v2.
+
+1. Backend Container Validation
+
+Command:
+
+docker compose ps
+
+Observed Result:
+
+hardynatta-backend:
+Up 7 minutes (healthy)
+
+maje-postgres:
+Up 26 minutes (healthy)
+
+Result:
+
+PASS
+
+2. Docker Health Status Validation
+
+Commands:
+
+docker inspect --format='{{.State.Health.Status}}' hardynatta-backend
+
+docker inspect --format='{{.State.Health.Status}}' maje-postgres
+
+Observed Result:
+
+Backend:
+healthy
+
+PostgreSQL:
+healthy
+
+Result:
+
+PASS
+
+3. Application Health Endpoint Validation
+
+Command:
+
+curl -i http://localhost:8000/health
+
+Observed Result:
+
+HTTP/1.1 200 OK
+
+Response:
+
+{"success":true,"message":"MAJE healthy"}
+
+Security response headers were present, including:
+
+x-content-type-options: nosniff
+x-frame-options: DENY
+referrer-policy: no-referrer
+permissions-policy: camera=(), microphone=(), geolocation=()
+content-security-policy: default-src 'none'; frame-ancestors 'none'
+
+Result:
+
+PASS
+
+4. Runtime Startup Validation
+
+Command:
+
+docker logs --tail 50 hardynatta-backend
+
+Observed startup sequence:
+
+Started server process
+Waiting for application startup
+Application startup complete
+Uvicorn running on http://0.0.0.0:8000
+
+Runtime health requests were successfully recorded.
+
+Result:
+
+PASS
+
+5. Runtime Request Logging Validation
+
+Observed runtime log:
+
+INFO: 172.19.0.1:52148 - "GET /health HTTP/1.1" 200 OK
+
+The backend runtime therefore provides request-level access logging
+through the active Uvicorn runtime.
+
+Result:
+
+PASS
+
+6. Centralized HTTP Exception Logging Validation
+
+Validation request:
+
+curl -i http://localhost:8000/users/not-a-valid-uuid
+
+Observed response:
+
+HTTP/1.1 403 Forbidden
+
+Observed application log:
+
+HTTP exception: method=GET path=/users/not-a-valid-uuid status=403
+
+The centralized exception handler successfully emitted an application
+log entry for the HTTP exception.
+
+Result:
+
+PASS
+
+7. Additional HTTP Exception Logging Validation
+
+Validation request:
+
+curl -i -X POST http://localhost:8000/users/ \
+  -H "Content-Type: application/json" \
+  -d '{}'
+
+Observed response:
+
+HTTP/1.1 403 Forbidden
+
+Observed application log:
+
+HTTP exception: method=POST path=/users/ status=403
+
+Result:
+
+PASS
+
+8. Automated Backend Test Validation
+
+Command:
+
+docker compose exec backend sh -lc 'python -m pytest -q'
+
+Observed Result:
+
+162 passed in 64.67s (0:01:04)
+
+Result:
+
+PASS
+
+9. Observability Implementation Validation
+
+The current implementation provides validated evidence for:
+
+- application health endpoint;
+- Docker health checks;
+- PostgreSQL health checks;
+- runtime startup visibility;
+- runtime request/access logging;
+- centralized HTTP exception logging;
+- automated backend validation.
+
+Result:
+
+PASS
+
+10. Observability Boundary
+
+The following capabilities are defined by the broader observability
+architecture but are not claimed as currently implemented runtime
+platform capabilities by this evidence record:
+
+- dedicated metrics platform;
+- Prometheus;
+- Grafana;
+- OpenTelemetry;
+- distributed tracing platform;
+- external alerting platform;
+- dedicated operational observability dashboard;
+- external incident management integration.
+
+These capabilities remain outside the current validation scope and are
+not required to be represented as implemented merely because they are
+defined by ARC-009 or HC-009.
+
+11. Evidence Assessment
+
+The executed validation demonstrates that the current MAJE runtime has
+working health signals, container health validation, request logging,
+centralized HTTP exception logging, and automated backend validation.
+
+The evidence therefore establishes an objective baseline for the
+currently implemented observability controls.
+
+This evidence does not claim full enterprise observability platform
+implementation.
+
+12. Conclusion
+
+PASS
+
+The currently implemented observability controls within the assessed
+scope were successfully validated through direct runtime execution and
+automated testing.
+
+EVIDENCE-006 provides objective evidence for the closure assessment
+of GAP-001-F010.
+
+EVIDENCE-006 does not independently constitute finding closure.
+Formal closure remains subject to the GAP-001 assessment record and
+closure decision.
+
+13. Evidence Limitations
+
+This validation does not constitute implementation or production
+validation of a dedicated metrics, tracing, alerting, or dashboard
+platform.
+
+Production monitoring integration, external alert routing, operational
+dashboard deployment, incident management integration, and production
+observability infrastructure remain outside this validation scope.
+
+Future observability enhancements remain subject to applicable
+architecture, security, deployment, monitoring, testing, and evidence
+governance requirements.
+
+Evidence Status:
+
+Valid — F010 Closure Candidate
+
+Evidence Registry:
+
+EVD-001 — Evidence Registry
+Target Version: 1.5

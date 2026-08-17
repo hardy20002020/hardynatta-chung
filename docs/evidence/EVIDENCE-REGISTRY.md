@@ -44,6 +44,7 @@ Evidence harus:
 | EVIDENCE-003 | Evidence Publication and Traceability Validation | `docs/evidence/EVIDENCE-003_evidence_publication_traceability_validation.txt` | PASS — controlled index, naming, provenance, retention, Git traceability, and assessment linkage validated for GAP-001-F007 | Valid - F007 Closure Candidate |
 | EVIDENCE-004 | Production Readiness Validation | `docs/evidence/EVIDENCE-004_production_readiness_validation.txt` | PASS — production configuration, security validation, Compose configuration, image build, migration state, and current runtime health validated for GAP-001-F008 | Valid - F008 Closure Candidate |
 | EVIDENCE-005 | Backup & Restore Validation | `docs/evidence/EVIDENCE-005_backup_restore_validation.txt` | PASS — PostgreSQL backup, isolated restore, table inventory, migration state, database accessibility, and 25/25 row-count consistency validated for GAP-001-F009 | Valid - F009 Closure Candidate |
+| EVIDENCE-006 | Observability Validation | `docs/evidence/EVIDENCE-006_observability_validation.txt` | PASS — application health, Docker health, PostgreSQL health, runtime request logging, centralized HTTP exception logging, and 162/162 backend test validation completed for GAP-001-F010 | Valid - F010 Closure Candidate |
 
 ---
 
@@ -373,13 +374,14 @@ Version	Date	Change
 1.2 2026-08-15      Added EVIDENCE-003 Evidence Publication and Traceability Validation for GAP-001-F007
 1.3 2026-08-15      Added EVIDENCE-004 Production Readiness Validation for GAP-001-F008
 1.4 2026-08-15      Added EVIDENCE-005 Backup & Restore Validation for GAP-001-F009
+1.5 2026-08-17      Added EVIDENCE-006 Observability Validation for GAP-001-F010
 Final Statement
 
 EVD-001 — Evidence Registry
 
 HARDYNATTA CHUNG Enterprise Software Engineering Ecosystem
 
-Version 1.4 — Controlled Evidence Registry
+Version 1.5 — Controlled Evidence Registry
 
 Evidence transforms implementation activity into auditable enterprise knowledge.
 
