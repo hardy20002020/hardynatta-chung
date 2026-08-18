@@ -6,7 +6,7 @@
 | --- | --- |
 | Document ID | EVD-001 |
 | Document Name | Evidence Registry |
-| Version | 1.3 |
+| Version | 1.6 |
 | Status | Controlled |
 | Owner | HARDYNATTA CHUNG |
 | Domain | Evidence |
@@ -45,6 +45,7 @@ Evidence harus:
 | EVIDENCE-004 | Production Readiness Validation | `docs/evidence/EVIDENCE-004_production_readiness_validation.txt` | PASS — production configuration, security validation, Compose configuration, image build, migration state, and current runtime health validated for GAP-001-F008 | Valid - F008 Closure Candidate |
 | EVIDENCE-005 | Backup & Restore Validation | `docs/evidence/EVIDENCE-005_backup_restore_validation.txt` | PASS — PostgreSQL backup, isolated restore, table inventory, migration state, database accessibility, and 25/25 row-count consistency validated for GAP-001-F009 | Valid - F009 Closure Candidate |
 | EVIDENCE-006 | Observability Validation | `docs/evidence/EVIDENCE-006_observability_validation.txt` | PASS — application health, Docker health, PostgreSQL health, runtime request logging, centralized HTTP exception logging, and 162/162 backend test validation completed for GAP-001-F010 | Valid - F010 Closure Candidate |
+| EVIDENCE-007 | Security Validation | `docs/evidence/EVIDENCE-007_security_validation.txt` | PASS — Docker-based security validation completed with 10/10 selected security tests passing for GAP-001-F011 | Valid - F011 Closure Candidate |
 
 ---
 
@@ -375,13 +376,14 @@ Version	Date	Change
 1.3 2026-08-15      Added EVIDENCE-004 Production Readiness Validation for GAP-001-F008
 1.4 2026-08-15      Added EVIDENCE-005 Backup & Restore Validation for GAP-001-F009
 1.5 2026-08-17      Added EVIDENCE-006 Observability Validation for GAP-001-F010
+1.6 2026-08-18      Added EVIDENCE-007 Security Validation for GAP-001-F011
 Final Statement
 
 EVD-001 — Evidence Registry
 
 HARDYNATTA CHUNG Enterprise Software Engineering Ecosystem
 
-Version 1.5 — Controlled Evidence Registry
+Version 1.6 — Controlled Evidence Registry
 
 Evidence transforms implementation activity into auditable enterprise knowledge.
 

@@ -1210,7 +1210,207 @@ Future observability enhancements remain subject to applicable architecture, sec
 
 # 84. GAP-001-F011
 
-GAP-001-F011 defines the controlled assessment requirements for this area. Assessment must compare the approved baseline with current implementation and objective evidence, record dependencies and risk, and identify a measurable remediation or validation condition where a gap exists.
+## GAP-001-F011 — Security Evidence Gap Remediation Record
+
+Status: CLOSED
+
+Original Finding:
+
+GAP-001-F011 identified a security evidence gap. Security controls could
+not be considered fully evidenced from implementation inventory and
+architecture documentation alone. Closure requires mapping applicable
+security requirements to the implemented controls and reproducible
+validation evidence.
+
+Remediation:
+
+The security evidence gap has been remediated by mapping the currently
+implemented MAJE authentication, authorization, token security, RBAC,
+refresh-token, revocation, and security audit controls to executable
+security validation tests.
+
+The validation was executed within the MAJE Docker runtime environment
+using the existing security test suite.
+
+Security Evidence:
+
+EVIDENCE-007 — Security Validation
+
+Evidence Location:
+
+docs/evidence/EVIDENCE-007_security_validation.txt
+
+Registry:
+
+EVD-001 — Evidence Registry, Version 1.6
+
+Security Control Mapping:
+
+1. Access Token Security
+
+Implementation Area:
+MAJE JWT access-token validation and token lifecycle controls.
+
+Validation Evidence:
+tests/test_access_token_security.py
+
+Validated controls include malformed token rejection, missing subject
+rejection, invalid subject rejection, token-version enforcement,
+revoked-token rejection, and expired-token rejection.
+
+Result:
+
+PASS
+
+2. RBAC Authorization
+
+Implementation Area:
+MAJE role-based authorization and permission enforcement.
+
+Validation Evidence:
+tests/test_rbac_security.py
+
+Validated controls include permission denial for unauthorized users,
+protection against forged privileged JWT claims, and successful
+permission-based access for an authorized manager role.
+
+Result:
+
+PASS
+
+3. Refresh Token Security
+
+Implementation Area:
+MAJE refresh-token rotation, reuse detection, session-family
+revocation, and security audit controls.
+
+Validation Evidence:
+tests/test_refresh_token_security.py
+
+Validated controls include refresh-token rotation, reuse detection,
+family revocation, revoked session state, and security audit event
+generation.
+
+Result:
+
+PASS
+
+4. Reproducible Security Validation
+
+Validation Environment:
+
+- MAJE backend Docker container: hardynatta-backend;
+- application path: /app;
+- PostgreSQL 17 runtime;
+- branch: feature/docs-refactor-v2;
+- Git baseline commit: fc08926.
+
+Validation Command:
+
+docker exec hardynatta-backend sh -c "cd /app && PYTHONPATH=/app pytest -q tests/test_access_token_security.py tests/test_rbac_security.py tests/test_refresh_token_security.py"
+
+Observed Result:
+
+10 passed in 3.66s
+
+Result:
+
+PASS
+
+5. Security Evidence Assessment
+
+The executed validation provides reproducible evidence linking the
+implemented security control areas to executable security tests.
+
+Validated control areas include:
+
+- access-token validation;
+- token expiry;
+- token revocation and version enforcement;
+- RBAC authorization;
+- forged privileged claim protection;
+- refresh-token rotation;
+- refresh-token reuse detection;
+- session-family revocation;
+- security audit event validation.
+
+Result:
+
+PASS
+
+6. Dependencies and Risk
+
+The validation depends on the existing MAJE authentication, authorization,
+database, session, and security test implementation.
+
+The evidence validates the selected implemented controls within the
+assessed scope. It does not constitute independent penetration testing,
+external security certification, or full enterprise security assurance.
+
+Those activities remain subject to applicable security, architecture,
+deployment, testing, governance, and production requirements.
+
+Closure Criteria:
+
+All GAP-001-F011 closure requirements within the assessed current
+implementation scope have been satisfied:
+
+- security requirements mapped to implemented security controls;
+- access-token security validation completed;
+- RBAC authorization validation completed;
+- refresh-token security validation completed;
+- revocation and token-version controls validated;
+- security audit event validation completed;
+- reproducible Docker-based security validation completed;
+- EVIDENCE-007 created and linked to GAP-001-F011;
+- EVD-001 updated to Version 1.6.
+
+Closure Decision:
+
+CLOSED
+
+Closure Basis:
+
+GAP-001-F011 closure criteria have been satisfied based on the
+implemented security control mapping and reproducible Docker-based
+automated security validation.
+
+EVIDENCE-007 provides the primary validation evidence for the currently
+implemented security control baseline. EVD-001 Version 1.6 provides the
+controlled evidence registry and governance baseline.
+
+The validated security evidence chain is:
+
+Implementation
+↓
+Security Control Mapping
+↓
+Automated Security Validation
+↓
+Security Evidence
+↓
+Assessment
+↓
+Closure
+
+Closure Evidence:
+
+- EVIDENCE-007 — docs/evidence/EVIDENCE-007_security_validation.txt
+- EVD-001 Version 1.6 — docs/evidence/EVIDENCE-REGISTRY.md
+- GAP-001 Assessment — docs/assessment/GAP-001_MAJE_Enterprise_Gap_Analysis.md
+
+Closure Limitation:
+
+This closure applies specifically to GAP-001-F011 and does not constitute
+closure of GAP-001 as a whole or of any other GAP-001 finding.
+
+This closure validates the currently implemented security controls within
+the assessed scope. It does not constitute full enterprise security
+assurance, independent penetration testing, external certification, or
+production security certification.
+
+Future security enhancements remain subject to applicable architecture,
+security, deployment, testing, and evidence governance requirements.
 
 ---
 

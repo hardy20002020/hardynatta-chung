@@ -1,0 +1,174 @@
+EVIDENCE-007 — Security Validation
+
+Document ID:
+EVIDENCE-007
+
+Title:
+Security Validation
+
+Project:
+MAJE Platform
+
+Assessment Finding:
+GAP-001-F011 — Security Evidence Gap
+
+Purpose:
+This evidence record documents reproducible validation of the currently
+implemented MAJE security controls through automated security testing
+executed within the Docker runtime environment.
+
+Validation Scope:
+
+- access token validation;
+- malformed and invalid access token rejection;
+- access token expiry validation;
+- access token revocation and token version validation;
+- RBAC permission enforcement;
+- forged privileged JWT claim rejection;
+- authorized role permission validation;
+- refresh token rotation;
+- refresh token reuse detection;
+- refresh token family revocation;
+- security audit event validation.
+
+Validation Environment:
+
+- MAJE backend running in Docker Compose;
+- PostgreSQL 17 container;
+- backend container: hardynatta-backend;
+- application path: /app;
+- branch: feature/docs-refactor-v2;
+- Git baseline commit: fc08926.
+
+1. Access Token Security Validation
+
+Test File:
+
+tests/test_access_token_security.py
+
+Validated controls include:
+
+- malformed access token rejection;
+- access token without subject rejection;
+- access token with invalid subject rejection;
+- access token without token version rejection;
+- revoked access token version rejection;
+- expired access token rejection.
+
+Result:
+
+PASS
+
+2. RBAC Security Validation
+
+Test File:
+
+tests/test_rbac_security.py
+
+Validated controls include:
+
+- unauthorized dashboard access rejection;
+- permission enforcement;
+- forged admin JWT claim rejection;
+- manager permission-based dashboard access.
+
+Result:
+
+PASS
+
+3. Refresh Token Security Validation
+
+Test File:
+
+tests/test_refresh_token_security.py
+
+Validated controls include:
+
+- refresh token rotation;
+- refresh token reuse detection;
+- refresh token family revocation;
+- revoked session state validation;
+- security audit event validation.
+
+Result:
+
+PASS
+
+4. Reproducible Automated Security Validation
+
+Command:
+
+docker exec hardynatta-backend sh -c "cd /app && PYTHONPATH=/app pytest -q tests/test_access_token_security.py tests/test_rbac_security.py tests/test_refresh_token_security.py"
+
+Observed Result:
+
+..........                                                               [100%]
+10 passed in 3.66s
+
+Result:
+
+PASS
+
+5. Security Evidence Mapping
+
+The executed security tests provide objective validation evidence for
+the following currently implemented security control areas:
+
+- JWT access token validation;
+- token expiry validation;
+- token revocation and version enforcement;
+- RBAC authorization;
+- protection against forged privileged JWT claims;
+- refresh token rotation;
+- refresh token reuse detection;
+- session family revocation;
+- security audit event generation.
+
+Result:
+
+PASS
+
+6. Validation Boundary
+
+This evidence record validates the security controls represented by the
+executed test suite.
+
+It does not claim that all possible enterprise security controls,
+external security monitoring platforms, penetration testing, or
+independent security certification have been implemented or completed.
+
+Those activities remain subject to applicable security, architecture,
+deployment, testing, governance, and production requirements.
+
+7. Evidence Assessment
+
+The executed Docker-based security validation demonstrates that the
+currently implemented MAJE authentication, authorization, token
+security, RBAC, refresh-token, revocation, and security audit controls
+are reproducibly testable within the assessed runtime environment.
+
+The validation therefore provides objective security evidence for the
+currently implemented controls within the defined scope.
+
+This evidence does not independently constitute finding closure.
+Formal closure remains subject to the GAP-001 assessment record and
+Evidence Registry update.
+
+8. Conclusion
+
+PASS
+
+The selected MAJE security controls were successfully validated through
+reproducible automated testing in the Docker runtime environment.
+
+EVIDENCE-007 provides objective evidence for the closure assessment
+of GAP-001-F011.
+
+Evidence Status:
+
+Valid — F011 Closure Candidate
+
+Evidence Registry:
+
+EVD-001 — Evidence Registry
+Target Version: 1.6
