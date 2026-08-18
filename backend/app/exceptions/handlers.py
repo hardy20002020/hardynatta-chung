@@ -1,6 +1,7 @@
 import logging
 
 from fastapi import FastAPI, HTTPException, Request
+from fastapi.encoders import jsonable_encoder
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 
@@ -11,6 +12,10 @@ logger = logging.getLogger("maje.exceptions")
 
 
 def register_exception_handlers(app: FastAPI):
+
+    # ==========================================================
+    # HTTP EXCEPTION
+    # ==========================================================
 
     @app.exception_handler(HTTPException)
     async def http_exception_handler(
@@ -33,6 +38,11 @@ def register_exception_handlers(app: FastAPI):
             ).model_dump(),
         )
 
+
+    # ==========================================================
+    # REQUEST VALIDATION EXCEPTION
+    # ==========================================================
+
     @app.exception_handler(RequestValidationError)
     async def validation_exception_handler(
         request: Request,
@@ -50,9 +60,16 @@ def register_exception_handlers(app: FastAPI):
                 success=False,
                 message="Validation failed",
                 data=None,
-                errors=exc.errors(),
+                errors=jsonable_encoder(
+                    exc.errors()
+                ),
             ).model_dump(),
         )
+
+
+    # ==========================================================
+    # GENERAL EXCEPTION
+    # ==========================================================
 
     @app.exception_handler(Exception)
     async def general_exception_handler(

@@ -10,8 +10,8 @@ export default function UserForm({
     name: "",
     email: "",
     password: "",
-    province_id: 1,
-    city_id: 1,
+    province_id: null,
+    city_id: null,
   });
 
   useEffect(() => {
@@ -20,16 +20,16 @@ export default function UserForm({
         name: initialData.name ?? "",
         email: initialData.email ?? "",
         password: "",
-        province_id: initialData.province_id ?? 1,
-        city_id: initialData.city_id ?? 1,
+        province_id: initialData.province_id ?? null,
+        city_id: initialData.city_id ?? null,
       });
     } else {
       setFormData({
         name: "",
         email: "",
         password: "",
-        province_id: 1,
-        city_id: 1,
+        province_id: null,
+        city_id: null,
       });
     }
   }, [initialData]);
@@ -41,7 +41,7 @@ export default function UserForm({
       ...prev,
       [name]:
         name === "province_id" || name === "city_id"
-          ? Number(value)
+          ? value === "" ? null : Number(value)
           : value,
     }));
   }
@@ -140,7 +140,6 @@ export default function UserForm({
             name="province_id"
             value={formData.province_id}
             onChange={handleChange}
-            required
             min={1}
             style={{
               width: "100%",
@@ -158,7 +157,6 @@ export default function UserForm({
             name="city_id"
             value={formData.city_id}
             onChange={handleChange}
-            required
             min={1}
             style={{
               width: "100%",
