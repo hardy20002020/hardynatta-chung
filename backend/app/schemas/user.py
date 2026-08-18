@@ -9,8 +9,8 @@ class UserBase(BaseModel):
     name: str
     email: EmailStr
 
-    province_id: int
-    city_id: int
+    province_id: int | None = None
+    city_id: int | None = None
 
 
 # ==========================================================
