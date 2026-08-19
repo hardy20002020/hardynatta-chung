@@ -3,6 +3,10 @@ from uuid import uuid4
 from fastapi.testclient import TestClient
 from sqlalchemy import delete
 
+from app.ai.exceptions import (
+    AIGatewayError,
+    AIServiceDisabledError,
+)
 from app.core.security import (
     create_access_token,
     hash_password,
@@ -181,6 +185,106 @@ def test_admin_can_generate_ai_and_audit_is_created():
             audit.description
             == "AI generation request executed"
         )
+
+    finally:
+        if user_id is not None:
+            cleanup_user(db, user_id)
+
+        db.close()
+
+
+def test_ai_generate_returns_503_when_service_disabled(monkeypatch):
+    class DisabledAIService:
+        def generate(self, prompt: str):
+            raise AIServiceDisabledError(
+                "AI service is disabled"
+            )
+
+    monkeypatch.setattr(
+        "app.api.ai.ai_service",
+        DisabledAIService(),
+    )
+
+    db = SessionLocal()
+    user_id = None
+
+    try:
+        user, token = create_test_user(
+            db,
+            "admin",
+        )
+
+        user_id = user.id
+
+        response = client.post(
+            "/ai/generate",
+            json={
+                "prompt": "Hello MAJE",
+            },
+            headers=authorization_header(token),
+        )
+
+        assert response.status_code == 503
+
+        body = response.json()
+
+        assert body["success"] is False
+        assert body["message"] == (
+            "AI service is currently unavailable"
+        )
+        assert body["data"] is None
+        assert body["errors"] is None
+
+    finally:
+        if user_id is not None:
+            cleanup_user(db, user_id)
+
+        db.close()
+
+
+def test_ai_generate_returns_502_when_gateway_fails(monkeypatch):
+    class FailingAIService:
+        def generate(self, prompt: str):
+            raise AIGatewayError(
+                "AI gateway request failed"
+            )
+
+    monkeypatch.setattr(
+        "app.api.ai.ai_service",
+        FailingAIService(),
+    )
+
+    db = SessionLocal()
+    user_id = None
+
+    try:
+        user, token = create_test_user(
+            db,
+            "admin",
+        )
+
+        user_id = user.id
+
+        response = client.post(
+            "/ai/generate",
+            json={
+                "prompt": "Hello MAJE",
+            },
+            headers=authorization_header(token),
+        )
+
+        assert response.status_code == 502
+
+        body = response.json()
+
+        assert body["success"] is False
+        assert body["message"] == (
+            "AI gateway request failed"
+        )
+        assert body["data"] is None
+        assert body["errors"] is None
+
+        assert "SECRET_PROVIDER_ERROR" not in response.text
 
     finally:
         if user_id is not None:
