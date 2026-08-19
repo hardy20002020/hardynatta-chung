@@ -1,0 +1,266 @@
+EVIDENCE-008 — Frontend Validation
+
+Document ID:
+EVIDENCE-008
+
+Title:
+Frontend Validation
+
+Project:
+MAJE Platform
+
+Assessment Finding:
+GAP-001-F012 — Frontend Validation Gap
+
+Purpose:
+This evidence record documents reproducible automated, runtime, manual,
+and persistence validation of the currently implemented MAJE frontend
+within the assessed development environment.
+
+Validation Date:
+2026-08-19
+
+Git Baseline Commit:
+6b40244
+
+Git Branch:
+feature/docs-refactor-v2
+
+Validation Scope:
+
+- frontend static lint validation;
+- frontend production build validation;
+- frontend development runtime validation;
+- authentication and dashboard smoke validation;
+- User Management validation;
+- nullable Province ID handling;
+- nullable City ID handling;
+- save and re-edit persistence validation;
+- PostgreSQL persistence validation.
+
+Validation Environment:
+
+- MAJE frontend running with Vite;
+- MAJE backend running in Docker Compose;
+- PostgreSQL 17 container;
+- frontend runtime: http://localhost:5173/;
+- backend runtime: http://localhost:8000/;
+- branch: feature/docs-refactor-v2;
+- Git baseline commit: 6b40244.
+
+1. Static Frontend Validation
+
+Command:
+
+npm run lint
+
+Observed Result:
+
+Found 4 warnings and 0 errors.
+
+Result:
+
+PASS
+
+Interpretation:
+
+The frontend static validation completed successfully with zero errors.
+Four existing warnings were reported by Oxlint:
+
+- react(only-export-components) in src/auth/AuthContext.jsx;
+- react-hooks(exhaustive-deps) in src/pages/AuditLogs.jsx;
+- react-hooks(exhaustive-deps) in src/pages/UserActivity.jsx;
+- react-hooks(exhaustive-deps) in src/pages/Dashboard.jsx.
+
+The warnings do not invalidate the successful lint execution and remain
+technical debt for future remediation.
+
+2. Production Build Validation
+
+Command:
+
+npm run build
+
+Observed Result:
+
+114 modules transformed successfully.
+Vite production build completed successfully.
+
+Result:
+
+PASS
+
+3. Frontend Runtime Validation
+
+Command:
+
+npm run dev -- --host 0.0.0.0
+
+Observed Result:
+
+Vite development server started successfully on port 5173.
+
+Result:
+
+PASS
+
+4. Authentication and Dashboard Validation
+
+Manual validation confirmed:
+
+- admin test account authenticated successfully;
+- MAJE Dashboard loaded successfully;
+- authenticated user identity displayed correctly;
+- admin role displayed correctly;
+- dashboard statistics loaded successfully.
+
+Result:
+
+PASS
+
+5. User Management Validation
+
+Manual validation confirmed:
+
+- User Management page loaded successfully;
+- existing users were displayed;
+- Nullable Location Test was accessible;
+- Frontend Nullable Test was present;
+- user edit form loaded successfully.
+
+Result:
+
+PASS
+
+6. Nullable Location UI Validation
+
+User:
+
+Nullable Location Test
+
+Email:
+
+nullable.location.test@example.com
+
+Manual validation confirmed:
+
+- Province ID field displayed as empty;
+- City ID field displayed as empty;
+- no frontend validation error required either field;
+- the user could be saved with both location fields empty.
+
+Result:
+
+PASS
+
+7. Save and Re-Edit Validation
+
+The Nullable Location Test user was saved with:
+
+Province ID:
+NULL
+
+City ID:
+NULL
+
+The same user was subsequently opened for editing again.
+
+Observed Result:
+
+- Province ID remained empty;
+- City ID remained empty;
+- the user could be saved again without entering either location field.
+
+Result:
+
+PASS
+
+8. Database Persistence Validation
+
+Command:
+
+docker compose exec postgres psql -U postgres -d maje -c "SELECT id, name, email, province_id, city_id FROM users WHERE email = 'nullable.location.test@example.com';"
+
+Observed Result:
+
+id   | 4517
+name | Nullable Location Test
+email | nullable.location.test@example.com
+province_id | NULL
+city_id | NULL
+
+Result:
+
+PASS
+
+Interpretation:
+
+The nullable location values were persisted as SQL NULL values in the
+PostgreSQL users table and remained NULL after the frontend save and
+subsequent edit validation.
+
+9. End-to-End Validation Chain
+
+The validated frontend flow is:
+
+UserForm
+↓
+Province ID empty
+↓
+City ID empty
+↓
+Save
+↓
+Backend API
+↓
+PostgreSQL
+↓
+province_id = NULL
+↓
+city_id = NULL
+↓
+Edit user again
+↓
+Province ID empty
+↓
+City ID empty
+↓
+Save succeeds
+
+Result:
+
+PASS
+
+10. Evidence Assessment
+
+The combined automated, runtime, manual, and database validation provides
+objective evidence that the currently implemented MAJE frontend supports
+nullable user location fields within the assessed scope.
+
+The validation demonstrates that Province ID and City ID may remain empty
+through the frontend form, can be persisted through the application
+stack, and remain NULL when the user is subsequently retrieved and edited.
+
+This evidence does not claim comprehensive frontend test coverage,
+browser compatibility coverage, accessibility certification, performance
+testing, or complete enterprise UI assurance.
+
+11. Conclusion
+
+PASS
+
+The currently implemented MAJE frontend was successfully validated through
+automated linting, production build execution, runtime smoke validation,
+manual User Management validation, nullable location validation, and
+PostgreSQL persistence verification.
+
+EVIDENCE-008 provides objective evidence for the closure assessment of
+GAP-001-F012.
+
+Evidence Status:
+
+Valid — F012 Closure Candidate
+
+Evidence Registry:
+
+EVD-001 — Evidence Registry

@@ -6,7 +6,7 @@
 | --- | --- |
 | Document ID | EVD-001 |
 | Document Name | Evidence Registry |
-| Version | 1.6 |
+| Version | 1.7 |
 | Status | Controlled |
 | Owner | HARDYNATTA CHUNG |
 | Domain | Evidence |
@@ -377,6 +377,7 @@ Version	Date	Change
 1.4 2026-08-15      Added EVIDENCE-005 Backup & Restore Validation for GAP-001-F009
 1.5 2026-08-17      Added EVIDENCE-006 Observability Validation for GAP-001-F010
 1.6 2026-08-18      Added EVIDENCE-007 Security Validation for GAP-001-F011
+1.7 2026-08-19      Added EVIDENCE-008 Frontend Validation for GAP-001-F012
 Final Statement
 
 EVD-001 — Evidence Registry

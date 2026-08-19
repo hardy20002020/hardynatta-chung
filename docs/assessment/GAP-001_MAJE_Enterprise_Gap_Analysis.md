@@ -1416,7 +1416,137 @@ security, deployment, testing, and evidence governance requirements.
 
 # 85. GAP-001-F012
 
-GAP-001-F012 defines the controlled assessment requirements for this area. Assessment must compare the approved baseline with current implementation and objective evidence, record dependencies and risk, and identify a measurable remediation or validation condition where a gap exists.
+## GAP-001-F012 — Frontend Validation Gap Remediation Record
+
+Status: CLOSED
+
+Original Finding:
+
+GAP-001-F012 identified a frontend validation gap. Closure requires explicit
+automated and manual frontend validation evidence.
+
+Remediation:
+
+The frontend validation gap has been remediated through combined automated,
+runtime, manual, and persistence validation of the currently implemented MAJE
+frontend behavior.
+
+Frontend Validation Evidence:
+
+EVIDENCE-008 — Frontend Validation
+
+Evidence Location:
+
+docs/evidence/EVIDENCE-008_frontend_validation.txt
+
+Validation Baseline:
+
+- Git commit: 6b40244
+- Git branch: feature/docs-refactor-v2
+- Validation date: 2026-08-19
+
+Validated Controls:
+
+- frontend static lint validation;
+- production build validation;
+- frontend development runtime validation;
+- authentication and dashboard smoke validation;
+- User Management validation;
+- nullable Province ID handling;
+- nullable City ID handling;
+- save and re-edit persistence validation;
+- PostgreSQL persistence validation.
+
+Validation Result:
+
+PASS
+
+Frontend lint completed with zero errors. Four existing Oxlint warnings were
+reported and remain technical debt for future remediation.
+
+The production build completed successfully.
+
+Manual validation confirmed successful authentication, dashboard loading,
+User Management access, and editing of the Nullable Location Test user.
+
+Province ID and City ID were successfully left empty, saved, retrieved,
+re-edited, and saved again without validation failure.
+
+Database validation confirmed:
+
+- province_id = NULL;
+- city_id = NULL.
+
+Closure Criteria:
+
+All identified GAP-001-F012 closure requirements within the assessed current
+implementation scope have been satisfied:
+
+- automated frontend validation completed;
+- production build validation completed;
+- frontend runtime validation completed;
+- authentication and dashboard smoke validation completed;
+- User Management validation completed;
+- nullable Province ID validation completed;
+- nullable City ID validation completed;
+- save and re-edit persistence validation completed;
+- PostgreSQL persistence validation completed;
+- EVIDENCE-008 created and linked to GAP-001-F012;
+- EVD-001 updated to Version 1.7.
+
+Closure Decision:
+
+CLOSED
+
+Closure Basis:
+
+GAP-001-F012 closure criteria have been satisfied through combined automated,
+runtime, manual, and persistence validation of the currently implemented
+frontend behavior.
+
+EVIDENCE-008 provides the primary validation evidence for GAP-001-F012.
+
+EVD-001 Version 1.7 provides the controlled evidence registry and traceability
+baseline.
+
+The validated frontend evidence chain is:
+
+Implementation
+↓
+Static Validation
+↓
+Build Validation
+↓
+Runtime Validation
+↓
+Manual UI Validation
+↓
+Persistence Validation
+↓
+Evidence
+↓
+Assessment
+↓
+Closure
+
+Closure Evidence:
+
+- EVIDENCE-008 — docs/evidence/EVIDENCE-008_frontend_validation.txt
+- EVD-001 Version 1.7 — docs/evidence/EVIDENCE-REGISTRY.md
+- GAP-001 Assessment — docs/assessment/GAP-001_MAJE_Enterprise_Gap_Analysis.md
+
+Closure Limitation:
+
+This closure applies specifically to GAP-001-F012 and does not constitute
+closure of GAP-001 as a whole or of any other GAP-001 finding.
+
+This validation does not constitute comprehensive frontend test coverage,
+browser compatibility certification, accessibility certification,
+performance assurance, penetration testing, or independent enterprise
+frontend certification.
+
+Future frontend enhancements remain subject to applicable architecture,
+testing, security, deployment, governance, and evidence requirements.
 
 ---
 
