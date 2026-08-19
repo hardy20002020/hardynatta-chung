@@ -2,6 +2,7 @@ from app.ai.gateway import (
     DeterministicModelGateway,
     ModelGateway,
 )
+from app.core.config import settings
 
 
 class AIService:
@@ -27,5 +28,15 @@ class AIService:
         Process an AI generation request through the
         controlled model gateway boundary.
         """
+
+        if not settings.AI_ENABLED:
+            raise RuntimeError(
+                "AI service is disabled"
+            )
+
+        if len(prompt) > settings.AI_MAX_PROMPT_LENGTH:
+            raise ValueError(
+                "AI prompt exceeds maximum allowed length"
+            )
 
         return self.gateway.generate(prompt)

@@ -102,6 +102,19 @@ class Settings(BaseSettings):
 
 
     # ==========================================================
+    # AI SERVICE
+    # ==========================================================
+
+    AI_ENABLED: bool = True
+
+    AI_MODEL_NAME: str = "deterministic"
+
+    AI_MAX_PROMPT_LENGTH: int = 10000
+
+    AI_TIMEOUT_SECONDS: int = 30
+
+
+    # ==========================================================
     # RATE LIMIT SECURITY
     # ==========================================================
 
