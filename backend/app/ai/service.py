@@ -34,6 +34,11 @@ class AIService:
                 "AI service is disabled"
             )
 
+        if not prompt.strip():
+            raise ValueError(
+                "AI prompt must not be empty"
+            )
+
         if len(prompt) > settings.AI_MAX_PROMPT_LENGTH:
             raise ValueError(
                 "AI prompt exceeds maximum allowed length"

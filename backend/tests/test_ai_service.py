@@ -59,3 +59,19 @@ def test_ai_service_rejects_when_disabled(monkeypatch):
         raise AssertionError(
             "Expected RuntimeError when AI service is disabled"
         )
+
+
+def test_ai_service_rejects_empty_prompt():
+    service = AIService(
+        gateway=FakeModelGateway()
+    )
+
+    for prompt in ("", "   "):
+        try:
+            service.generate(prompt)
+        except ValueError as exc:
+            assert str(exc) == "AI prompt must not be empty"
+        else:
+            raise AssertionError(
+                "Expected ValueError for empty prompt"
+            )
