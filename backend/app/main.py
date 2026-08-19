@@ -23,6 +23,7 @@ from app.api.users import router as user_router
 from app.api.provinces import router as province_router
 from app.api.cities import router as city_router
 from app.api.dashboard import router as dashboard_router
+from app.api.ai import router as ai_router
 
 from app.api.roles import router as role_router
 from app.api.permissions import router as permission_router
@@ -206,6 +207,10 @@ app.include_router(
 
 app.include_router(
     dashboard_router
+)
+
+app.include_router(
+    ai_router
 )
 
 app.include_router(
