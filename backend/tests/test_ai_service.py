@@ -1,4 +1,8 @@
 from app.ai.gateway import ModelGateway
+from app.ai.exceptions import (
+    AIGatewayError,
+    AIServiceDisabledError,
+)
 from app.ai.service import AIService
 
 
@@ -53,7 +57,7 @@ def test_ai_service_rejects_when_disabled(monkeypatch):
 
     try:
         service.generate("Hello MAJE")
-    except RuntimeError as exc:
+    except AIServiceDisabledError as exc:
         assert str(exc) == "AI service is disabled"
     else:
         raise AssertionError(
@@ -94,4 +98,26 @@ def test_ai_service_rejects_invalid_gateway_output():
     else:
         raise AssertionError(
             "Expected ValueError for invalid gateway output"
+        )
+
+
+class FailingGateway(ModelGateway):
+    def generate(self, prompt: str) -> str:
+        raise RuntimeError("SECRET_PROVIDER_ERROR")
+
+
+def test_ai_service_wraps_gateway_failure():
+    service = AIService(
+        gateway=FailingGateway()
+    )
+
+    try:
+        service.generate("Hello MAJE")
+    except AIGatewayError as exc:
+        assert str(exc) == "AI gateway request failed"
+        assert isinstance(exc.__cause__, RuntimeError)
+        assert str(exc.__cause__) == "SECRET_PROVIDER_ERROR"
+    else:
+        raise AssertionError(
+            "Expected AIGatewayError for gateway failure"
         )

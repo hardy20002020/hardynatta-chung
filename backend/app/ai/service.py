@@ -3,6 +3,10 @@ from app.ai.gateway import (
     ModelGateway,
 )
 from app.core.config import settings
+from app.ai.exceptions import (
+    AIGatewayError,
+    AIServiceDisabledError,
+)
 
 
 class AIService:
@@ -30,7 +34,7 @@ class AIService:
         """
 
         if not settings.AI_ENABLED:
-            raise RuntimeError(
+            raise AIServiceDisabledError(
                 "AI service is disabled"
             )
 
@@ -44,7 +48,12 @@ class AIService:
                 "AI prompt exceeds maximum allowed length"
             )
 
-        result = self.gateway.generate(prompt)
+        try:
+            result = self.gateway.generate(prompt)
+        except Exception as exc:
+            raise AIGatewayError(
+                "AI gateway request failed"
+            ) from exc
 
         if not isinstance(result, str):
             raise ValueError(
