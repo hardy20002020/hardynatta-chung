@@ -6,7 +6,7 @@
 | --- | --- |
 | Document ID | EVD-001 |
 | Document Name | Evidence Registry |
-| Version | 1.7 |
+| Version | 1.8 |
 | Status | Controlled |
 | Owner | HARDYNATTA CHUNG |
 | Domain | Evidence |
@@ -46,6 +46,8 @@ Evidence harus:
 | EVIDENCE-005 | Backup & Restore Validation | `docs/evidence/EVIDENCE-005_backup_restore_validation.txt` | PASS — PostgreSQL backup, isolated restore, table inventory, migration state, database accessibility, and 25/25 row-count consistency validated for GAP-001-F009 | Valid - F009 Closure Candidate |
 | EVIDENCE-006 | Observability Validation | `docs/evidence/EVIDENCE-006_observability_validation.txt` | PASS — application health, Docker health, PostgreSQL health, runtime request logging, centralized HTTP exception logging, and 162/162 backend test validation completed for GAP-001-F010 | Valid - F010 Closure Candidate |
 | EVIDENCE-007 | Security Validation | `docs/evidence/EVIDENCE-007_security_validation.txt` | PASS — Docker-based security validation completed with 10/10 selected security tests passing for GAP-001-F011 | Valid - F011 Closure Candidate |
+| EVIDENCE-008 | Frontend Validation | `docs/evidence/EVIDENCE-008_frontend_validation.txt` | PASS — automated lint/build, frontend runtime, manual nullable location validation, and PostgreSQL persistence validation completed for GAP-001-F012 | Valid - F012 Closure Candidate |
+| EVIDENCE-009 | Test Execution Validation | `docs/evidence/EVIDENCE-009_test_execution_validation.txt` | PASS — Docker backend pytest execution completed with 162 passed, 0 failed, 0 errors for GAP-001-F001 | Valid - F001 Closure Candidate |
 
 ---
 
@@ -378,13 +380,14 @@ Version	Date	Change
 1.5 2026-08-17      Added EVIDENCE-006 Observability Validation for GAP-001-F010
 1.6 2026-08-18      Added EVIDENCE-007 Security Validation for GAP-001-F011
 1.7 2026-08-19      Added EVIDENCE-008 Frontend Validation for GAP-001-F012
+1.8 2026-08-19      Added EVIDENCE-009 Test Execution Validation for GAP-001-F001
 Final Statement
 
 EVD-001 — Evidence Registry
 
 HARDYNATTA CHUNG Enterprise Software Engineering Ecosystem
 
-Version 1.6 — Controlled Evidence Registry
+Version 1.8 — Controlled Evidence Registry
 
 Evidence transforms implementation activity into auditable enterprise knowledge.
 
