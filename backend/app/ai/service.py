@@ -44,4 +44,11 @@ class AIService:
                 "AI prompt exceeds maximum allowed length"
             )
 
-        return self.gateway.generate(prompt)
+        result = self.gateway.generate(prompt)
+
+        if not isinstance(result, str):
+            raise ValueError(
+                "AI gateway returned invalid output"
+            )
+
+        return result

@@ -75,3 +75,23 @@ def test_ai_service_rejects_empty_prompt():
             raise AssertionError(
                 "Expected ValueError for empty prompt"
             )
+
+
+class InvalidOutputGateway(ModelGateway):
+    def generate(self, prompt: str):
+        return None
+
+
+def test_ai_service_rejects_invalid_gateway_output():
+    service = AIService(
+        gateway=InvalidOutputGateway()
+    )
+
+    try:
+        service.generate("Hello MAJE")
+    except ValueError as exc:
+        assert str(exc) == "AI gateway returned invalid output"
+    else:
+        raise AssertionError(
+            "Expected ValueError for invalid gateway output"
+        )
