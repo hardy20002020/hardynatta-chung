@@ -97,6 +97,18 @@ def test_ai_service_rejects_empty_prompt():
             )
 
 
+def test_ai_service_preserves_valid_prompt_whitespace():
+    service = AIService(
+        gateway=FakeModelGateway()
+    )
+
+    result = service.generate(
+        " Hello MAJE "
+    )
+
+    assert result == "fake response:  Hello MAJE "
+
+
 class InvalidOutputGateway(ModelGateway):
     def generate(self, prompt: str):
         return None
