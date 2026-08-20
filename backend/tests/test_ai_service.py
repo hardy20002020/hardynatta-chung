@@ -46,6 +46,21 @@ def test_ai_service_rejects_prompt_above_configured_limit(monkeypatch):
         )
 
 
+def test_ai_service_accepts_prompt_at_configured_limit(monkeypatch):
+    monkeypatch.setattr(
+        "app.ai.service.settings.AI_MAX_PROMPT_LENGTH",
+        5,
+    )
+
+    service = AIService(
+        gateway=FakeModelGateway()
+    )
+
+    result = service.generate("12345")
+
+    assert result == "fake response: 12345"
+
+
 def test_ai_service_rejects_when_disabled(monkeypatch):
     monkeypatch.setattr(
         "app.ai.service.settings.AI_ENABLED",
