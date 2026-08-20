@@ -35,6 +35,22 @@ def test_ai_configuration_defaults():
     assert settings.AI_TIMEOUT_SECONDS == 30
 
 
+def test_ai_model_name_can_select_supported_model():
+    settings = make_settings(
+        AI_MODEL_NAME="deterministic",
+    )
+
+    assert settings.AI_MODEL_NAME == "deterministic"
+
+
+def test_ai_model_name_can_represent_future_provider():
+    settings = make_settings(
+        AI_MODEL_NAME="future-provider",
+    )
+
+    assert settings.AI_MODEL_NAME == "future-provider"
+
+
 def test_ai_configuration_overrides():
     settings = make_settings(
         AI_ENABLED=False,
