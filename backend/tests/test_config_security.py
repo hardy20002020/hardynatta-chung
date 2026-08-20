@@ -26,6 +26,29 @@ def test_development_defaults_remain_allowed():
     assert settings.DEBUG is True
 
 
+def test_ai_configuration_defaults():
+    settings = make_settings()
+
+    assert settings.AI_ENABLED is True
+    assert settings.AI_MODEL_NAME == "deterministic"
+    assert settings.AI_MAX_PROMPT_LENGTH == 10000
+    assert settings.AI_TIMEOUT_SECONDS == 30
+
+
+def test_ai_configuration_overrides():
+    settings = make_settings(
+        AI_ENABLED=False,
+        AI_MODEL_NAME="test-model",
+        AI_MAX_PROMPT_LENGTH=5000,
+        AI_TIMEOUT_SECONDS=60,
+    )
+
+    assert settings.AI_ENABLED is False
+    assert settings.AI_MODEL_NAME == "test-model"
+    assert settings.AI_MAX_PROMPT_LENGTH == 5000
+    assert settings.AI_TIMEOUT_SECONDS == 60
+
+
 def test_production_rejects_debug_mode():
     with pytest.raises(
         ValidationError,
