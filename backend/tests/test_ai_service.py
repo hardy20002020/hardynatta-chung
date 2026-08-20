@@ -12,6 +12,18 @@ class FakeModelGateway(ModelGateway):
         return f"fake response: {prompt}"
 
 
+def test_ai_service_uses_configured_model_gateway_by_default():
+    service = AIService()
+
+    result = service.generate(
+        "Hello MAJE"
+    )
+
+    assert result == (
+        "AI service received prompt: Hello MAJE"
+    )
+
+
 def test_ai_service_uses_injected_model_gateway():
     service = AIService(
         gateway=FakeModelGateway()
