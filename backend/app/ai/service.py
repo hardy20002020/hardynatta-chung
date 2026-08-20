@@ -1,6 +1,6 @@
 from app.ai.gateway import (
-    DeterministicModelGateway,
     ModelGateway,
+    create_model_gateway,
 )
 from app.core.config import settings
 from app.ai.exceptions import (
@@ -25,7 +25,7 @@ class AIService:
         self.gateway = (
             gateway
             if gateway is not None
-            else DeterministicModelGateway()
+            else create_model_gateway()
         )
 
     def generate(self, prompt: str) -> str:
