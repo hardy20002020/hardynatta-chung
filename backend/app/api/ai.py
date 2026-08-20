@@ -8,6 +8,7 @@ from sqlalchemy.orm import Session
 
 from app.ai.exceptions import (
     AIGatewayError,
+    AIInvalidOutputError,
     AIServiceDisabledError,
 )
 from app.ai.service import AIService
@@ -55,6 +56,11 @@ def generate(
         raise HTTPException(
             status_code=502,
             detail="AI gateway request failed",
+        ) from exc
+    except AIInvalidOutputError as exc:
+        raise HTTPException(
+            status_code=502,
+            detail="AI gateway returned invalid output",
         ) from exc
 
 

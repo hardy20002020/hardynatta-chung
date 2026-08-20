@@ -14,3 +14,9 @@ class AIGatewayError(AIServiceError):
     """
     Raised when the model gateway fails.
     """
+
+
+class AIInvalidOutputError(AIServiceError):
+    """
+    Raised when the model gateway returns invalid output.
+    """

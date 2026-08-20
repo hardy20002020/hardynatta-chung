@@ -5,6 +5,7 @@ from app.ai.gateway import (
 from app.core.config import settings
 from app.ai.exceptions import (
     AIGatewayError,
+    AIInvalidOutputError,
     AIServiceDisabledError,
 )
 
@@ -56,7 +57,7 @@ class AIService:
             ) from exc
 
         if not isinstance(result, str):
-            raise ValueError(
+            raise AIInvalidOutputError(
                 "AI gateway returned invalid output"
             )
 

@@ -5,6 +5,7 @@ from sqlalchemy import delete
 
 from app.ai.exceptions import (
     AIGatewayError,
+    AIInvalidOutputError,
     AIServiceDisabledError,
 )
 from app.core.security import (
@@ -280,6 +281,59 @@ def test_ai_generate_returns_502_when_gateway_fails(monkeypatch):
         assert body["success"] is False
         assert body["message"] == (
             "AI gateway request failed"
+        )
+        assert body["data"] is None
+        assert body["errors"] is None
+
+        assert "SECRET_PROVIDER_ERROR" not in response.text
+
+    finally:
+        if user_id is not None:
+            cleanup_user(db, user_id)
+
+        db.close()
+
+
+def test_ai_generate_returns_502_when_gateway_returns_invalid_output(
+    monkeypatch,
+):
+    class InvalidOutputAIService:
+        def generate(self, prompt: str):
+            raise AIInvalidOutputError(
+                "AI gateway returned invalid output"
+            )
+
+    monkeypatch.setattr(
+        "app.api.ai.ai_service",
+        InvalidOutputAIService(),
+    )
+
+    db = SessionLocal()
+    user_id = None
+
+    try:
+        user, token = create_test_user(
+            db,
+            "admin",
+        )
+
+        user_id = user.id
+
+        response = client.post(
+            "/ai/generate",
+            json={
+                "prompt": "Hello MAJE",
+            },
+            headers=authorization_header(token),
+        )
+
+        assert response.status_code == 502
+
+        body = response.json()
+
+        assert body["success"] is False
+        assert body["message"] == (
+            "AI gateway returned invalid output"
         )
         assert body["data"] is None
         assert body["errors"] is None
