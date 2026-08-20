@@ -1,6 +1,7 @@
 from app.ai.gateway import ModelGateway
 from app.ai.exceptions import (
     AIGatewayError,
+    AIInvalidOutputError,
     AIServiceDisabledError,
 )
 from app.ai.service import AIService
@@ -93,11 +94,11 @@ def test_ai_service_rejects_invalid_gateway_output():
 
     try:
         service.generate("Hello MAJE")
-    except ValueError as exc:
+    except AIInvalidOutputError as exc:
         assert str(exc) == "AI gateway returned invalid output"
     else:
         raise AssertionError(
-            "Expected ValueError for invalid gateway output"
+            "Expected AIInvalidOutputError for invalid gateway output"
         )
 
 
