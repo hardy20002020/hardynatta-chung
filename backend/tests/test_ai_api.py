@@ -194,6 +194,48 @@ def test_admin_can_generate_ai_and_audit_is_created():
         db.close()
 
 
+def test_ai_generate_rejects_invalid_prompt_schema():
+    db = SessionLocal()
+    user_id = None
+
+    try:
+        user, token = create_test_user(
+            db,
+            "admin",
+        )
+
+        user_id = user.id
+
+        invalid_prompts = (
+            "",
+            "A" * 10001,
+        )
+
+        for prompt in invalid_prompts:
+            response = client.post(
+                "/ai/generate",
+                json={
+                    "prompt": prompt,
+                },
+                headers=authorization_header(token),
+            )
+
+            assert response.status_code == 422
+
+            body = response.json()
+
+            assert body["success"] is False
+            assert body["message"] == "Validation failed"
+            assert body["data"] is None
+            assert body["errors"] is not None
+
+    finally:
+        if user_id is not None:
+            cleanup_user(db, user_id)
+
+        db.close()
+
+
 def test_ai_generate_returns_503_when_service_disabled(monkeypatch):
     class DisabledAIService:
         def generate(self, prompt: str):
