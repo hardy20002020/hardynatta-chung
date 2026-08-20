@@ -3,6 +3,7 @@ from app.ai.exceptions import (
     AIGatewayError,
     AIInvalidOutputError,
     AIServiceDisabledError,
+    AITimeoutError,
 )
 from app.ai.service import AIService
 
@@ -119,6 +120,30 @@ def test_ai_service_preserves_valid_prompt_whitespace():
     )
 
     assert result == "fake response:  Hello MAJE "
+
+
+class TimeoutGateway(ModelGateway):
+    def generate(self, prompt: str) -> str:
+        raise AITimeoutError(
+            "AI gateway request timed out"
+        )
+
+
+def test_ai_service_preserves_gateway_timeout():
+    service = AIService(
+        gateway=TimeoutGateway()
+    )
+
+    try:
+        service.generate("Hello MAJE")
+    except AITimeoutError as exc:
+        assert str(exc) == (
+            "AI gateway request timed out"
+        )
+    else:
+        raise AssertionError(
+            "Expected AITimeoutError to propagate"
+        )
 
 
 class InvalidOutputGateway(ModelGateway):

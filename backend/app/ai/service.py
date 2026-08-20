@@ -7,6 +7,7 @@ from app.ai.exceptions import (
     AIGatewayError,
     AIInvalidOutputError,
     AIServiceDisabledError,
+    AITimeoutError,
 )
 
 
@@ -51,6 +52,8 @@ class AIService:
 
         try:
             result = self.gateway.generate(prompt)
+        except AITimeoutError:
+            raise
         except Exception as exc:
             raise AIGatewayError(
                 "AI gateway request failed"

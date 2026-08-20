@@ -7,6 +7,7 @@ from app.ai.exceptions import (
     AIGatewayError,
     AIInvalidOutputError,
     AIServiceDisabledError,
+    AITimeoutError,
 )
 from app.core.security import (
     create_access_token,
@@ -274,6 +275,57 @@ def test_ai_generate_returns_503_when_service_disabled(monkeypatch):
         assert body["success"] is False
         assert body["message"] == (
             "AI service is currently unavailable"
+        )
+        assert body["data"] is None
+        assert body["errors"] is None
+
+    finally:
+        if user_id is not None:
+            cleanup_user(db, user_id)
+
+        db.close()
+
+
+def test_ai_generate_returns_504_when_gateway_times_out(
+    monkeypatch,
+):
+    class TimeoutAIService:
+        def generate(self, prompt: str):
+            raise AITimeoutError(
+                "AI gateway request timed out"
+            )
+
+    monkeypatch.setattr(
+        "app.api.ai.ai_service",
+        TimeoutAIService(),
+    )
+
+    db = SessionLocal()
+    user_id = None
+
+    try:
+        user, token = create_test_user(
+            db,
+            "admin",
+        )
+
+        user_id = user.id
+
+        response = client.post(
+            "/ai/generate",
+            json={
+                "prompt": "Hello MAJE",
+            },
+            headers=authorization_header(token),
+        )
+
+        assert response.status_code == 504
+
+        body = response.json()
+
+        assert body["success"] is False
+        assert body["message"] == (
+            "AI gateway request timed out"
         )
         assert body["data"] is None
         assert body["errors"] is None

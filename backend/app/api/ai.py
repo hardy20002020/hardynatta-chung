@@ -10,6 +10,7 @@ from app.ai.exceptions import (
     AIGatewayError,
     AIInvalidOutputError,
     AIServiceDisabledError,
+    AITimeoutError,
 )
 from app.ai.service import AIService
 from app.core.permissions import require_permission
@@ -51,6 +52,11 @@ def generate(
         raise HTTPException(
             status_code=503,
             detail="AI service is currently unavailable",
+        ) from exc
+    except AITimeoutError as exc:
+        raise HTTPException(
+            status_code=504,
+            detail="AI gateway request timed out",
         ) from exc
     except AIGatewayError as exc:
         raise HTTPException(

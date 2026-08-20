@@ -16,6 +16,12 @@ class AIGatewayError(AIServiceError):
     """
 
 
+class AITimeoutError(AIServiceError):
+    """
+    Raised when an AI model or provider operation times out.
+    """
+
+
 class AIInvalidOutputError(AIServiceError):
     """
     Raised when the model gateway returns invalid output.
