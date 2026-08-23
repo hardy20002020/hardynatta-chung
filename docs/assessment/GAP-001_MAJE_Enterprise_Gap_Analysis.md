@@ -576,7 +576,140 @@ testing, security, deployment, governance, and evidence requirements.
 
 # 75. GAP-001-F002
 
-GAP-001-F002 defines the controlled assessment requirements for this area. Assessment must compare the approved baseline with current implementation and objective evidence, record dependencies and risk, and identify a measurable remediation or validation condition where a gap exists.
+GAP-001-F002 — AI Service Implementation Gap Remediation Record
+
+Status: CLOSED
+
+Original Finding:
+
+ARC-004 defines AI-service expectations, while the inspected repository did not show a dedicated AI-service implementation directory. Closure requires implementation evidence or a formally governed scope/defer decision.
+
+Remediation:
+
+The AI Service implementation gap has been remediated by establishing a dedicated MAJE AI Service implementation boundary under:
+
+backend/app/ai/
+
+The implemented AI Service boundary provides:
+
+- controlled AI service orchestration;
+- model gateway abstraction;
+- configurable model gateway selection;
+- deterministic development and testing gateway;
+- AI enable/disable policy;
+- prompt validation and prompt length controls;
+- controlled timeout and gateway error handling;
+- gateway output validation;
+- governed backend API integration;
+- authentication and authorization enforcement;
+- AI audit integration;
+- dedicated automated AI service, gateway, and API tests.
+
+Implementation Evidence:
+
+EVIDENCE-011 — AI Service Implementation Validation
+
+Evidence Location:
+
+docs/evidence/EVIDENCE-011_ai_service_implementation_validation.txt
+
+Git Baseline:
+
+5939017 — docs(evidence): add current backend regression validation
+
+Git Branch:
+
+feature/docs-refactor-v2
+
+Current Backend Regression:
+
+EVIDENCE-010 — Current Backend Regression Validation
+
+Observed result:
+
+188 passed
+0 failed
+0 errors
+
+Closure Assessment:
+
+The remediation was assessed against the original GAP-001-F002 closure requirement.
+
+1. Dedicated AI Service Implementation
+
+PASS — The repository contains the dedicated AI Service implementation directory at backend/app/ai/ with service, gateway, exception, and package components.
+
+2. AI Service Boundary
+
+PASS — backend/app/ai/service.py establishes the controlled AIService application boundary with AI enablement, prompt validation, gateway invocation, timeout handling, gateway failure handling, and output validation.
+
+3. Model Gateway Abstraction
+
+PASS — backend/app/ai/gateway.py provides the ModelGateway abstraction, deterministic gateway implementation, and configurable gateway factory.
+
+4. Configuration and Policy Controls
+
+PASS — The current implementation provides AI_ENABLED, AI_MODEL_NAME, AI_MAX_PROMPT_LENGTH, and AI_TIMEOUT_SECONDS configuration controls.
+
+5. API Integration and Authorization
+
+PASS — The AI capability is exposed through the governed backend API boundary and automated validation confirms authentication, authorization, successful generation, and controlled API error behavior.
+
+6. Audit Integration
+
+PASS — Automated API validation confirms that successful AI generation produces the expected audit event.
+
+7. Automated Validation
+
+PASS — Dedicated AI service, gateway, and API tests are present and the current Docker backend regression suite completed successfully with:
+
+188 passed
+0 failed
+0 errors
+
+8. Architecture Boundary
+
+PASS — EVIDENCE-011 explicitly limits the closure claim to the currently implemented AI Service boundary and does not claim full realization of every capability described by ARC-004 v2.0.
+
+Closure Criteria:
+
+The original GAP-001-F002 closure requirement has been satisfied for the currently assessed implementation scope:
+
+- dedicated AI Service implementation established;
+- implementation boundary validated;
+- model abstraction established;
+- configuration and prompt policy controls validated;
+- controlled error handling validated;
+- API integration and authorization validated;
+- audit integration validated;
+- automated validation completed;
+- objective evidence registered in EVD-001.
+
+Closure Decision:
+
+CLOSED
+
+Closure Basis:
+
+GAP-001-F002 closure criteria have been satisfied based on the implemented AI Service boundary and objective validation evidence.
+
+EVIDENCE-011 provides the primary validation evidence for the remediation. EVD-001 Version 2.0 provides the controlled evidence registry entry.
+
+The original AI Service finding is preserved as historical assessment context and has not been rewritten.
+
+Closure Evidence:
+
+- EVIDENCE-011 — docs/evidence/EVIDENCE-011_ai_service_implementation_validation.txt
+- EVIDENCE-010 — docs/evidence/EVIDENCE-010_backend_current_regression_validation.txt
+- EVD-001 Version 2.0 — docs/evidence/EVIDENCE-REGISTRY.md
+- ARC-004 — docs/architecture/ARC-004_AI_Service_Architecture.md
+- GAP-001 Assessment — docs/assessment/GAP-001_MAJE_Enterprise_Gap_Analysis.md
+
+Closure Limitation:
+
+This closure applies specifically to GAP-001-F002 and the currently implemented AI Service boundary. It does not constitute full realization of ARC-004, closure of GAP-001 as a whole, or closure of any other GAP-001 finding.
+
+Future AI capabilities remain subject to ARC-004 and applicable architecture, security, testing, deployment, observability, governance, and product requirements.
 
 ---
 

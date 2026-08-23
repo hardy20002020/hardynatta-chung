@@ -1,0 +1,393 @@
+EVIDENCE-011 — AI Service Implementation Validation
+
+Document ID:
+EVIDENCE-011
+
+Title:
+AI Service Implementation Validation
+
+Project:
+MAJE Platform
+
+Assessment Finding:
+GAP-001-F002 — AI Service Implementation Gap
+
+Purpose:
+This evidence record documents validation of the dedicated MAJE AI Service
+implementation boundary established to remediate GAP-001-F002.
+
+The validation confirms the presence of the AI Service implementation,
+model gateway abstraction, configurable model selection, AI service policy
+controls, controlled error handling, API integration, authorization
+boundary, audit integration, and associated automated tests.
+
+Validation Date:
+2026-08-23
+
+Git Baseline Commit:
+5939017
+
+Git Branch:
+feature/docs-refactor-v2
+
+Validation Scope:
+
+- dedicated AI Service implementation boundary;
+- AI service orchestration boundary;
+- model gateway abstraction;
+- configurable model gateway selection;
+- deterministic development gateway;
+- AI service enable/disable policy;
+- prompt validation;
+- prompt length limitation;
+- gateway timeout handling;
+- gateway failure handling;
+- gateway output validation;
+- API error mapping;
+- AI API authorization;
+- AI audit integration;
+- automated AI service tests;
+- automated AI gateway tests;
+- automated AI API tests;
+- current backend regression validation.
+
+Validation Environment:
+
+- MAJE backend running in Docker;
+- backend container: hardynatta-backend;
+- application path: /app;
+- PostgreSQL runtime available;
+- branch: feature/docs-refactor-v2;
+- Git baseline commit: 5939017.
+
+1. Implementation Inventory
+
+The dedicated AI Service implementation directory is present at:
+
+backend/app/ai/
+
+Implemented components include:
+
+- backend/app/ai/__init__.py
+- backend/app/ai/exceptions.py
+- backend/app/ai/gateway.py
+- backend/app/ai/service.py
+
+Associated automated AI tests include:
+
+- backend/tests/test_ai_api.py
+- backend/tests/test_ai_gateway.py
+- backend/tests/test_ai_service.py
+
+Result:
+
+PASS
+
+2. AI Service Boundary
+
+backend/app/ai/service.py provides the controlled AIService
+application boundary.
+
+The service:
+
+- checks whether AI is enabled;
+- rejects empty prompts;
+- enforces the configured maximum prompt length;
+- invokes the configured model gateway;
+- preserves gateway timeout semantics;
+- converts unexpected gateway failures into controlled AI errors;
+- validates gateway output.
+
+Result:
+
+PASS
+
+3. Model Gateway Abstraction
+
+backend/app/ai/gateway.py provides the ModelGateway abstraction between
+application-level AI orchestration and model-provider interaction.
+
+The implementation includes:
+
+- ModelGateway abstract interface;
+- DeterministicModelGateway;
+- create_model_gateway() factory.
+
+The ModelGateway contract prevents direct instantiation of the abstract
+gateway.
+
+The deterministic gateway provides a controlled development and testing
+implementation without invoking an external model provider.
+
+Result:
+
+PASS
+
+4. Configurable Model Selection
+
+The model gateway factory selects the configured gateway based on:
+
+settings.AI_MODEL_NAME
+
+The current supported deterministic configuration is:
+
+AI_MODEL_NAME = deterministic
+
+The automated gateway tests validate:
+
+- deterministic model selection;
+- deterministic gateway behavior;
+- rejection of unsupported model configurations.
+
+Result:
+
+PASS
+
+5. AI Service Configuration
+
+The current AI service configuration includes:
+
+- AI_ENABLED;
+- AI_MODEL_NAME;
+- AI_MAX_PROMPT_LENGTH;
+- AI_TIMEOUT_SECONDS.
+
+These settings provide a controlled configuration boundary for the
+currently implemented AI service.
+
+Result:
+
+PASS
+
+6. Prompt Input Policy
+
+The AI service enforces:
+
+- non-empty prompt validation;
+- maximum prompt length;
+- acceptance of prompts at the configured boundary;
+- preservation of valid prompt whitespace.
+
+The configured default maximum prompt length is:
+
+10000
+
+The associated behavior is covered by automated AI service and API tests.
+
+Result:
+
+PASS
+
+7. Controlled AI Error Boundary
+
+The current AI implementation defines controlled exception semantics
+including:
+
+- AIServiceDisabledError;
+- AITimeoutError;
+- AIGatewayError;
+- AIInvalidOutputError.
+
+Gateway timeout errors are preserved.
+
+Unexpected gateway failures are converted into AIGatewayError.
+
+Invalid gateway output is rejected through AIInvalidOutputError.
+
+Result:
+
+PASS
+
+8. AI API Integration
+
+The AI service is exposed through the governed backend API boundary.
+
+Automated API validation confirms:
+
+- unauthenticated AI generation requests are rejected;
+- unauthorized roles cannot generate AI requests;
+- authorized admin access succeeds;
+- successful AI generation returns the governed response structure;
+- AI generation creates the expected audit event.
+
+Result:
+
+PASS
+
+9. AI Automated Test Coverage
+
+The current repository contains dedicated automated AI test suites:
+
+backend/tests/test_ai_service.py
+backend/tests/test_ai_gateway.py
+backend/tests/test_ai_api.py
+
+The tests validate the currently implemented AI boundary including:
+
+- gateway abstraction;
+- deterministic gateway behavior;
+- model gateway selection;
+- unsupported model rejection;
+- injected gateway behavior;
+- prompt validation;
+- prompt length boundaries;
+- disabled AI service behavior;
+- valid prompt whitespace preservation;
+- timeout propagation;
+- invalid gateway output;
+- gateway failure handling;
+- authentication;
+- authorization;
+- API error mapping;
+- AI audit behavior.
+
+Result:
+
+PASS
+
+10. Current Backend Regression Validation
+
+Current backend regression validation was executed from the Docker
+runtime using:
+
+MSYS_NO_PATHCONV=1 docker exec hardynatta-backend python -m pytest -q
+
+Observed result:
+
+188 passed
+0 failed
+0 errors
+
+The corresponding current regression evidence is:
+
+EVIDENCE-010 — Current Backend Regression Validation
+
+Result:
+
+PASS
+
+11. ARC-004 Architecture Boundary
+
+This evidence validates the implemented AI Service boundary relevant to
+GAP-001-F002.
+
+It does not claim that every capability described by ARC-004 v2.0 has
+already been implemented.
+
+The following extended architectural capabilities are not claimed as
+implemented by this evidence unless separately evidenced:
+
+- memory;
+- long-term memory;
+- knowledge retrieval;
+- embeddings;
+- vector store;
+- agents;
+- tool execution;
+- AI evaluation framework;
+- advanced retrieval testing;
+- agent testing;
+- tool testing;
+- other capability-specific AI infrastructure.
+
+ARC-004 remains the governed architectural baseline for these capabilities.
+
+Result:
+
+PASS — Boundary Explicitly Defined
+
+12. Validation Assessment
+
+The current repository contains a dedicated AI Service implementation
+boundary that was absent when GAP-001-F002 was originally identified.
+
+The validated implementation chain is:
+
+AI Service Implementation
+↓
+AI Service Boundary
+↓
+Model Gateway Abstraction
+↓
+Configuration
+↓
+Prompt Policy
+↓
+Controlled Error Handling
+↓
+API Integration
+↓
+Authorization
+↓
+Audit
+↓
+Automated AI Tests
+↓
+Current Backend Regression
+
+The implementation is reproducibly testable within the Docker runtime
+environment.
+
+Result:
+
+PASS
+
+13. Closure Assessment
+
+The original GAP-001-F002 finding required implementation evidence or a
+formally governed scope/defer decision.
+
+The implementation evidence requirement has been satisfied for the
+currently implemented AI Service boundary.
+
+Result:
+
+PASS — F002 Closure Candidate
+
+14. Validation Boundary
+
+This evidence does not constitute:
+
+- full realization of ARC-004;
+- complete AI capability implementation;
+- production AI certification;
+- external model-provider validation;
+- comprehensive AI safety certification;
+- penetration testing;
+- independent enterprise AI assurance.
+
+Future AI capabilities remain governed by ARC-004 and applicable
+architecture, security, testing, deployment, observability, governance,
+and product requirements.
+
+15. Evidence Integrity
+
+This record represents a new validation execution and evidence record.
+
+It does not replace or modify historical evidence records.
+
+Earlier evidence records remain preserved according to Evidence Registry
+governance requirements.
+
+16. Conclusion
+
+PASS
+
+The dedicated MAJE AI Service implementation boundary identified by
+GAP-001-F002 has been implemented and validated.
+
+The implementation provides a controlled AI service boundary, model
+abstraction, configurable gateway selection, prompt policy, controlled
+error handling, API authorization, audit integration, and automated
+validation.
+
+EVIDENCE-011 provides objective evidence supporting the closure
+assessment of GAP-001-F002.
+
+Evidence Status:
+
+Valid — F002 Closure Candidate
+
+Evidence Registry:
+
+EVD-001 — Evidence Registry
