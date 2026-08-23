@@ -715,7 +715,121 @@ Future AI capabilities remain subject to ARC-004 and applicable architecture, se
 
 # 76. GAP-001-F003
 
-GAP-001-F003 defines the controlled assessment requirements for this area. Assessment must compare the approved baseline with current implementation and objective evidence, record dependencies and risk, and identify a measurable remediation or validation condition where a gap exists.
+GAP-001-F003 — Infrastructure Implementation Gap Remediation Record
+
+Status: CLOSED
+
+Original Finding:
+
+The inspected infrastructure directory contained no implementation artifacts. Closure requires governed infrastructure artifacts where required by the approved deployment model.
+
+Remediation:
+
+The infrastructure implementation gap has been remediated for the currently implemented containerized deployment model by establishing and validating governed Docker and Docker Compose deployment artifacts.
+
+The implemented deployment infrastructure boundary includes:
+
+- backend container definition;
+- base Docker Compose deployment definition;
+- development Docker Compose deployment definition;
+- production Docker Compose deployment definition;
+- PostgreSQL service definition;
+- service dependency and health checks;
+- persistent database volume configuration;
+- environment-based production configuration;
+- reproducible backend container image build;
+- runtime health validation.
+
+Implementation Evidence:
+
+EVIDENCE-012 — Infrastructure Implementation Validation
+
+Evidence Location:
+
+docs/evidence/EVIDENCE-012_infrastructure_implementation_validation.txt
+
+Evidence Registry:
+
+EVD-001 Version 2.1
+
+Git Branch:
+
+feature/docs-refactor-v2
+
+Closure Assessment:
+
+The remediation was assessed against the original GAP-001-F003 closure requirement.
+
+1. Infrastructure Implementation Artifacts
+
+PASS — The repository contains backend/Dockerfile and Docker Compose deployment definitions for the base, development, and production deployment models.
+
+2. Container Build Definition
+
+PASS — backend/Dockerfile provides a reproducible backend container build definition using a Python 3.13 slim base image, explicit dependencies, non-root execution, health-supporting curl installation, and deterministic Uvicorn startup.
+
+3. Deployment Configuration
+
+PASS — docker-compose.yml, docker-compose.dev.yml, and docker-compose.prod.yml define the currently implemented containerized deployment boundaries for backend and PostgreSQL services.
+
+4. Production Configuration Validation
+
+PASS — docker-compose.prod.yml resolves successfully using the production environment configuration.
+
+5. Image Build Validation
+
+PASS — backend/Dockerfile was successfully built with Docker BuildKit and all 13 build steps completed successfully.
+
+6. Runtime Health Validation
+
+PASS — the current Docker Compose runtime reports hardynatta-backend and maje-postgres as Up and healthy.
+
+7. Compose Configuration Validation
+
+PASS — docker compose config -q completed successfully without configuration errors.
+
+8. Architecture and Governance Alignment
+
+PASS — the implementation is governed by ARC-008 Deployment Architecture and HC-008 Deployment Governance, which establish the deployment, containerization, configuration, health, release, and infrastructure governance baseline.
+
+Closure Criteria:
+
+The original GAP-001-F003 closure requirement has been satisfied for the currently assessed infrastructure and deployment boundary:
+
+- governed infrastructure artifacts established;
+- Docker container definition established;
+- base, development, and production Compose definitions established;
+- production configuration resolution validated;
+- container image build validated;
+- runtime health validated;
+- Compose configuration validated;
+- objective evidence registered in EVD-001.
+
+Closure Decision:
+
+CLOSED
+
+Closure Basis:
+
+GAP-001-F003 closure criteria have been satisfied based on the currently implemented Docker and Docker Compose infrastructure boundary and objective validation evidence.
+
+EVIDENCE-012 provides the primary validation evidence for the remediation. EVD-001 Version 2.1 provides the controlled evidence registry entry.
+
+The original infrastructure finding is preserved as historical assessment context and has not been rewritten.
+
+Closure Evidence:
+
+- EVIDENCE-012 — docs/evidence/EVIDENCE-012_infrastructure_implementation_validation.txt
+- EVD-001 Version 2.1 — docs/evidence/EVIDENCE-REGISTRY.md
+- ARC-008 — docs/architecture/ARC-008_Deployment_Architecture.md
+- HC-008 — docs/hc/HC-008_Deployment_Governance.md
+- GAP-001 Assessment — docs/assessment/GAP-001_MAJE_Enterprise_Gap_Analysis.md
+
+Closure Limitation:
+
+This closure applies specifically to GAP-001-F003 and the currently implemented Docker and Docker Compose infrastructure boundary. It does not constitute complete cloud infrastructure provisioning, Terraform implementation, Kubernetes implementation, production cloud deployment certification, closure of GAP-001 as a whole, or closure of any other GAP-001 finding.
+
+Future infrastructure capabilities remain subject to ARC-008, HC-008, and applicable security, deployment, operations, testing, observability, governance, and product requirements.
 
 ---
 

@@ -6,7 +6,7 @@
 | --- | --- |
 | Document ID | EVD-001 |
 | Document Name | Evidence Registry |
-| Version | 2.0 |
+| Version | 2.1 |
 | Status | Controlled |
 | Owner | HARDYNATTA CHUNG |
 | Domain | Evidence |
@@ -50,6 +50,7 @@ Evidence harus:
 | EVIDENCE-009 | Test Execution Validation | `docs/evidence/EVIDENCE-009_test_execution_validation.txt` | PASS — Docker backend pytest execution completed with 162 passed, 0 failed, 0 errors for GAP-001-F001 | Valid - F001 Closure Candidate |
 | EVIDENCE-010 | Current Backend Regression Validation | `docs/evidence/EVIDENCE-010_backend_current_regression_validation.txt` | PASS — Docker backend pytest execution completed with 188 passed, 0 failed, 0 errors at Git commit 8b9d233 | Valid - Current |
 | EVIDENCE-011 | AI Service Implementation Validation | `docs/evidence/EVIDENCE-011_ai_service_implementation_validation.txt` | PASS — dedicated AI Service implementation boundary, model gateway abstraction, configurable model selection, prompt policy, controlled error handling, API integration, authorization, audit integration, and automated validation completed for GAP-001-F002 | Valid - F002 Closure Candidate |
+| EVIDENCE-012 | Infrastructure Implementation Validation | `docs/evidence/EVIDENCE-012_infrastructure_implementation_validation.txt` | PASS — Dockerfile, Docker Compose deployment definitions, production configuration resolution, image build, runtime health, and Compose validation completed for GAP-001-F003 | Valid - F003 Closure Candidate |
 
 ---
 
@@ -385,13 +386,14 @@ Version	Date	Change
 1.8 2026-08-19      Added EVIDENCE-009 Test Execution Validation for GAP-001-F001
 1.9 2026-08-23      Added EVIDENCE-010 Current Backend Regression Validation
 2.0 2026-08-23      Added EVIDENCE-011 AI Service Implementation Validation for GAP-001-F002
+2.1 2026-08-23      Added EVIDENCE-012 Infrastructure Implementation Validation for GAP-001-F003
 Final Statement
 
 EVD-001 — Evidence Registry
 
 HARDYNATTA CHUNG Enterprise Software Engineering Ecosystem
 
-Version 2.0 — Controlled Evidence Registry
+Version 2.1 — Controlled Evidence Registry
 
 Evidence transforms implementation activity into auditable enterprise knowledge.
 
@@ -429,6 +431,17 @@ API integration, authorization, audit integration, automated AI tests,
 and current backend regression validation.
 
 EVIDENCE-011 supports the closure assessment of GAP-001-F002 but does not,
+by itself, constitute formal closure.
+
+EVIDENCE-012 provides objective evidence that the currently implemented
+MAJE deployment infrastructure boundary has been established and validated
+for the assessed Docker and Docker Compose deployment model.
+
+The validation covers the backend Dockerfile, base/development/production
+Compose definitions, production configuration resolution, Docker image
+build, runtime health, and Compose configuration validation.
+
+EVIDENCE-012 supports the closure assessment of GAP-001-F003 but does not,
 by itself, constitute formal closure.
 
 This current validation supports assessment and remediation activities but does not, by itself, constitute formal closure of any GAP-001 finding.
