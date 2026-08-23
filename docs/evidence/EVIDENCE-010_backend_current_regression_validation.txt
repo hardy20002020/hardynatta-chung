@@ -1,0 +1,137 @@
+EVIDENCE-010 — Current Backend Regression Validation
+
+Document ID:
+EVIDENCE-010
+
+Title:
+Current Backend Regression Validation
+
+Project:
+MAJE Platform
+
+Assessment Scope:
+Current backend regression validation
+
+Purpose:
+This evidence record documents the current reproducible backend test
+execution for the MAJE repository at the validated Git checkpoint.
+
+Validation Date:
+2026-08-23
+
+Git Baseline Commit:
+8b9d233
+
+Git Branch:
+feature/docs-refactor-v2
+
+Validation Scope:
+
+- current backend regression test execution;
+- application package resolution;
+- backend test collection;
+- automated backend test execution;
+- successful test completion.
+
+Validation Environment:
+
+- MAJE backend running in Docker;
+- backend container: hardynatta-backend;
+- application path: /app;
+- PostgreSQL runtime available;
+- branch: feature/docs-refactor-v2;
+- Git baseline commit: 8b9d233.
+
+1. Reproducible Test Execution
+
+Command:
+
+MSYS_NO_PATHCONV=1 docker exec hardynatta-backend python -m pytest -q
+
+Observed Result:
+
+188 passed in 65.36s (0:01:05)
+
+Result:
+
+PASS
+
+2. Application Package Resolution
+
+The backend test suite executed successfully from the Docker backend
+runtime context.
+
+The application package was successfully resolved from the /app
+application context.
+
+Result:
+
+PASS
+
+3. Test Collection and Execution
+
+Pytest successfully collected and executed the current backend test suite.
+
+Observed execution reached:
+
+100%
+
+Final result:
+
+188 passed
+0 failed
+0 errors
+
+Result:
+
+PASS
+
+4. Validation Assessment
+
+The current Docker-based regression execution demonstrates that the
+backend test suite completes successfully at Git commit 8b9d233.
+
+The validation provides current objective evidence of successful
+automated backend regression execution for the defined validation scope.
+
+5. Validation Boundary
+
+This evidence validates the current backend automated regression test
+execution at the stated Git checkpoint.
+
+It does not independently constitute complete test coverage, performance
+assurance, production quality assurance, security certification, or
+independent enterprise test assurance.
+
+Those areas remain subject to their applicable architecture, testing,
+security, deployment, governance, and evidence requirements.
+
+6. Evidence Integrity
+
+This record represents a new validation execution and does not replace
+or modify historical evidence records.
+
+Earlier evidence records remain preserved according to the Evidence
+Registry governance requirements.
+
+7. Conclusion
+
+PASS
+
+The current MAJE backend regression suite was successfully executed in
+the Docker runtime environment with:
+
+188 passed
+0 failed
+0 errors
+
+EVIDENCE-010 provides current objective evidence for the validated
+backend regression state at Git commit 8b9d233.
+
+Evidence Status:
+
+Valid — Current Backend Regression Validation
+
+Evidence Registry:
+
+EVD-001 — Evidence Registry

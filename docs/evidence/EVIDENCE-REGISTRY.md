@@ -6,7 +6,7 @@
 | --- | --- |
 | Document ID | EVD-001 |
 | Document Name | Evidence Registry |
-| Version | 1.8 |
+| Version | 1.9 |
 | Status | Controlled |
 | Owner | HARDYNATTA CHUNG |
 | Domain | Evidence |
@@ -40,7 +40,7 @@ Evidence harus:
 | Evidence ID | Evidence | Source | Result | Status |
 | --- | --- | --- | --- | --- |
 | EVIDENCE-001 | Backend Test Validation | `docs/evidence/backend/EVIDENCE-001_backend_test_validation.txt` | 162 passed, 0 failed, 0 errors, 981 warnings | Valid |
-| EVIDENCE-002 | Backend Docker Test Validation - Current | `docs/evidence/backend/EVIDENCE-002_backend_docker_test_validation.txt` | 162 passed, 0 failed, 0 errors, 0 warnings | Valid - Current |
+| EVIDENCE-002 | Backend Docker Test Validation | `docs/evidence/backend/EVIDENCE-002_backend_docker_test_validation.txt` | 162 passed, 0 failed, 0 errors, 0 warnings | Valid - Historical |
 | EVIDENCE-003 | Evidence Publication and Traceability Validation | `docs/evidence/EVIDENCE-003_evidence_publication_traceability_validation.txt` | PASS — controlled index, naming, provenance, retention, Git traceability, and assessment linkage validated for GAP-001-F007 | Valid - F007 Closure Candidate |
 | EVIDENCE-004 | Production Readiness Validation | `docs/evidence/EVIDENCE-004_production_readiness_validation.txt` | PASS — production configuration, security validation, Compose configuration, image build, migration state, and current runtime health validated for GAP-001-F008 | Valid - F008 Closure Candidate |
 | EVIDENCE-005 | Backup & Restore Validation | `docs/evidence/EVIDENCE-005_backup_restore_validation.txt` | PASS — PostgreSQL backup, isolated restore, table inventory, migration state, database accessibility, and 25/25 row-count consistency validated for GAP-001-F009 | Valid - F009 Closure Candidate |
@@ -48,6 +48,7 @@ Evidence harus:
 | EVIDENCE-007 | Security Validation | `docs/evidence/EVIDENCE-007_security_validation.txt` | PASS — Docker-based security validation completed with 10/10 selected security tests passing for GAP-001-F011 | Valid - F011 Closure Candidate |
 | EVIDENCE-008 | Frontend Validation | `docs/evidence/EVIDENCE-008_frontend_validation.txt` | PASS — automated lint/build, frontend runtime, manual nullable location validation, and PostgreSQL persistence validation completed for GAP-001-F012 | Valid - F012 Closure Candidate |
 | EVIDENCE-009 | Test Execution Validation | `docs/evidence/EVIDENCE-009_test_execution_validation.txt` | PASS — Docker backend pytest execution completed with 162 passed, 0 failed, 0 errors for GAP-001-F001 | Valid - F001 Closure Candidate |
+| EVIDENCE-010 | Current Backend Regression Validation | `docs/evidence/EVIDENCE-010_backend_current_regression_validation.txt` | PASS — Docker backend pytest execution completed with 188 passed, 0 failed, 0 errors at Git commit 8b9d233 | Valid - Current |
 
 ---
 
@@ -381,13 +382,14 @@ Version	Date	Change
 1.6 2026-08-18      Added EVIDENCE-007 Security Validation for GAP-001-F011
 1.7 2026-08-19      Added EVIDENCE-008 Frontend Validation for GAP-001-F012
 1.8 2026-08-19      Added EVIDENCE-009 Test Execution Validation for GAP-001-F001
+1.9 2026-08-23      Added EVIDENCE-010 Current Backend Regression Validation
 Final Statement
 
 EVD-001 — Evidence Registry
 
 HARDYNATTA CHUNG Enterprise Software Engineering Ecosystem
 
-Version 1.8 — Controlled Evidence Registry
+Version 1.9 — Controlled Evidence Registry
 
 Evidence transforms implementation activity into auditable enterprise knowledge.
 
@@ -407,11 +409,12 @@ Closure
 
 EVIDENCE-001 remains preserved as historical backend test evidence.
 
-EVIDENCE-002 is the current backend Docker test validation baseline and provides objective evidence that the backend automated test suite completed successfully with:
+EVIDENCE-002 remains preserved as historical backend Docker test evidence.
 
-162 passed
+EVIDENCE-010 is the current backend regression validation record and provides objective evidence that the backend automated test suite completed successfully at Git commit 8b9d233 with:
+
+188 passed
 0 failed
 0 errors
-0 warnings
 
-This evidence supports assessment and remediation activities but does not, by itself, constitute formal closure of any GAP-001 finding.
+This current validation supports assessment and remediation activities but does not, by itself, constitute formal closure of any GAP-001 finding.
