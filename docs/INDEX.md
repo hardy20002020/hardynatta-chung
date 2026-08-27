@@ -122,6 +122,7 @@ Evidence records provide validation and traceability material supporting assessm
 | [EVIDENCE-010](evidence/EVIDENCE-010_backend_current_regression_validation.txt) | Current Backend Regression Validation |
 | [EVIDENCE-011](evidence/EVIDENCE-011_ai_service_implementation_validation.txt) | AI Service Implementation Validation |
 | [EVIDENCE-012](evidence/EVIDENCE-012_infrastructure_implementation_validation.txt) | Infrastructure Implementation Validation |
+| [EVIDENCE-013](evidence/EVIDENCE-013_ci_cd_implementation_validation.txt) | CI/CD Implementation Validation |
 
 [Evidence Registry](evidence/EVIDENCE-REGISTRY.md)
 

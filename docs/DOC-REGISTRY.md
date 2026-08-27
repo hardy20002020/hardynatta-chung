@@ -494,6 +494,7 @@ Registry berikut mencatat official documents yang saat ini teridentifikasi dalam
 | EVIDENCE-010 | Current Backend Regression Validation | `docs/evidence/EVIDENCE-010_backend_current_regression_validation.txt` | Valid |
 | EVIDENCE-011 | AI Service Implementation Validation | `docs/evidence/EVIDENCE-011_ai_service_implementation_validation.txt` | Valid |
 | EVIDENCE-012 | Infrastructure Implementation Validation | `docs/evidence/EVIDENCE-012_infrastructure_implementation_validation.txt` | Valid |
+| EVIDENCE-013 | CI/CD Implementation Validation | `docs/evidence/EVIDENCE-013_ci_cd_implementation_validation.txt` | Valid - F004 Remediation |
 
 # 24. Evidence Registry
 
