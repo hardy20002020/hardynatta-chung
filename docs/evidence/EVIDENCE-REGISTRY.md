@@ -6,7 +6,7 @@
 | --- | --- |
 | Document ID | EVD-001 |
 | Document Name | Evidence Registry |
-| Version | 2.2 |
+| Version | 2.3 |
 | Status | Controlled |
 | Owner | HARDYNATTA CHUNG |
 | Domain | Evidence |
@@ -52,6 +52,7 @@ Evidence harus:
 | EVIDENCE-011 | AI Service Implementation Validation | `docs/evidence/EVIDENCE-011_ai_service_implementation_validation.txt` | PASS — dedicated AI Service implementation boundary, model gateway abstraction, configurable model selection, prompt policy, controlled error handling, API integration, authorization, audit integration, and automated validation completed for GAP-001-F002 | Valid - F002 Closure Candidate |
 | EVIDENCE-012 | Infrastructure Implementation Validation | `docs/evidence/EVIDENCE-012_infrastructure_implementation_validation.txt` | PASS — Dockerfile, Docker Compose deployment definitions, production configuration resolution, image build, runtime health, and Compose validation completed for GAP-001-F003 | Valid - F003 Closure Candidate |
 | EVIDENCE-013 | CI/CD Implementation Validation | `docs/evidence/EVIDENCE-013_ci_cd_implementation_validation.txt` | PASS — GitHub Actions CI workflow implementation, backend and frontend validation paths, database bootstrap, Git provenance, and successful GitHub Actions execution validated for GAP-001-F004; complete CD and deployment capabilities not yet evidenced | Valid - F004 Remediation |
+| EVIDENCE-014 | Operations Documentation Validation | `docs/evidence/EVIDENCE-014_operations_documentation_validation.txt` | PASS — governed Operations documentation boundary, deployment, health check, backup/restore, rollback, incident response, and monitoring/observability procedures validated for GAP-001-F005 | Valid - F005 Remediation |
 
 ---
 
