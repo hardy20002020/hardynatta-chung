@@ -978,7 +978,167 @@ and product requirements.
 
 # 78. GAP-001-F005
 
-GAP-001-F005 defines the controlled assessment requirements for this area. Assessment must compare the approved baseline with current implementation and objective evidence, record dependencies and risk, and identify a measurable remediation or validation condition where a gap exists.
+GAP-001-F005 — Operations Documentation Gap Remediation Record
+
+Status: CLOSED
+
+Original Finding:
+
+GAP-001-F005 — Operations Documentation Gap. docs/operations currently
+contains README.md only. Closure requires governed operational procedures,
+runbooks, incident handling, recovery, and deployment procedures.
+
+Remediation:
+
+The Operations documentation gap has been remediated by establishing and
+validating a governed Operations documentation boundary containing the
+required operational procedures.
+
+The implemented Operations documentation boundary includes:
+
+- OPS-001 — Deployment Procedure;
+- OPS-002 — Health Check Procedure;
+- OPS-003 — Backup & Restore Procedure;
+- OPS-004 — Rollback Procedure;
+- OPS-005 — Incident Response Procedure;
+- OPS-006 — Monitoring & Observability Procedure.
+
+Implementation Evidence:
+
+EVIDENCE-014 — Operations Documentation Validation
+
+Evidence Location:
+
+docs/evidence/EVIDENCE-014_operations_documentation_validation.txt
+
+Evidence Registry:
+
+EVD-001 Version 2.3
+
+Git Branch:
+
+feature/docs-refactor-v2
+
+Closure Assessment:
+
+The remediation was assessed against the original GAP-001-F005 closure
+requirement.
+
+1. Operations Documentation Structure
+
+PASS — docs/operations now contains six governed operational procedures
+in addition to the Operations README.
+
+2. Deployment Procedure
+
+PASS — OPS-001 establishes the controlled deployment procedure boundary,
+including prerequisites, deployment flow, validation, failure handling,
+rollback consideration, and evidence requirements.
+
+3. Health Check Procedure
+
+PASS — OPS-002 establishes the controlled health check procedure boundary,
+including application, database, container, development, and
+post-deployment health validation considerations.
+
+4. Backup and Restore Procedure
+
+PASS — OPS-003 establishes the controlled backup and restore procedure
+boundary, including backup creation, archive inspection, isolated restore,
+restored database validation, and recovery evidence requirements.
+
+5. Rollback Procedure
+
+PASS — OPS-004 establishes the controlled rollback procedure boundary,
+including rollback decision, prerequisites, failed release identification,
+and post-rollback validation considerations.
+
+6. Incident Response Procedure
+
+PASS — OPS-005 establishes the controlled incident response procedure
+boundary, including incident lifecycle, detection, triage, severity,
+impact assessment, containment, and operational response.
+
+7. Monitoring and Observability Procedure
+
+PASS — OPS-006 establishes the controlled monitoring and observability
+procedure boundary and defines the applicable operational monitoring
+controls and evidence considerations.
+
+8. Governance Traceability
+
+PASS — The Operations procedures reference the applicable architecture and
+governance baseline, including ARC-008, HC-005, HC-008, HC-009, and
+applicable HC-011 documentation governance controls.
+
+9. Scope Classification
+
+PASS — The Operations documentation explicitly distinguishes documented,
+implemented, validated, and not-yet-evidenced capabilities.
+
+10. Production Execution Boundary
+
+NOT YET EVIDENCED — The existence of governed operational procedures does
+not by itself establish successful production deployment, production
+monitoring, production incident execution, production backup scheduling,
+production restore execution, or production rollback execution.
+
+Closure Criteria:
+
+The original GAP-001-F005 closure requirement has been satisfied for the
+currently assessed Operations documentation boundary.
+
+The following operational procedures are established and governed:
+
+- deployment;
+- health check;
+- backup and restore;
+- rollback;
+- incident response;
+- monitoring and observability.
+
+Objective evidence has been established and registered in EVD-001.
+
+Closure Decision:
+
+CLOSED
+
+Closure Basis:
+
+GAP-001-F005 closure criteria have been satisfied based on the established
+Operations documentation boundary and objective validation evidence.
+
+EVIDENCE-014 provides the primary validation evidence for the remediation.
+EVD-001 Version 2.3 provides the controlled evidence registry entry.
+
+The original Operations Documentation finding is preserved as historical
+assessment context and has not been rewritten.
+
+Closure Evidence:
+
+- EVIDENCE-014 — docs/evidence/EVIDENCE-014_operations_documentation_validation.txt
+- EVD-001 Version 2.3 — docs/evidence/EVIDENCE-REGISTRY.md
+- ARC-008 — docs/architecture/ARC-008_Deployment_Architecture.md
+- HC-005 — docs/hc/HC-005_Database_Governance.md
+- HC-008 — docs/hc/HC-008_Deployment_Governance.md
+- HC-009 — docs/hc/HC-009_Monitoring_Observability_Governance.md
+- HC-011 — docs/hc/HC-011_Documentation_Governance.md
+- GAP-001 Assessment — docs/assessment/GAP-001_MAJE_Enterprise_Gap_Analysis.md
+
+Closure Limitation:
+
+This closure applies specifically to the currently implemented and
+validated Operations documentation boundary.
+
+It does not constitute production operational certification, production
+deployment certification, disaster recovery certification, production
+monitoring certification, production backup scheduling certification,
+production restore certification, production rollback certification,
+closure of GAP-001 as a whole, or closure of any other GAP-001 finding.
+
+Future operational capabilities remain subject to the approved
+architecture, security, deployment, recovery, monitoring, testing,
+observability, governance, and product requirements.
 
 ---
 
