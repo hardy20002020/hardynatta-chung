@@ -1,0 +1,582 @@
+EVIDENCE-013 — CI/CD Implementation Validation
+
+MAJE Platform
+HARDYNATTA CHUNG Enterprise Software Engineering Ecosystem
+
+Assessment Reference:
+
+GAP-001-F004 — CI/CD Gap
+
+Evidence Type:
+
+CI/CD Implementation and Traceability Validation
+
+Status:
+
+VALIDATION COMPLETE — IMPLEMENTATION PRESENT
+
+Validation Scope:
+
+This evidence validates the currently implemented CI/CD workflow definition
+and its alignment with the applicable MAJE deployment and release governance
+baseline.
+
+This evidence validates repository implementation and traceability.
+
+It does not claim successful execution of the workflow on GitHub Actions,
+production deployment, continuous delivery, or production release approval.
+
+---
+
+1. Governing Architecture and Governance Baseline
+
+The applicable deployment and release baseline includes:
+
+- ARC-008 — Deployment Architecture
+- HC-008 — Deployment Governance
+- HC-014 — Release Management
+
+ARC-008 defines CI/CD as the controlled automation boundary for validation
+and delivery from source revision toward release artifact and target
+environment.
+
+ARC-008 identifies the baseline pipeline stages as including:
+
+- source checkout;
+- dependency installation;
+- static analysis;
+- unit testing;
+- build;
+- integration testing;
+- security scanning;
+- artifact publication;
+- approval;
+- deployment;
+- post-deployment validation.
+
+HC-008 defines the CI/CD workflow as:
+
+Code Commit
+↓
+CI Validation
+↓
+Build Image
+↓
+Testing
+↓
+Security Scan
+↓
+Deploy
+↓
+Monitoring
+
+HC-014 defines the release workflow as:
+
+Development
+↓
+Code Review
+↓
+Testing
+↓
+Quality Gate
+↓
+Release Approval
+↓
+Staging
+↓
+Production
+
+The current workflow implementation is assessed against these governing
+baselines without assuming that every baseline stage is already implemented.
+
+---
+
+2. CI/CD Workflow Implementation
+
+Repository inspection identified the following GitHub Actions workflow:
+
+.github/workflows/ci.yml
+
+The workflow is named:
+
+MAJE CI
+
+The workflow is configured for:
+
+- push events on main;
+- push events on develop;
+- push events on feature/** branches;
+- push events on bugfix/** branches;
+- push events on hotfix/** branches;
+- pull requests targeting main;
+- pull requests targeting develop.
+
+Result:
+
+PASS
+
+A controlled GitHub Actions workflow definition exists in the repository.
+
+---
+
+3. Backend CI Validation Path
+
+The backend CI job is defined as:
+
+Backend Tests
+
+Execution environment:
+
+ubuntu-latest
+
+The workflow provisions PostgreSQL 17 as a GitHub Actions service.
+
+PostgreSQL configuration includes:
+
+- database: maje;
+- user: postgres;
+- password: postgres;
+- port: 5432;
+- pg_isready health check.
+
+The backend job establishes:
+
+DATABASE_URL
+
+and uses:
+
+backend
+
+as its working directory.
+
+The workflow performs the following backend validation steps:
+
+1. Checkout source using actions/checkout@v4.
+2. Set up Python 3.13 using actions/setup-python@v5.
+3. Install Python dependencies from requirements.txt.
+4. Execute Alembic database migrations.
+5. Execute the application database seed.
+6. Execute the backend pytest suite.
+
+Backend test command:
+
+python -m pytest -q
+
+Result:
+
+PASS — workflow implementation is present and provides a reproducible
+backend automated validation path.
+
+---
+
+4. Frontend CI Validation Path
+
+The frontend CI job is defined as:
+
+Frontend Validation
+
+Execution environment:
+
+ubuntu-latest
+
+The frontend job establishes:
+
+frontend
+
+as its working directory.
+
+The workflow performs the following frontend validation steps:
+
+1. Checkout source using actions/checkout@v4.
+2. Set up Node.js 24 using actions/setup-node@v4.
+3. Use npm cache based on frontend/package-lock.json.
+4. Install dependencies using npm ci.
+5. Execute frontend lint.
+6. Execute frontend production build.
+
+Frontend validation commands:
+
+npm run lint
+
+npm run build
+
+Result:
+
+PASS — workflow implementation is present and provides a reproducible
+frontend lint and build validation path.
+
+---
+
+5. Database Bootstrap in CI
+
+The backend workflow includes explicit database preparation before tests:
+
+alembic upgrade head
+
+followed by:
+
+python -m app.db.seed
+
+This establishes a controlled database initialization sequence before
+backend automated testing.
+
+Result:
+
+PASS
+
+---
+
+6. Existing Git Provenance
+
+Git history confirms that the CI workflow was introduced and subsequently
+enhanced through identifiable commits.
+
+Initial CI implementation:
+
+df950fc — ci: add automated backend and frontend validation
+
+Backend database bootstrap enhancement:
+
+107c70a — ci(backend): bootstrap database before tests
+
+Commit 107c70a added:
+
+- Alembic migration execution;
+- database seed execution.
+
+Git inspection confirms that both commits modify:
+
+.github/workflows/ci.yml
+
+Result:
+
+PASS
+
+---
+
+7. Current Repository State
+
+The current branch is:
+
+feature/docs-refactor-v2
+
+The current HEAD is:
+
+1198e29fe387fd7098580d17502d7a1abf736449
+
+Current HEAD message:
+
+docs(registry): establish controlled document inventory
+
+Working tree validation reported:
+
+clean
+
+The current branch is synchronized with:
+
+origin/feature/docs-refactor-v2
+
+Result:
+
+PASS
+
+---
+
+8. CI/CD Implementation Boundary
+
+The current repository contains an implemented Continuous Integration
+workflow.
+
+Validated CI capabilities include:
+
+- source checkout;
+- Python environment setup;
+- Node.js environment setup;
+- backend dependency installation;
+- frontend dependency installation;
+- PostgreSQL CI service;
+- database migration;
+- database seed;
+- backend automated testing;
+- frontend lint validation;
+- frontend production build validation.
+
+The following capabilities are not established by this evidence:
+
+- verified GitHub Actions workflow execution result;
+- GitHub-hosted CI run evidence;
+- automated Docker image publication;
+- artifact registry publication;
+- automated security scanning;
+- automated production deployment;
+- automated staging deployment;
+- release approval automation;
+- production promotion automation;
+- post-deployment production validation;
+- production rollback execution evidence.
+
+These capabilities are therefore not claimed as implemented or validated by
+EVIDENCE-013.
+
+---
+
+9. CI Versus CD Assessment
+
+The current workflow provides a concrete Continuous Integration boundary.
+
+The repository evidence does not establish a complete Continuous Delivery
+pipeline matching all stages described by ARC-008, HC-008, and HC-014.
+
+Accordingly:
+
+Continuous Integration:
+
+IMPLEMENTED
+
+CI Workflow Definition:
+
+VALIDATED
+
+Continuous Delivery:
+
+NOT YET EVIDENCED
+
+Production Deployment Automation:
+
+NOT YET EVIDENCED
+
+Release Automation:
+
+NOT YET EVIDENCED
+
+Production Deployment Approval Automation:
+
+NOT YET EVIDENCED
+
+---
+
+10. Reproducibility
+
+The workflow contains explicit commands and versioned runtime selections
+for its current validation path.
+
+Backend:
+
+Python 3.13
+
+Frontend:
+
+Node.js 24
+
+Backend dependency source:
+
+backend/requirements.txt
+
+Frontend dependency source:
+
+frontend/package-lock.json
+
+Backend test:
+
+python -m pytest -q
+
+Frontend lint:
+
+npm run lint
+
+Frontend build:
+
+npm run build
+
+Database migration:
+
+alembic upgrade head
+
+Database seed:
+
+python -m app.db.seed
+
+Result:
+
+PASS — the repository contains an identifiable and reproducible CI
+workflow definition for the currently implemented validation scope.
+
+---
+
+11. Security and Governance Limitation
+
+The workflow definition itself does not establish that every security,
+artifact, approval, deployment, monitoring, and release-control requirement
+defined by ARC-008, HC-008, HC-014, or applicable security governance has
+been operationally validated.
+
+No claim is made here regarding:
+
+- GitHub repository security configuration;
+- GitHub Actions runner hardening;
+- secret-management configuration;
+- branch protection;
+- required reviewers;
+- deployment credentials;
+- artifact signing;
+- container scanning;
+- dependency vulnerability scanning;
+- production environment authorization.
+
+Those controls require separate evidence where applicable.
+
+---
+
+12. Closure Assessment Against GAP-001-F004
+
+Original GAP-001-F004 finding:
+
+GAP-001-F004 — CI/CD Gap. No GitHub Actions workflow definitions were
+detected. Closure requires controlled automated validation and delivery
+workflows, or a formally approved alternative.
+
+Current repository state demonstrates that the original condition:
+
+"No GitHub Actions workflow definitions were detected"
+
+is no longer applicable to the current repository state.
+
+A GitHub Actions workflow now exists at:
+
+.github/workflows/ci.yml
+
+The workflow provides controlled automated backend and frontend validation.
+
+However, the current evidence does not establish complete Continuous
+Delivery or successful execution of the workflow on GitHub Actions.
+
+Therefore the current assessment status is:
+
+PARTIALLY REMEDIATED
+
+---
+
+13. Closure Condition
+
+GAP-001-F004 should not be marked CLOSED solely on the basis of the
+existence of .github/workflows/ci.yml.
+
+Further validation is required for full closure if the approved baseline
+requires executable CI/CD delivery capability.
+
+Potential closure evidence should establish, as applicable:
+
+- successful GitHub Actions workflow execution;
+- backend CI success;
+- frontend CI success;
+- required quality gates;
+- security scanning;
+- artifact generation or publication;
+- controlled deployment workflow;
+- staging validation;
+- approval boundary;
+- production promotion controls;
+- post-deployment validation.
+
+The applicable closure scope must remain aligned with the approved MAJE
+deployment and release architecture.
+
+---
+
+14. Evidence Conclusion
+
+EVIDENCE-013 establishes objective repository evidence that MAJE now contains
+a governed GitHub Actions Continuous Integration workflow.
+
+The evidence demonstrates:
+
+Architecture
+↓
+Governance
+↓
+CI Workflow Definition
+↓
+Backend Validation Path
+↓
+Frontend Validation Path
+↓
+Git Provenance
+↓
+Assessment
+
+The evidence does not demonstrate:
+
+CI Execution Result
+↓
+Artifact Publication
+↓
+Deployment
+↓
+Production Promotion
+↓
+Post-Deployment Validation
+
+Those areas remain outside the validated scope of EVIDENCE-013.
+
+---
+
+15. Evidence Classification
+
+Evidence ID:
+
+EVIDENCE-013
+
+Evidence Name:
+
+CI/CD Implementation Validation
+
+Primary Finding:
+
+GAP-001-F004
+
+Evidence Class:
+
+Test Evidence / Deployment Evidence / Governance Evidence
+
+Primary Source:
+
+.github/workflows/ci.yml
+
+Supporting Sources:
+
+- ARC-008 — Deployment Architecture
+- HC-008 — Deployment Governance
+- HC-014 — Release Management
+- Git commit df950fc
+- Git commit 107c70a
+
+Validation Result:
+
+PASS — CI workflow implementation and repository traceability validated.
+
+Assessment Result:
+
+PARTIALLY REMEDIATED — CI implementation exists; complete CD and
+operational execution evidence are not yet established.
+
+---
+
+16. Limitation
+
+This evidence validates the repository implementation of the current MAJE
+CI workflow.
+
+It does not constitute:
+
+- successful GitHub Actions execution evidence;
+- CI/CD platform certification;
+- production deployment validation;
+- production release approval;
+- production operational readiness;
+- security certification;
+- independent enterprise CI/CD assurance.
+
+Future CI/CD capabilities remain subject to ARC-008, HC-008, HC-014,
+security governance, deployment governance, release management, and
+evidence governance requirements.
+

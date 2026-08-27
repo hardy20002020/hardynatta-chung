@@ -6,7 +6,7 @@
 | --- | --- |
 | Document ID | EVD-001 |
 | Document Name | Evidence Registry |
-| Version | 2.1 |
+| Version | 2.2 |
 | Status | Controlled |
 | Owner | HARDYNATTA CHUNG |
 | Domain | Evidence |
@@ -51,6 +51,7 @@ Evidence harus:
 | EVIDENCE-010 | Current Backend Regression Validation | `docs/evidence/EVIDENCE-010_backend_current_regression_validation.txt` | PASS — Docker backend pytest execution completed with 188 passed, 0 failed, 0 errors at Git commit 8b9d233 | Valid - Current |
 | EVIDENCE-011 | AI Service Implementation Validation | `docs/evidence/EVIDENCE-011_ai_service_implementation_validation.txt` | PASS — dedicated AI Service implementation boundary, model gateway abstraction, configurable model selection, prompt policy, controlled error handling, API integration, authorization, audit integration, and automated validation completed for GAP-001-F002 | Valid - F002 Closure Candidate |
 | EVIDENCE-012 | Infrastructure Implementation Validation | `docs/evidence/EVIDENCE-012_infrastructure_implementation_validation.txt` | PASS — Dockerfile, Docker Compose deployment definitions, production configuration resolution, image build, runtime health, and Compose validation completed for GAP-001-F003 | Valid - F003 Closure Candidate |
+| EVIDENCE-013 | CI/CD Implementation Validation | `docs/evidence/EVIDENCE-013_ci_cd_implementation_validation.txt` | PASS — GitHub Actions CI workflow implementation, backend and frontend validation paths, database bootstrap, and Git provenance validated for GAP-001-F004; complete CD and remote execution not yet evidenced | Valid - F004 Remediation |
 
 ---
 
