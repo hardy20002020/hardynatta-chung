@@ -123,6 +123,7 @@ Evidence records provide validation and traceability material supporting assessm
 | [EVIDENCE-011](evidence/EVIDENCE-011_ai_service_implementation_validation.txt) | AI Service Implementation Validation |
 | [EVIDENCE-012](evidence/EVIDENCE-012_infrastructure_implementation_validation.txt) | Infrastructure Implementation Validation |
 | [EVIDENCE-013](evidence/EVIDENCE-013_ci_cd_implementation_validation.txt) | CI/CD Implementation Validation |
+| [EVIDENCE-014](evidence/EVIDENCE-014_operations_documentation_validation.txt) | Operations Documentation Validation |
 
 [Evidence Registry](evidence/EVIDENCE-REGISTRY.md)
 

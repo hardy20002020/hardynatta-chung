@@ -495,6 +495,7 @@ Registry berikut mencatat official documents yang saat ini teridentifikasi dalam
 | EVIDENCE-011 | AI Service Implementation Validation | `docs/evidence/EVIDENCE-011_ai_service_implementation_validation.txt` | Valid |
 | EVIDENCE-012 | Infrastructure Implementation Validation | `docs/evidence/EVIDENCE-012_infrastructure_implementation_validation.txt` | Valid |
 | EVIDENCE-013 | CI/CD Implementation Validation | `docs/evidence/EVIDENCE-013_ci_cd_implementation_validation.txt` | Valid - F004 Remediation |
+| EVIDENCE-014 | Operations Documentation Validation | `docs/evidence/EVIDENCE-014_operations_documentation_validation.txt` | Valid - F005 Remediation |
 
 # 24. Evidence Registry
 
